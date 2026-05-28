@@ -1,6 +1,6 @@
 # Projeto: M.I.N.D (Mental Intelligence & Network Data)
 **Sistema de Inteligência para Apoio Diagnóstico em Saúde Mental**
-*A decomposição conceitual liga a cognição humana (Mental Intelligence) à infraestrutura de dados conectados (Network Data).*
+<br/>*A decomposição conceitual liga a cognição humana (Mental Intelligence) à infraestrutura de dados conectados (Network Data).*<br/>
 
 Este documento apresenta a especificação e o escopo atualizados do projeto de cruzamento entre **Ciência de Dados** e **Psicologia/Psiquiatria**, idealizado para otimizar processos clínicos, mitigar erros de diagnóstico em saúde mental e estruturar uma modelagem probabilística rigorosa baseada em evidências científicas.
 
@@ -20,34 +20,227 @@ Utilizar algoritmos de *Machine Learning*, estatística aplicada e modelagem pro
 
 ---
 
-## 3. Funcionalidades Principais do Sistema
+# 3. Funcionalidades Principais do Sistema
 
-### Fase 1: Mínimo Produto Viável (MVP)
-* **Cálculo Probabilístico Unificado (CID-11 & DSM-5-TR):** Cruzamento de dados de entrada estruturados com uma base de conhecimento para apontar a probabilidade estatística de diferentes laudos e comorbidades.
-* **Mapeamento Clínico de Restrições (Árvores Lógicas):** Aplicação automatizada dos critérios operacionais, temporais e de exclusão estipulados pelo DSM-5-TR (ex: tempo mínimo de persistência de sintomas e regras eliminatórias).
-* **Ingestão de Dados Clínicos Estruturados:** Formulários digitais padronizados baseados em escalas transversais de sintomas (como as do próprio DSM-5-TR) e checklists binários/Likert preenchidos pelo profissional.
-* **Painel de Evolução Longitudinal:** Painéis interativos para o profissional acompanhar graficamente a distribuição de sintomas ao longo do tempo e o histórico de resposta do paciente.
+## Fase 1 MVP (Minimum Viable Product)
+O foco inicial do projeto será a construção de um Clinical Decision Support System (CDSS) voltado para apoio probabilístico à tomada de decisão clínica em saúde mental, utilizando critérios estruturados do DSM-5-TR e da CID-11.
 
-### Fase 2: Expansão Pós-Validação
-* **Ingestão de Dados Multimodais:** Processamento de Linguagem Natural (NLP) para extração de entidades clínicas a partir de notas textuais livres e relatórios médicos anteriores.
-* **Mapeamento de Perfis Fenotípicos Avançados:** Triagem refinada de dados epidemiológicos para identificar padrões de cronicidade ou remissão. *(A recomendação ou intervenção farmacológica ativa foi descontinuada do escopo inicial devido a restrições regulatórias de alto risco).*
+O MVP prioriza:
+* interpretabilidade clínica;
+* rastreabilidade diagnóstica;
+* modelagem probabilística explicável;
+* validação longitudinal;
+* conformidade ética e regulatória.
+
+### 3.1 Inferência Probabilística Diagnóstica
+O núcleo do sistema será um motor de inferência clínica responsável por calcular a distribuição probabilística entre hipóteses diagnósticas possíveis a partir de sintomas observados, critérios temporais e regras de exclusão diagnóstica.
+
+A inferência será baseada em:
+* lógica diagnóstica estruturada;
+* pesos probabilísticos condicionais;
+* modelagem heurística inicial;
+* futura expansão para Redes Bayesianas.
+
+> O sistema não realizará diagnóstico definitivo, funcionando exclusivamente como ferramenta de apoio clínico.
+
+### 3.2 Motor Lógico DSM-5-TR / CID-11
+Implementação computacional dos critérios operacionais presentes no DSM-5-TR e CID-11, incluindo:
+* critérios obrigatórios;
+* cardinalidade mínima de sintomas;
+* duração mínima dos episódios;
+* regras de exclusão diagnóstica;
+* relações de comorbidade;
+* conflitos diagnósticos.
+
+Essa camada transforma os critérios clínicos em estruturas computáveis e auditáveis.
 
 ---
 
-## 4. Arquitetura Tecnológica e Engenharia de Dados (Stack)
+### 3.3 Estrutura Longitudinal de Episódios Clínicos
+O sistema utilizará uma modelagem longitudinal baseada em episódios clínicos, permitindo acompanhar:
+* persistência sintomática;
+* remissão;
+* recorrência;
+* evolução temporal;
+* resposta terapêutica.
 
-### 1. Armazenamento e Estruturação de Dados (SQL)
-Criação de um banco de dados relacional robusto estruturado em tabelas de entidades clínicas, garantindo integridade referencial para mapear sintomas e taxonomias:
-* **Tabela de Sintomas e Diagnósticos:** Catalogação padronizada dos códigos da CID-11 e do DSM-5-TR.
-* **Tabela de Critérios Operacionais:** Parâmetros de controle de tempo (meses/semanas) e regras lógicas do DSM-5-TR.
-* **Tabela de Mapeamento (Crosswalks):** Equivalência e coeficientes de correlação entre sintomas da CID-11 e constructos do DSM-5-TR utilizando chaves conceituais baseadas no padrão UMLS (*Unified Medical Language System*).
+A estrutura longitudinal será especialmente relevante para transtornos do humor, como:
+* Episódio Depressivo Maior;
+* Transtorno Bipolar I;
+* Transtorno Bipolar II;
+* Distimia;
+* Ciclotimia.
 
-### 2. Modelagem Estatística e Inteligência Artificial (Python / R)
-* **R (Validação Estatística):** Análise exploratória profunda (EDA), testes de hipóteses, validação de consistência interna das escalas (Alfa de Cronbach) e Análise de Classes Latentes (LCA) sobre microdados de estudos de caso.
-* **Python (Cálculo Probabilístico e ML):** Construção das pipelines de processamento de dados e desenvolvimento de modelos de **Redes Bayesianas** ou inferência lógica para calcular probabilidades condicionais baseadas nos sintomas ativados.
+### 3.4 Ingestão Estruturada de Dados Clínicos
+A coleta inicial de dados será baseada em instrumentos estruturados e escalas psicométricas padronizadas.
 
-### 3. Métricas e Dashboards (DAX / Power BI)
-* Criação de indicadores de performance clínica e painéis visuais interativos. Utilização de fórmulas DAX avançadas para calcular a variação percentual de severidade de sintomas entre consultas e taxas de adesão terapêutica.
+Os dados poderão incluir:
+* checklists clínicos;
+* escalas Likert;
+* escalas transversais do DSM-5-TR;
+* PHQ-9;
+* GAD-7;
+* observações clínicas estruturadas.
+
+A arquitetura foi projetada para futura expansão multimodal via NLP clínico.
+
+### 3.5 Explicabilidade Diagnóstica
+Toda inferência produzida pelo sistema deverá possuir rastreabilidade completa.
+
+O sistema armazenará:
+* sintomas utilizados;
+* critérios ativados;
+* regras de exclusão aplicadas;
+* pesos probabilísticos;
+* conflitos diagnósticos;
+* trilha lógica da inferência.
+
+Essa abordagem visa garantir:
+* transparência;
+* auditoria clínica;
+* confiabilidade;
+* validação profissional.
+
+---
+
+### 3.6 Modelagem de Relações Diagnósticas
+O sistema será capaz de representar:
+* comorbidades;
+* relações hierárquicas;
+* exclusões diagnósticas;
+* relações espectrais entre transtornos.
+
+Essa camada permitirá análises probabilísticas mais próximas da prática clínica real.
+
+### 3.7 Painel Longitudinal e Métricas Clínicas
+O sistema disponibilizará dashboards interativos para acompanhamento temporal do paciente, incluindo:
+* evolução sintomática;
+* severidade clínica;
+* frequência de sintomas;
+* impacto funcional;
+* adesão terapêutica;
+* mudanças entre consultas.
+
+Os painéis serão desenvolvidos inicialmente utilizando:
+* Power BI;
+* Apache Superset;
+* métricas DAX;
+* consultas analíticas SQL.
+
+### 3.8 Arquitetura Preparada para Redes Bayesianas
+Embora o MVP inicial utilize inferência heurística e lógica probabilística estruturada, toda a arquitetura foi planejada para futura migração para:
+* Redes Bayesianas;
+* inferência causal;
+* aprendizado probabilístico;
+* calibração epidemiológica dinâmica.
+
+Essa evolução permitirá modelar relações condicionais complexas entre sintomas, episódios e transtornos.
+
+---
+
+### 3.9 Segurança, LGPD e Governança Clínica
+A arquitetura do sistema foi projetada considerando:
+* segregação entre identidade e camada analítica;
+* anonimização de dados sensíveis;
+* rastreabilidade de alterações;
+* versionamento clínico;
+* auditoria de inferência;
+* controle de acesso;
+* conformidade com LGPD.
+
+O sistema sará o princípio de:
+"Human-in-the-loop".
+
+Toda decisão clínica permanecerá integralmente sob responsabilidade do profissional habilitado.
+
+---
+
+# 4. Arquitetura Tecnológica e Engenharia de Dados (Stack)
+
+## 4.1 Banco de Dados Relacional (PostgreSQL)
+A modelagem relacional foi estruturada para suportar:
+* integridade clínica;
+* inferência probabilística;
+* modelagem longitudinal;
+* explicabilidade diagnóstica;
+* rastreabilidade completa.
+
+Principais entidades:
+* pacientes;
+* episódios clínicos;
+* consultas;
+* sintomas;
+* critérios diagnósticos;
+* inferências;
+* escalas psicométricas;
+* relações bayesianas.
+
+---
+
+## 4.2 Backend e APIs Clínicas
+O backend será desenvolvido utilizando:
+* Python;
+* FastAPI;
+* SQLAlchemy;
+* Pydantic.
+
+A API será responsável por:
+* ingestão de dados clínicos;
+* execução das regras diagnósticas;
+* cálculo probabilístico;
+* rastreabilidade de inferências;
+* integração futura com dashboards e NLP.
+
+## 4.3 Modelagem Estatística e Inferência
+
+### Python
+Responsável por:
+* pipelines de inferência;
+* cálculo probabilístico;
+* modelagem heurística;
+* Redes Bayesianas futuras;
+* engenharia de features clínicas.
+
+Bibliotecas previstas:
+* pandas;
+* NumPy;
+* scipy;
+* statsmodels;
+* pgmpy;
+* PyMC.
+
+### R
+Responsável por:
+* análise exploratória;
+* validação psicométrica;
+* testes estatísticos;
+* análise de consistência interna;
+* análise de classes latentes (LCA).
+
+---
+
+## 4.4 Dashboards e Visualização Analítica
+Os painéis analíticos serão desenvolvidos com:
+* Power BI;
+* Apache Superset;
+* consultas SQL analíticas;
+* métricas DAX.
+
+O objetivo é permitir:
+* monitoramento longitudinal;
+* visualização probabilística;
+* acompanhamento clínico;
+* interpretação rápida por profissionais de saúde.
+
+## 4.5 Expansão Arquitetural Futura
+A arquitetura foi desenhada para futura integração com:
+* NLP clínico;
+* ingestão multimodal;
+* sistemas especialistas híbridos;
+* inferência causal;
+* pipelines MLOps;
+* aprendizado longitudinal;
+* integração interoperável com prontuários eletrônicos.
 
 ---
 
