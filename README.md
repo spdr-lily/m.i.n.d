@@ -1,6 +1,6 @@
 # Projeto: M.I.N.D (Mental Intelligence & Network Data)
 **Sistema de Inteligência para Apoio Diagnóstico em Saúde Mental**
-*A decomposição conceitual liga a cognição humana (Mental Intelligence) à infraestrutura de dados conectados (Network Data).*
+<br/>*A decomposição conceitual liga a cognição humana (Mental Intelligence) à infraestrutura de dados conectados (Network Data).*<br/>
 
 Este documento apresenta a especificação e o escopo atualizados do projeto de cruzamento entre **Ciência de Dados** e **Psicologia/Psiquiatria**, idealizado para otimizar processos clínicos, mitigar erros de diagnóstico em saúde mental e estruturar uma modelagem probabilística rigorosa baseada em evidências científicas.
 
