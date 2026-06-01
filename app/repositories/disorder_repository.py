@@ -1,0 +1,149 @@
+from typing import Optional, List
+from sqlalchemy.orm import Session
+from app.models.base import Symptom, Disorder, DiagnosticCriteria, DiagnosisRelationship
+
+
+class DisorderRepository:
+    def __init__(self, session: Session):
+        self.session = session
+
+    # Symptoms
+    def create_symptom(self, symptom_name: str, symptom_description: Optional[str] = None) -> Symptom:
+        symptom = Symptom(symptom_name=symptom_name, symptom_description=symptom_description)
+        self.session.add(symptom)
+        self.session.commit()
+        self.session.refresh(symptom)
+        return symptom
+
+    def get_symptom(self, symptom_id: int) -> Optional[Symptom]:
+        return self.session.query(Symptom).filter(Symptom.symptom_id == symptom_id).first()
+
+    def list_symptoms(self, skip: int = 0, limit: int = 100) -> List[Symptom]:
+        return self.session.query(Symptom).offset(skip).limit(limit).all()
+
+    def update_symptom(self, symptom_id: int, **updates) -> Optional[Symptom]:
+        symptom = self.get_symptom(symptom_id)
+        if symptom:
+            for key, value in updates.items():
+                if value is not None and hasattr(symptom, key):
+                    setattr(symptom, key, value)
+            self.session.commit()
+            self.session.refresh(symptom)
+        return symptom
+
+    def delete_symptom(self, symptom_id: int) -> bool:
+        symptom = self.get_symptom(symptom_id)
+        if symptom:
+            self.session.delete(symptom)
+            self.session.commit()
+            return True
+        return False
+
+    # Disorders
+    def create_disorder(
+        self,
+        disorder_name: str,
+        cid_code: Optional[str] = None,
+        dsm_code: Optional[str] = None,
+        disorder_description: Optional[str] = None
+    ) -> Disorder:
+        disorder = Disorder(
+            disorder_name=disorder_name,
+            cid_code=cid_code,
+            dsm_code=dsm_code,
+            disorder_description=disorder_description
+        )
+        self.session.add(disorder)
+        self.session.commit()
+        self.session.refresh(disorder)
+        return disorder
+
+    def get_disorder(self, disorder_id: int) -> Optional[Disorder]:
+        return self.session.query(Disorder).filter(Disorder.disorder_id == disorder_id).first()
+
+    def list_disorders(self, skip: int = 0, limit: int = 100) -> List[Disorder]:
+        return self.session.query(Disorder).offset(skip).limit(limit).all()
+
+    def update_disorder(self, disorder_id: int, **updates) -> Optional[Disorder]:
+        disorder = self.get_disorder(disorder_id)
+        if disorder:
+            for key, value in updates.items():
+                if value is not None and hasattr(disorder, key):
+                    setattr(disorder, key, value)
+            self.session.commit()
+            self.session.refresh(disorder)
+        return disorder
+
+    def delete_disorder(self, disorder_id: int) -> bool:
+        disorder = self.get_disorder(disorder_id)
+        if disorder:
+            self.session.delete(disorder)
+            self.session.commit()
+            return True
+        return False
+
+    # Diagnostic Criteria
+    def create_criteria(
+        self,
+        disorder_id: int,
+        symptom_id: int,
+        required_presence: bool = True,
+        minimum_duration_days: Optional[int] = None,
+        clinical_notes: Optional[str] = None
+    ) -> DiagnosticCriteria:
+        criteria = DiagnosticCriteria(
+            disorder_id=disorder_id,
+            symptom_id=symptom_id,
+            required_presence=required_presence,
+            minimum_duration_days=minimum_duration_days,
+            clinical_notes=clinical_notes
+        )
+        self.session.add(criteria)
+        self.session.commit()
+        self.session.refresh(criteria)
+        return criteria
+
+    def list_criteria_by_disorder(self, disorder_id: int) -> List[DiagnosticCriteria]:
+        return self.session.query(DiagnosticCriteria).filter(
+            DiagnosticCriteria.disorder_id == disorder_id
+        ).all()
+
+    def delete_criteria(self, criteria_id: int) -> bool:
+        criteria = self.session.query(DiagnosticCriteria).filter(
+            DiagnosticCriteria.criteria_id == criteria_id
+        ).first()
+        if criteria:
+            self.session.delete(criteria)
+            self.session.commit()
+            return True
+        return False
+
+    # Diagnosis Relationships
+    def create_relationship(
+        self,
+        source_disorder_id: int,
+        target_disorder_id: int,
+        relationship_type: Optional[str] = None,
+        relationship_weight: Optional[float] = None,
+        clinical_description: Optional[str] = None
+    ) -> DiagnosisRelationship:
+        rel = DiagnosisRelationship(
+            source_disorder_id=source_disorder_id,
+            target_disorder_id=target_disorder_id,
+            relationship_type=relationship_type,
+            relationship_weight=relationship_weight,
+            clinical_description=clinical_description
+        )
+        self.session.add(rel)
+        self.session.commit()
+        self.session.refresh(rel)
+        return rel
+
+    def list_relationships(self, disorder_id: Optional[int] = None) -> List[DiagnosisRelationship]:
+        query = self.session.query(DiagnosisRelationship)
+        if disorder_id is not None:
+            query = query.filter(
+                (DiagnosisRelationship.source_disorder_id == disorder_id) |
+                (DiagnosisRelationship.target_disorder_id == disorder_id)
+            )
+        return query.all()

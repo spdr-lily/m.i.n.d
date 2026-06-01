@@ -63,10 +63,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/mind-cdss"
-Documentation = "https://mind-cdss.readthedocs.io"
-Repository = "https://github.com/yourusername/mind-cdss.git"
-Issues = "https://github.com/yourusername/mind-cdss/issues"
+Homepage = "https://github.com/spdr-lily/m.i.n.d"
+Documentation = "https://github.com/spdr-lily/m.i.n.d"
+Repository = "https://github.com/spdr-lily/m.i.n.d.git"
+Issues = "https://github.com/spdr-lily/m.i.n.d/issues"
 
 [tool.setuptools]
 packages = ["app"]

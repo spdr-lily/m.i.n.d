@@ -1,23 +1,39 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16-alpine
     container_name: mind-postgres
     environment:
-      POSTGRES_USER: mind_user
-      POSTGRES_PASSWORD: mind_password
-      POSTGRES_DB: mind_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 137_Cmspelo
+      POSTGRES_DB: mind
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mind_user -d mind_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mind"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mind-network
+
+  app:
+    build: .
+    container_name: mind-app
+    environment:
+      DATABASE_URL: postgresql://postgres:137_Cmspelo@postgres:5432/mind
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      DEBUG: "false"
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - mind-network
 
@@ -31,6 +47,60 @@ services:
       - "5050:80"
     depends_on:
       - postgres
+    networks:
+      - mind-network
+
+  airflow-webserver:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: mind-airflow-webserver
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:137_Cmspelo@postgres:5432/mind
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW_CONN_MIND_POSTGRES: postgresql+psycopg2://postgres:137_Cmspelo@postgres:5432/mind
+      _AIRFLOW_WWW_USER_USERNAME: admin
+      _AIRFLOW_WWW_USER_PASSWORD: admin
+      DATABASE_URL: postgresql://postgres:137_Cmspelo@postgres:5432/mind
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./app:/opt/airflow/app
+      - ./migrations:/opt/airflow/migrations
+      - ./alembic.ini:/opt/airflow/alembic.ini
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      bash -c "airflow db migrate && airflow users create
+      --username admin --firstname Admin --lastname User
+      --role Admin --email admin@mind.local --password admin 2>/dev/null;
+      airflow webserver"
+    networks:
+      - mind-network
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.5-python3.12
+    container_name: mind-airflow-scheduler
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:137_Cmspelo@postgres:5432/mind
+      AIRFLOW__CORE__FERNET_KEY: ""
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW_CONN_MIND_POSTGRES: postgresql+psycopg2://postgres:137_Cmspelo@postgres:5432/mind
+      DATABASE_URL: postgresql://postgres:137_Cmspelo@postgres:5432/mind
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./app:/opt/airflow/app
+      - ./migrations:/opt/airflow/migrations
+      - ./alembic.ini:/opt/airflow/alembic.ini
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: airflow scheduler
     networks:
       - mind-network
 

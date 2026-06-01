@@ -1,6 +1,6 @@
 from typing import Generic, TypeVar, List, Optional, Any
 from sqlalchemy.orm import Session
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, inspect as sa_inspect
 
 ModelType = TypeVar("ModelType")
 
@@ -12,9 +12,15 @@ class BaseRepository(Generic[ModelType]):
         self.session = session
         self.model = model
 
+    def _get_pk(self) -> str:
+        mapper = sa_inspect(self.model)
+        pk_col = mapper.primary_key[0]
+        return pk_col.name
+
     def create(self, obj_in: Any) -> ModelType:
         """Create a new record."""
-        db_obj = self.model(**obj_in.dict() if hasattr(obj_in, 'dict') else obj_in)
+        data = obj_in.model_dump() if hasattr(obj_in, 'model_dump') else (obj_in.dict() if hasattr(obj_in, 'dict') else obj_in)
+        db_obj = self.model(**data)
         self.session.add(db_obj)
         self.session.commit()
         self.session.refresh(db_obj)
@@ -22,8 +28,9 @@ class BaseRepository(Generic[ModelType]):
 
     def get_by_id(self, id: Any) -> Optional[ModelType]:
         """Get record by ID."""
+        pk = self._get_pk()
         return self.session.query(self.model).filter(
-            self.model.id == id
+            getattr(self.model, pk) == id
         ).first()
 
     def get(self, **kwargs) -> Optional[ModelType]:
@@ -52,11 +59,12 @@ class BaseRepository(Generic[ModelType]):
 
     def update(self, id: Any, obj_in: Any) -> Optional[ModelType]:
         """Update a record."""
+        pk = self._get_pk()
         db_obj = self.session.query(self.model).filter(
-            self.model.id == id
+            getattr(self.model, pk) == id
         ).first()
         if db_obj:
-            update_data = obj_in.dict(exclude_unset=True) if hasattr(obj_in, 'dict') else obj_in
+            update_data = obj_in.model_dump(exclude_unset=True) if hasattr(obj_in, 'model_dump') else (obj_in.dict(exclude_unset=True) if hasattr(obj_in, 'dict') else obj_in)
             for field, value in update_data.items():
                 setattr(db_obj, field, value)
             self.session.commit()
@@ -65,8 +73,9 @@ class BaseRepository(Generic[ModelType]):
 
     def delete(self, id: Any) -> bool:
         """Delete a record."""
+        pk = self._get_pk()
         db_obj = self.session.query(self.model).filter(
-            self.model.id == id
+            getattr(self.model, pk) == id
         ).first()
         if db_obj:
             self.session.delete(db_obj)
@@ -76,6 +85,7 @@ class BaseRepository(Generic[ModelType]):
 
     def delete_by_filter(self, **filters) -> int:
         """Delete records matching filters."""
+        pk = self._get_pk()
         count = self.session.query(self.model)
         for key, value in filters.items():
             if value is not None:

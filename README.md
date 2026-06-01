@@ -1,268 +1,152 @@
-# Projeto: M.I.N.D (Mental Intelligence & Network Data)
-**Sistema de Inteligência para Apoio Diagnóstico em Saúde Mental**
-<br/>*A decomposição conceitual liga a cognição humana (Mental Intelligence) à infraestrutura de dados conectados (Network Data).*<br/>
+# M.I.N.D (Mental Intelligence & Network Data)
 
-Este documento apresenta a especificação e o escopo atualizados do projeto de cruzamento entre **Ciência de Dados** e **Psicologia/Psiquiatria**, idealizado para otimizar processos clínicos, mitigar erros de diagnóstico em saúde mental e estruturar uma modelagem probabilística rigorosa baseada em evidências científicas.
+**Sistema de Apoio à Decisão Clínica (CDSS) para Diagnóstico em Saúde Mental**
 
----
-
-## 1. Contexto e Motivação
-O processo de diagnóstico em saúde mental enfrenta desafios severos e estruturais que impactam diretamente a vida dos pacientes. Entre os principais problemas identificados estão:
-* **Alta Taxa de Erros Diagnósticos:** Diversos transtornos possuem sintomas sobrepostos (comorbidades e manifestações similares), gerando tratamentos e prescrições iniciais ineficazes.
-* **Barreiras de Acesso e Custo:** Avaliações neuropsicológicas completas possuem custo elevado, planos de saúde frequentemente não cobrem e as filas de espera no sistema público (SUS) são extensas.
-* **Morosidade:** O atraso na identificação correta do transtorno retarda o início de intervenções eficientes, prolongando o sofrimento do paciente.
-
-## 2. Escopo e Objetivos do Projeto (Foco do MVP)
-O projeto consiste no desenvolvimento de um **software de apoio à decisão clínica** direcionado exclusivamente a profissionais da saúde mental (psicólogos, psiquiatras e neurologistas).
-
-**Objetivo Principal:**
-Utilizar algoritmos de *Machine Learning*, estatística aplicada e modelagem probabilística para calcular a probabilidade de diagnósticos específicos baseados de forma unificada na **CID-11 (Classificação Internacional de Doenças)** e no **DSM-5-TR (Manual Diagnóstico e Estatístico de Transtornos Mentais)**, funcionando como uma ferramenta complementar à análise do profissional.
+Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, com suporte a escalas psicométricas, dashboards clínicos, orquestração Airflow e processamento distribuído PySpark.
 
 ---
 
-# 3. Funcionalidades Principais do Sistema
+## Stack
 
-## Fase 1 MVP (Minimum Viable Product)
-O foco inicial do projeto será a construção de um Clinical Decision Support System (CDSS) voltado para apoio probabilístico à tomada de decisão clínica em saúde mental, utilizando critérios estruturados do DSM-5-TR e da CID-11.
-
-O MVP prioriza:
-* interpretabilidade clínica;
-* rastreabilidade diagnóstica;
-* modelagem probabilística explicável;
-* validação longitudinal;
-* conformidade ética e regulatória.
-
-### 3.1 Inferência Probabilística Diagnóstica
-O núcleo do sistema será um motor de inferência clínica responsável por calcular a distribuição probabilística entre hipóteses diagnósticas possíveis a partir de sintomas observados, critérios temporais e regras de exclusão diagnóstica.
-
-A inferência será baseada em:
-* lógica diagnóstica estruturada;
-* pesos probabilísticos condicionais;
-* modelagem heurística inicial;
-* futura expansão para Redes Bayesianas.
-
-> O sistema não realizará diagnóstico definitivo, funcionando exclusivamente como ferramenta de apoio clínico.
-
-### 3.2 Motor Lógico DSM-5-TR / CID-11
-Implementação computacional dos critérios operacionais presentes no DSM-5-TR e CID-11, incluindo:
-* critérios obrigatórios;
-* cardinalidade mínima de sintomas;
-* duração mínima dos episódios;
-* regras de exclusão diagnóstica;
-* relações de comorbidade;
-* conflitos diagnósticos.
-
-Essa camada transforma os critérios clínicos em estruturas computáveis e auditáveis.
+| Camada | Tecnologia |
+|---|---|
+| API | FastAPI + Pydantic v2 + SQLAlchemy 2.0 |
+| Banco | PostgreSQL 16 + Alembic |
+| Inferência | Rede Bayesiana (Naive Bayes) + Critérios DSM-5-TR |
+| Escalas | PHQ-9, GAD-7, MADRS, ASRM, MDQ, etc. |
+| Métricas | Pandas (moving averages, correlações) |
+| Orquestração | Apache Airflow (4 DAGs) |
+| Batch/ETL | PySpark 3.5 (inferência, métricas populacionais, importação CSV) |
+| Segurança | JWT + RBAC + Fernet AES (LGPD) |
+| Auditoria | Middleware com rastreabilidade completa |
+| CI/CD | GitHub Actions (flake8, black, mypy, pytest, codecov) |
+| Deploy | Docker Compose (5 serviços) |
 
 ---
 
-### 3.3 Estrutura Longitudinal de Episódios Clínicos
-O sistema utilizará uma modelagem longitudinal baseada em episódios clínicos, permitindo acompanhar:
-* persistência sintomática;
-* remissão;
-* recorrência;
-* evolução temporal;
-* resposta terapêutica.
+## Fases Implementadas
 
-A estrutura longitudinal será especialmente relevante para transtornos do humor, como:
-* Episódio Depressivo Maior;
-* Transtorno Bipolar I;
-* Transtorno Bipolar II;
-* Distimia;
-* Ciclotimia.
-
-### 3.4 Ingestão Estruturada de Dados Clínicos
-A coleta inicial de dados será baseada em instrumentos estruturados e escalas psicométricas padronizadas.
-
-Os dados poderão incluir:
-* checklists clínicos;
-* escalas Likert;
-* escalas transversais do DSM-5-TR;
-* PHQ-9;
-* GAD-7;
-* observações clínicas estruturadas.
-
-A arquitetura foi projetada para futura expansão multimodal via NLP clínico.
-
-### 3.5 Explicabilidade Diagnóstica
-Toda inferência produzida pelo sistema deverá possuir rastreabilidade completa.
-
-O sistema armazenará:
-* sintomas utilizados;
-* critérios ativados;
-* regras de exclusão aplicadas;
-* pesos probabilísticos;
-* conflitos diagnósticos;
-* trilha lógica da inferência.
-
-Essa abordagem visa garantir:
-* transparência;
-* auditoria clínica;
-* confiabilidade;
-* validação profissional.
+1. **Modelos e Schema** — 17 tabelas, UUIDs, LGPD, Alembic
+2. **Schemas Pydantic** — Validação de todas as entradas/saídas
+3. **Repositories** — CRUD com SQLAlchemy 2.0
+4. **Services** — Lógica de negócio (pacientes, consultas, diagnóstico, escalas)
+5. **API REST** — Endpoints para todas as entidades clínicas
+6. **Auth + RBAC + Auditoria** — JWT, roles (admin/clinician/viewer), middleware de auditoria
+7. **Escalas + Rede Bayesiana** — 10 instrumentos psicométricos, Naive Bayes, inferência probabilística
+8. **Métricas + Dashboards** — Pandas (faixas etárias, correlações, moving averages), Airflow (4 DAGs), PySpark (batch inference + population metrics + ETL)
 
 ---
 
-### 3.6 Modelagem de Relações Diagnósticas
-O sistema será capaz de representar:
-* comorbidades;
-* relações hierárquicas;
-* exclusões diagnósticas;
-* relações espectrais entre transtornos.
+## API Endpoints
 
-Essa camada permitirá análises probabilísticas mais próximas da prática clínica real.
+### Autenticação
+- `POST /api/auth/login` — Login (JWT)
+- `POST /api/auth/register` — Cadastro de profissional
 
-### 3.7 Painel Longitudinal e Métricas Clínicas
-O sistema disponibilizará dashboards interativos para acompanhamento temporal do paciente, incluindo:
-* evolução sintomática;
-* severidade clínica;
-* frequência de sintomas;
-* impacto funcional;
-* adesão terapêutica;
-* mudanças entre consultas.
+### Pacientes
+- `POST /api/patients/` — Criar paciente
+- `GET /api/patients/{uuid}` — Obter paciente
+- `GET /api/patients/` — Listar pacientes
+- `PUT /api/patients/{uuid}` — Atualizar paciente
 
-Os painéis serão desenvolvidos inicialmente utilizando:
-* Power BI;
-* Apache Superset;
-* métricas DAX;
-* consultas analíticas SQL.
+### Consultas
+- `POST /api/consultations/` — Criar consulta
+- `GET /api/consultations/{uuid}` — Obter consulta
 
-### 3.8 Arquitetura Preparada para Redes Bayesianas
-Embora o MVP inicial utilize inferência heurística e lógica probabilística estruturada, toda a arquitetura foi planejada para futura migração para:
-* Redes Bayesianas;
-* inferência causal;
-* aprendizado probabilístico;
-* calibração epidemiológica dinâmica.
+### Inferência
+- `POST /api/inferences/run` — Inferência por critérios (DSM-5-TR)
+- `POST /api/inferences/bayesian` — Inferência Bayesiana
 
-Essa evolução permitirá modelar relações condicionais complexas entre sintomas, episódios e transtornos.
+### Escalas
+- `GET /api/scales/` — Listar escalas
+- `POST /api/scales/{name}/apply` — Aplicar escala
+- `POST /api/assessments/` — Submeter avaliação
 
----
+### Métricas
+- `GET /api/metrics/overview` — Visão geral
+- `GET /api/metrics/scales/{name}/trends` — Tendências temporais
+- `GET /api/metrics/correlations` — Correlações entre escalas
 
-### 3.9 Segurança, LGPD e Governança Clínica
-A arquitetura do sistema foi projetada considerando:
-* segregação entre identidade e camada analítica;
-* anonimização de dados sensíveis;
-* rastreabilidade de alterações;
-* versionamento clínico;
-* auditoria de inferência;
-* controle de acesso;
-* conformidade com LGPD.
+### Alertas
+- `GET /api/alerts/` — Listar alertas clínicos
 
-O sistema sará o princípio de:
-"Human-in-the-loop".
+### Auditoria
+- `GET /api/audit/logs` — Logs de auditoria
 
-Toda decisão clínica permanecerá integralmente sob responsabilidade do profissional habilitado.
+### Profissionais / Transtornos / Episódios
+- CRUD completo em `/api/professionals/`, `/api/disorders/`, `/api/episodes/`
 
 ---
 
-# 4. Arquitetura Tecnológica e Engenharia de Dados (Stack)
+## Testes
 
-## 4.1 Banco de Dados Relacional (PostgreSQL)
-A modelagem relacional foi estruturada para suportar:
-* integridade clínica;
-* inferência probabilística;
-* modelagem longitudinal;
-* explicabilidade diagnóstica;
-* rastreabilidade completa.
+**140 testes** (unitários + integração) com cobertura:
 
-Principais entidades:
-* pacientes;
-* episódios clínicos;
-* consultas;
-* sintomas;
-* critérios diagnósticos;
-* inferências;
-* escalas psicométricas;
-* relações bayesianas.
+```
+tests/
+├── unit/
+│   ├── test_assessment_scales.py
+│   ├── test_auth.py
+│   ├── test_bayesian_network.py
+│   ├── test_criteria_evaluator.py
+│   ├── test_dsm_icd_mapper.py
+│   ├── test_inference_engine.py
+│   └── test_metrics.py
+└── integration/
+    ├── test_api.py
+    ├── test_audit.py
+    ├── test_audit_api.py
+    └── test_repositories.py
+```
 
----
-
-## 4.2 Backend e APIs Clínicas
-O backend será desenvolvido utilizando:
-* Python;
-* FastAPI;
-* SQLAlchemy;
-* Pydantic.
-
-A API será responsável por:
-* ingestão de dados clínicos;
-* execução das regras diagnósticas;
-* cálculo probabilístico;
-* rastreabilidade de inferências;
-* integração futura com dashboards e NLP.
-
-## 4.3 Modelagem Estatística e Inferência
-
-### Python
-Responsável por:
-* pipelines de inferência;
-* cálculo probabilístico;
-* modelagem heurística;
-* Redes Bayesianas futuras;
-* engenharia de features clínicas.
-
-Bibliotecas previstas:
-* pandas;
-* NumPy;
-* scipy;
-* statsmodels;
-* pgmpy;
-* PyMC.
-
-### R
-Responsável por:
-* análise exploratória;
-* validação psicométrica;
-* testes estatísticos;
-* análise de consistência interna;
-* análise de classes latentes (LCA).
+```bash
+pytest tests/ -v          # Todos os testes
+pytest tests/unit/ -v     # Unitários
+pytest tests/integration/ -v  # Integração
+```
 
 ---
 
-## 4.4 Dashboards e Visualização Analítica
-Os painéis analíticos serão desenvolvidos com:
-* Power BI;
-* Apache Superset;
-* consultas SQL analíticas;
-* métricas DAX.
+## Como Rodar
 
-O objetivo é permitir:
-* monitoramento longitudinal;
-* visualização probabilística;
-* acompanhamento clínico;
-* interpretação rápida por profissionais de saúde.
+```bash
+# 1. Ambiente
+python -m venv .venv
+.venv\Scripts\Activate.ps1   # Windows
+pip install -e .
+pip install -r requirements.txt
 
-## 4.5 Expansão Arquitetural Futura
-A arquitetura foi desenhada para futura integração com:
-* NLP clínico;
-* ingestão multimodal;
-* sistemas especialistas híbridos;
-* inferência causal;
-* pipelines MLOps;
-* aprendizado longitudinal;
-* integração interoperável com prontuários eletrônicos.
+# 2. Banco
+docker compose up -d          # postgres + pgadmin + airflow
+alembic upgrade head
 
----
+# 3. Servidor
+uvicorn app.main:app --reload --port 8001
 
-## 5. Fontes de Dados e Referências Científicas
+# 4. Airflow (já sobe com docker compose)
+# http://localhost:8080  (admin / admin)
+```
 
-### Critérios Diagnósticos Oficiais
-* **CID-11:** *Capítulo 06 - Mental, behavioural or neurodevelopmental disorders*. Organização Mundial da Saúde (OMS). [Link oficial](https://icd.who.int/en).
-* **DSM-5-TR:** *Diagnostic and Statistical Manual of Mental Disorders, Fifth Edition, Text Revision*. American Psychiatric Association (APA). [Link oficial](https://dsm.psychiatryonline.org).
-* **DSM-5-TR Online Assessment Measures:** Escalas transversais de sintomas (Level 1 e Level 2 Cross-Cutting Measures) utilizadas como padrão de dados de entrada do sistema. [Link oficial](https://www.psychiatry.org/psychiatrists/practice/dsm/educational-resources/assessment-measures).
-
-### Repositórios de Microdados para Treinamento de Modelos
-* **MIMIC-IV (Medical Information Mart for Intensive Care):** Prontuários eletrônicos anonimizados com históricos clínicos reais e códigos CID. PhysioNet / MIT Laboratory for Computational Physiology. [Link oficial](https://physionet.org/content/mimiciv/).
-* **UCI Machine Learning Repository:** Conjuntos de dados tabulares e surveys consolidadas sobre saúde mental e comportamento. [Link oficial](https://archive.ics.uci.edu/).
-* **UMLS Metathesaurus (Unified Medical Language System):** Base de dados integradora da U.S. National Library of Medicine (NLM) usada para crosswalks lógicos e unificação de termos biomédicos. [Link oficial](https://www.nlm.nih.gov/research/umls/index.html).
-
-### Dados Epidemiológicos (Calibração de Probabilidades *a Priori*)
-* **VIGITEL:** Vigilância de Fatores de Risco e Proteção para Doenças Crônicas por Inquérito Telefônico. Ministério da Saúde do Brasil. [Link oficial](https://www.gov.br/saude/pt-br).
-* **Global Burden of Disease Study (GBD):** Dados globais e regionais de prevalência e incidência de transtornos mentais. Institute for Health Metrics and Evaluation (IHME), University of Washington. [Link oficial](https://www.healthdata.org/gbd).
+### PySpark (opcional)
+```bash
+pip install pyspark==3.5.0
+python spark/submit.py batch_inference
+python spark/submit.py population_metrics
+python spark/submit.py data_import --csv data/pacientes.csv
+```
 
 ---
 
-## 6. Aspectos Éticos, Segurança e LGPD
-* **Protagonismo Humano:** O sistema atua estritamente como um assistente de validação estatística. A metodologia e a decisão clínica final permanecem 100% sob a responsabilidade do profissional de saúde habilitado.
-* **Conformidade com a LGPD (Lei nº 13.709/2018):** Anonimização obrigatória e irreversível de dados sensíveis dos pacientes (Artigo 11). Identificadores pessoais são completamente dissociados da camada analítica e preditiva.
-* **Segurança e Sigilo:** Criptografia ponta a ponta e aderência estrita às resoluções do CFM (Conselho Federal de Medicina) e CFP (Conselho Federal de Psicologia) relativas à segurança do prontuário eletrônico.
+## Documentação
+
+- `CLINICAL_MANUAL.md` — Manual clínico completo (pt-BR)
+- `STRUCTURE.md` — Estrutura de diretórios detalhada
+- `QUICKSTART.md` — Guia rápido de configuração
+- `DESENVOLVIMENTO.md` — Documentação de desenvolvimento
+- `ANCHORED SUMMARY.md` — Sumário executivo da sessão ativa
+
+---
+
+## Licença
+
+MIT

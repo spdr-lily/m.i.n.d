@@ -60,7 +60,7 @@ class PatientService:
 
     def update_patient_profile(self, patient_uuid: UUID, updates: PatientProfileUpdate) -> Optional[PatientProfile]:
         """Update patient profile."""
-        update_dict = updates.dict(exclude_unset=True)
+        update_dict = updates.model_dump(exclude_unset=True)
         return self.repository.update_patient_profile(patient_uuid, **update_dict)
 
     def delete_patient(self, patient_uuid: UUID) -> bool:

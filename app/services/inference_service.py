@@ -1,0 +1,131 @@
+from uuid import UUID
+from typing import Optional, List
+from sqlalchemy.orm import Session
+from app.models.base import DiagnosticInference
+from app.repositories.inference_repository import InferenceRepository
+from app.repositories.consultation_repository import ConsultationRepository
+from app.repositories.disorder_repository import DisorderRepository
+from app.ml.inference_engine import InferenceEngine
+
+
+class InferenceService:
+    def __init__(self, session: Session):
+        self.session = session
+        self.repository = InferenceRepository(session)
+        self.engine = InferenceEngine()
+
+    def run_inference(
+        self,
+        consultation_uuid: UUID,
+        generated_by_model: str = "criteria-engine-v1",
+        model_version: str = "0.2.0"
+    ) -> List[DiagnosticInference]:
+        consultation_repo = ConsultationRepository(self.session)
+        disorder_repo = DisorderRepository(self.session)
+
+        consultation = consultation_repo.get_consultation(consultation_uuid)
+        if not consultation:
+            raise ValueError(f"Consultation {consultation_uuid} not found")
+
+        observations = consultation.symptom_observations
+        if not observations:
+            raise ValueError("No symptom observations found for this consultation")
+
+        disorders = disorder_repo.list_disorders()
+        if not disorders:
+            raise ValueError("No disorders registered in the system")
+
+        disorders_with_criteria = [
+            (
+                d.disorder_id,
+                d.disorder_name,
+                disorder_repo.list_criteria_by_disorder(d.disorder_id)
+            )
+            for d in disorders
+        ]
+
+        relationships = disorder_repo.list_relationships()
+
+        results = self.engine.calculate(
+            disorders_with_criteria=disorders_with_criteria,
+            observations=observations,
+            relationships=relationships
+        )
+
+        inferences = []
+        for result in results:
+            inference = self.repository.create_inference(
+                consultation_uuid=consultation_uuid,
+                disorder_id=result.disorder_id,
+                inference_probability=result.probability,
+                confidence_level=result.confidence_level,
+                generated_by_model=generated_by_model,
+                model_version=model_version
+            )
+            inferences.append(inference)
+
+        self.session.commit()
+        return inferences
+
+    def get_explanation(self, consultation_uuid: UUID) -> Optional[dict]:
+        consultation_repo = ConsultationRepository(self.session)
+        disorder_repo = DisorderRepository(self.session)
+
+        consultation = consultation_repo.get_consultation(consultation_uuid)
+        if not consultation:
+            return None
+
+        inferences = self.repository.list_inferences_by_consultation(consultation_uuid)
+        observations = consultation.symptom_observations
+
+        explanation = {
+            "consultation_uuid": str(consultation_uuid),
+            "total_symptoms_observed": len(observations),
+            "symptoms": [
+                {
+                    "symptom_id": o.symptom_id,
+                    "intensity": float(o.intensity) if o.intensity else None,
+                    "frequency": o.frequency,
+                    "duration_days": o.duration_days,
+                    "clinical_notes": o.clinical_notes
+                }
+                for o in (observations or [])
+            ],
+            "diagnoses": []
+        }
+
+        for inf in inferences:
+            disorder = disorder_repo.get_disorder(inf.disorder_id)
+            criteria_list = disorder_repo.list_criteria_by_disorder(inf.disorder_id)
+
+            criteria_details = []
+            for criterion in criteria_list:
+                matched_obs = [
+                    o for o in (observations or [])
+                    if o.symptom_id == criterion.symptom_id
+                ]
+                criteria_details.append({
+                    "criteria_id": criterion.criteria_id,
+                    "symptom_id": criterion.symptom_id,
+                    "required": criterion.required_presence,
+                    "minimum_duration_days": criterion.minimum_duration_days,
+                    "matched": len(matched_obs) > 0,
+                    "clinical_notes": criterion.clinical_notes
+                })
+
+            explanation["diagnoses"].append({
+                "inference_uuid": str(inf.inference_uuid),
+                "disorder_id": inf.disorder_id,
+                "disorder_name": disorder.disorder_name if disorder else None,
+                "cid_code": disorder.cid_code if disorder else None,
+                "dsm_code": disorder.dsm_code if disorder else None,
+                "probability": float(inf.inference_probability),
+                "confidence": float(inf.confidence_level) if inf.confidence_level else None,
+                "criteria_evaluated": len(criteria_details),
+                "criteria_details": criteria_details
+            })
+
+        return explanation
+
+    def list_inferences(self, consultation_uuid: UUID) -> List[DiagnosticInference]:
+        return self.repository.list_inferences_by_consultation(consultation_uuid)

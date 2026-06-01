@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional, List
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.schemas.common import TimestampMixin
 
 
@@ -11,8 +11,7 @@ class SymptomResponse(BaseModel):
     symptom_name: str
     symptom_description: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DisorderResponse(BaseModel):
@@ -23,8 +22,7 @@ class DisorderResponse(BaseModel):
     disorder_name: str
     disorder_description: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class HealthcareProfessionalResponse(BaseModel):
@@ -34,8 +32,7 @@ class HealthcareProfessionalResponse(BaseModel):
     professional_license: Optional[str] = None
     specialty: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ClinicalConsultationBase(BaseModel):
@@ -70,8 +67,7 @@ class SymptomObservationResponse(TimestampMixin):
     clinical_notes: Optional[str] = None
     symptom: Optional[SymptomResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ScaleResponseCreate(BaseModel):
@@ -89,8 +85,7 @@ class ScaleResponseResponse(TimestampMixin):
     response_value: Optional[float] = None
     response_text: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DiagnosticInferenceResponse(TimestampMixin):
@@ -104,8 +99,7 @@ class DiagnosticInferenceResponse(TimestampMixin):
     model_version: Optional[str] = None
     disorder: Optional[DisorderResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ClinicalConsultationResponse(ClinicalConsultationBase, TimestampMixin):
@@ -117,8 +111,7 @@ class ClinicalConsultationResponse(ClinicalConsultationBase, TimestampMixin):
     scale_responses: Optional[List[ScaleResponseResponse]] = None
     diagnostic_inferences: Optional[List[DiagnosticInferenceResponse]] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ConsultationWithDataCreate(ClinicalConsultationCreate):

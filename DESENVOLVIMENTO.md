@@ -1,404 +1,258 @@
-# 📋 Documentação de Desenvolvimento - Projeto M.I.N.D
+# M.I.N.D — Documentação de Desenvolvimento
 
-**Data:** Junho 2026  
-**Status:** MVP - Fase Inicial de Implementação  
-**Versão:** 0.1.0
-
----
-
-## 📌 Sumário Executivo
-
-O projeto **M.I.N.D (Mental Intelligence & Network Data)** é um **Sistema de Apoio à Decisão Clínica (CDSS)** desenvolvido em Python para profissionais de saúde mental (psicólogos, psiquiatras e neurologistas). O objetivo é utilizar Machine Learning e modelagem probabilística para calcular a probabilidade de diagnósticos baseados em critérios estruturados da **CID-11** e **DSM-5-TR**.
-
-**Diferencial:** O sistema funciona como ferramenta complementar à análise clínica (Human-in-the-loop), nunca como diagnóstico definitivo.
+**Data:** Junho 2026
+**Versão:** 0.8.0
+**Status:** MVP Completo — 8 fases implementadas
+**Testes:** 140 (unitários + integração)
+**Stack:** FastAPI + PostgreSQL + Pandas + Airflow + PySpark
 
 ---
 
-## 🎯 Objetivos do Projeto
+## Stack Tecnológico
 
-### Objetivo Principal
-Fornecer uma ferramenta de inferência diagnóstica probabilística que:
-- Calcula probabilidades de diagnósticos baseados em sintomas observados
-- Segue rigorosamente critérios diagnósticos internacionais (DSM-5-TR e CID-11)
-- Fornece rastreabilidade completa das inferências
-- Mantém o profissional como responsável final pela decisão clínica
+### Backend
+- **FastAPI** — Framework web assíncrono
+- **Python 3.12** — Linguagem principal
+- **SQLAlchemy 2.0** — ORM
+- **Pydantic v2** — Validação e serialização
 
-### Objetivos Secundários
-- ✅ Reduzir erros diagnósticos em saúde mental
-- ✅ Diminuir tempo de diagnóstico correto
-- ✅ Democratizar acesso a ferramentas diagnósticas estruturadas
-- ✅ Garantir conformidade com LGPD e regulamentações clínicas
-- ✅ Criar base para evolução futura para Redes Bayesianas
+### Banco de Dados
+- **PostgreSQL 16** — Relacional com schemas (`core`, `clinical`, `diagnostic`, `audit`)
+- **Alembic** — Migrations versionadas
+- **17 tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, auditoria
 
----
+### Inferência & ML
+- **Rede Bayesiana (Naive Bayes)** — `app/ml/bayesian_network.py`
+- **CriteriaEvaluator** — Lógica DSM-5-TR (contagem mínima, duração, exclusão, comorbidade)
+- **DSM-ICD Mapper** — Mapeamento bidirecional DSM-5-TR ↔ CID-11
+- **10 escalas psicométricas** — PHQ-9, GAD-7, MADRS, ASRM, MDQ, AUDIT, DAST-10, C-SSRS, WHODAS 2.0, ISI
 
-## 🏗️ Arquitetura Implementada
+### Métricas & Analytics
+- **Pandas** — `metrics_service.py`: faixas etárias (`pd.cut`), moving averages, correlação de Pearson, `pd.read_sql` em bulk
+- **Apache Airflow** — 4 DAGs (inferência em lote, qualidade, métricas, alertas)
+- **PySpark 3.5** — 3 jobs (batch inference, population metrics, data import CSV)
 
-### Stack Tecnológico
+### Segurança
+- **JWT** — Login, refresh, verificação de token
+- **RBAC** — Roles: `admin`, `clinician`, `viewer`
+- **Fernet AES** — Criptografia de campos sensíveis (LGPD)
+- **Audit Middleware** — Log de todas as requisições a entidades clínicas
 
-**Backend:**
-- **FastAPI** 0.104+ — Framework web assíncrono
-- **Python** 3.11+ — Linguagem principal
-- **SQLAlchemy 2.0+** — ORM para banco de dados
-- **Pydantic 2.5+** — Validação de dados e serialização
-
-**Banco de Dados:**
-- **PostgreSQL 16** — Banco de dados relacional (containerizado com Docker)
-- **Alembic 1.12+** — Gerenciamento de migrations
-
-**Modelagem & Inferência:**
-- **NumPy, SciPy, Pandas** — Processamento de dados
-- **scikit-learn** — Machine Learning
-- **PyMC 5.10+** — Inferência Bayesiana (pronto para uso)
-- **ArviZ** — Visualização de diagnósticos estatísticos
-
-**Segurança & Autenticação:**
-- **PyJWT, python-jose** — Gerenciamento de tokens JWT
-- **passlib, bcrypt** — Hashing de senhas
-- **AES encryption** — Criptografia de dados sensíveis (LGPD)
-
-**Testes & Qualidade:**
-- **pytest 7.4+** — Framework de testes
-- **pytest-cov** — Cobertura de testes
-- **pytest-asyncio** — Testes assíncronos
-- **black, flake8, pylint, mypy** — Linting e formatação
+### Qualidade & DevOps
+- **pytest** — 140 testes
+- **black, isort** — Formatação
+- **flake8, mypy** — Lint e tipos
+- **GitHub Actions** — CI com PostgreSQL service, flake8, black --check, mypy, pytest + codecov
+- **Docker Compose** — 5 serviços
 
 ---
 
-## 📁 Estrutura de Diretórios Criada
+## Banco de Dados — Schemas
+
+### `core`
+- `patient_identity` — UUID, nome, CPF hash, email hash
+- `patient_profile` — Data de nascimento, sexo, escolaridade, etnia
+- `education_levels`, `ethnicities`, `gender_identities`, `sex_types` — Tabelas de domínio
+
+### `clinical`
+- `healthcare_professionals` — Profissionais cadastrados
+- `consultations` — Consultas (motivo, anamnese, status)
+- `clinical_episodes` — Episódios clínicos (depressivo, maníaco, etc.)
+- `episode_symptoms` — Sintomas por episódio
+- `assessment_scales` — Metadados das escalas
+- `scale_questions` — Itens/questões de cada escala
+- `scale_responses` — Respostas dos pacientes
+
+### `diagnostic`
+- `disorders` — Transtornos (DSM-5-TR + CID-11)
+- `diagnostic_criteria` — Critérios por transtorno
+- `disorder_relationships` — Comorbidades, exclusões, hierarquias
+- `diagnostic_inferences` — Resultados das inferências
+
+### `audit`
+- `audit_logs` — Log de auditoria completo
+
+---
+
+## API — Endpoints
+
+### Auth
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/auth/register` | Cadastro de profissional |
+| POST | `/api/auth/login` | Login (retorna JWT) |
+
+### Pacientes
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/patients/` | Criar paciente |
+| GET | `/api/patients/{uuid}` | Obter paciente |
+| GET | `/api/patients/` | Listar pacientes |
+| PUT | `/api/patients/{uuid}` | Atualizar paciente |
+
+### Consultas
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/consultations/` | Criar consulta |
+| GET | `/api/consultations/{uuid}` | Obter consulta |
+
+### Inferência
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | `/api/inferences/run` | Inferência por critérios DSM-5-TR |
+| POST | `/api/inferences/bayesian` | Inferência Bayesiana |
+
+### Escalas
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/scales/` | Listar escalas |
+| GET | `/api/scales/{name}` | Detalhes da escala |
+| POST | `/api/scales/{name}/apply` | Aplicar escala |
+| POST | `/api/assessments/` | Submeter avaliação |
+
+### Métricas
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/metrics/overview` | Visão geral (total pacientes, inferências, distribuição etária) |
+| GET | `/api/metrics/scales/{name}/trends` | Tendência temporal de uma escala |
+| GET | `/api/metrics/correlations` | Correlações entre escalas |
+
+### Auditoria
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/audit/logs` | Consultar logs de auditoria (filtros: entidade, operação, data) |
+
+### Alertas
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/alerts/` | Listar alertas clínicos |
+| PUT | `/api/alerts/{id}/acknowledge` | Reconhecer alerta |
+
+### CRUD Padrão
+| Entidade | Rotas |
+|---|---|
+| Profissionais | `/api/professionals/` |
+| Transtornos | `/api/disorders/` |
+| Episódios | `/api/episodes/` |
+
+---
+
+## Airflow — DAGs
+
+| DAG | Schedule | Descrição |
+|---|---|---|
+| `clinical_inference_pipeline` | 02h diário | Inferência Bayesiana em lote para consultas pendentes |
+| `data_quality_checks` | 03h diário | 6 checagens: duplicatas, nulls, consistência, C-SSRS |
+| `metrics_aggregation` | 04h diário | Agregação de métricas clínicas |
+| `alert_generation` | 6/6h | Geração de alertas (ideação suicida, deterioração) |
+
+Conexão com PostgreSQL via `AIRFLOW_CONN_MIND_POSTGRES`.
+
+---
+
+## PySpark — Jobs
+
+| Job | Descrição |
+|---|---|
+| `batch_inference` | Lê consultas pendentes via JDBC e executa inferência distribuída |
+| `population_metrics` | Age distribution, disorder prevalence, scale statistics |
+| `data_import` | ETL de CSV para PostgreSQL (symptoms e patients) |
+
+Uso: `python spark/submit.py <job_name> [--csv path]`
+
+---
+
+## Testes
 
 ```
-m.i.n.d/
-├── alembic/                    # Migrations (Alembic)
-│   ├── versions/               # Versões das migrations
-│   └── env.py                  # Configuração Alembic
-│
-├── app/                        # Pacote principal da aplicação
-│   ├── __init__.py
-│   ├── main.py                 # Ponto de entrada FastAPI
-│   │
-│   ├── core/                   # Utilities & configuração
-│   │   ├── config.py           # ✅ Configurações (Pydantic BaseSettings)
-│   │   ├── database.py         # ✅ Conexão & sessão BD
-│   │   └── exceptions.py       # ✅ Exceções customizadas (17 clínicas)
-│   │
-│   ├── models/                 # SQLAlchemy ORM
-│   │   ├── base.py             # ✅ Modelo base com UUIDs (LGPD)
-│   │   ├── patient.py          # ⬜ Modelo de Paciente
-│   │   ├── disorder.py         # ⬜ Modelo de Transtorno
-│   │   ├── symptoms.py         # ⬜ Modelo de Sintomas
-│   │   ├── consultation.py     # ⬜ Modelo de Consulta
-│   │   └── diagnosis.py        # ⬜ Modelo de Diagnóstico
-│   │
-│   ├── schemas/                # Pydantic DTOs
-│   │   ├── patient.py          # ✅ Schemas de Paciente
-│   │   ├── diagnosis.py        # ⬜ Schemas de Diagnóstico
-│   │   └── assessment.py       # ⬜ Schemas de Escalas
-│   │
-│   ├── repositories/           # Data Access Layer
-│   │   ├── base.py             # ⬜ Repositório base com CRUD
-│   │   ├── patient_repository.py
-│   │   └── disorder_repository.py
-│   │
-│   ├── services/               # Lógica de Negócio
-│   │   ├── patient_service.py
-│   │   ├── diagnosis_service.py
-│   │   └── assessment_service.py
-│   │
-│   ├── ml/                     # ML & Inferência
-│   │   ├── bayesian_network.py       # ⬜ Redes Bayesianas
-│   │   ├── inference_engine.py       # ⬜ Motor de Inferência
-│   │   ├── dsm_icd_mapper.py         # ⬜ Mapeamento DSM ↔ CID-11
-│   │   └── criteria_evaluator.py     # ⬜ Engine de regras
-│   │
-│   ├── api/                    # FastAPI Routes
-│   │   ├── health.py           # ✅ Health check endpoints
-│   │   ├── patients.py         # ⬜ Endpoints de Pacientes
-│   │   ├── diagnoses.py        # ⬜ Endpoints de Diagnóstico
-│   │   └── consultations.py    # ⬜ Endpoints de Consulta
-│   │
-│   └── security/               # Auth & Autorização
-│       ├── auth.py             # ⬜ Gerenciamento JWT
-│       ├── rbac.py             # ⬜ RBAC
-│       └── encryption.py       # ⬜ Criptografia AES
-│
-├── tests/                      # Suite de Testes
-│   ├── conftest.py             # ✅ Fixtures pytest
-│   ├── unit/                   # Testes unitários
-│   │   └── test_criteria_evaluator.py
-│   └── integration/            # Testes de integração
-│       └── test_consultation_workflow.py
-│
-├── migrations/                 # SQL migrations
-│   └── 001_initial_schema.sql  # ✅ Schema inicial com audit
-│
-├── docker-compose.yml          # ✅ PostgreSQL + pgAdmin
-├── Dockerfile                  # ✅ Imagem Docker produção
-├── .env.example                # ✅ Template variáveis ambiente
-├── requirements.txt            # ✅ Dependências Python
-├── pyproject.toml              # ✅ Metadata e config do projeto
-├── alembic.ini                 # ✅ Config Alembic
-│
-├── README.md                   # ✅ Visão geral do projeto
-├── STRUCTURE.md                # ✅ Estrutura técnica
-├── QUICKSTART.md               # ✅ Guia de inicialização
-├── DESENVOLVIMENTO.md          # 📄 Este arquivo
-│
-└── .git/                       # Controle de versão
-
-Legend: ✅ = Criado | ⬜ = Planejado | 📄 = Documentação
+tests/
+├── unit/                           (7 arquivos)
+│   ├── test_assessment_scales.py   — Scoring e validação das 10 escalas
+│   ├── test_auth.py                — JWT, RBAC, autenticação
+│   ├── test_bayesian_network.py    — Naive Bayes classifier
+│   ├── test_criteria_evaluator.py  — Regras DSM-5-TR
+│   ├── test_dsm_icd_mapper.py      — Mapeamento DSM ↔ CID
+│   ├── test_inference_engine.py    — Cálculo probabilístico
+│   └── test_metrics.py             — Métricas e correlações
+└── integration/                    (4 arquivos)
+    ├── test_api.py                 — End-to-end API
+    ├── test_audit.py               — Auditoria
+    ├── test_audit_api.py           — API de auditoria
+    └── test_repositories.py        — Camada de dados
 ```
 
----
-
-## ✅ O Que Foi Implementado
-
-### 1. **Configuração Base do Projeto**
-- ✅ Estrutura de diretórios conforme padrão profissional Python
-- ✅ `pyproject.toml` com todas as dependências necessárias
-- ✅ `requirements.txt` com versões pinadas
-- ✅ Configuração `docker-compose.yml` para PostgreSQL local
-- ✅ `Dockerfile` para containerização
-
-### 2. **FastAPI & Backend**
-- ✅ Aplicação FastAPI básica (`app/main.py`)
-- ✅ Configuração centralizada com `Pydantic BaseSettings`
-- ✅ Endpoints de health check (`/health`)
-- ✅ Estrutura de exceções customizadas para domínio clínico
-- ✅ CORS e middlewares básicos
-
-### 3. **Banco de Dados**
-- ✅ Integração SQLAlchemy com PostgreSQL
-- ✅ Session factory com context managers
-- ✅ Alembic configurado para migrations versionadas
-- ✅ Schema SQL inicial com:
-  - Tabelas base: `patients`, `disorders`, `symptoms`, `consultations`
-  - Triggers de audit para compliance LGPD
-  - Índices para performance
-
-### 4. **Modelagem ORM**
-- ✅ Base model com UUID primária (LGPD compliant)
-- ✅ Timestamps de criação/modificação automáticos
-- ✅ Metadata clínica base para extensão
-
-### 5. **Schemas Pydantic**
-- ✅ DTOs para Paciente (request/response)
-- ✅ Validação automática e serialização JSON
-- ✅ Documentação OpenAPI automática
-
-### 6. **Testes & QA**
-- ✅ Configuração pytest com fixtures clínicas
-- ✅ Testes unitários de exemplo (`test_criteria_evaluator.py`)
-- ✅ Testes de integração de exemplo
-- ✅ Coverage setup com pytest-cov
-
-### 7. **Documentação**
-- ✅ `README.md` com contexto e motivação
-- ✅ `STRUCTURE.md` com guia de arquitetura
-- ✅ `QUICKSTART.md` com passos de configuração
-- ✅ `.instructions.md` com diretivas de desenvolvimento
-- ✅ `.agent.md` para integração com GitHub Copilot
-
-### 8. **Git & Controle de Versão**
-- ✅ `.gitignore` completo para Python
-- ✅ Histórico de commits com mensagens em português
-- ✅ Licença MIT
-
----
-
-## 🔄 Histórico de Commits
-
-```
-bd1af5e - Restructure project architecture to parallel directory layout
-0dffdcc - Atualizando o diretórios
-305c0f8 - Merge branch 'main'
-764554d - br-pt (Branch em português)
-c7c47cc - Atualizando o diretório do projeto
-4f1ab68 - Update README.md
-6fdbcfe - Simplify M.I.N.D. description
-2cbc3c3 - Primeiro commit: adicionando todos os arquivos do projeto
-```
-
-**Mudança Principal Recente:** Reestruturação arquitetural para layout paralelo (padrão profissional Python).
-
----
-
-## 🚀 Próximos Passos (Roadmap)
-
-### **Fase 1.1: Modelos ORM Completos** (Curto Prazo)
-- [ ] Implementar modelos: `Patient`, `Disorder`, `Symptom`, `Consultation`, `Diagnosis`
-- [ ] Adicionar validações de negócio nos modelos
-- [ ] Criar migrations com Alembic
-- [ ] Testar integridade referencial
-
-### **Fase 1.2: Camada de Dados** (Curto Prazo)
-- [ ] Implementar repositórios base com CRUD
-- [ ] Criar `PatientRepository`, `DiagnosisRepository`, etc.
-- [ ] Adicionar queries especializadas (buscar consultas, sintomas, etc.)
-- [ ] Testes unitários para repositórios
-
-### **Fase 1.3: Lógica de Negócio** (Médio Prazo)
-- [ ] `PatientService` — gerenciamento de pacientes
-- [ ] `DiagnosisService` — orquestração de cálculo de diagnóstico
-- [ ] `AssessmentService` — scoring de escalas psicométricas
-- [ ] `ConsultationService` — workflow de consulta
-
-### **Fase 2: Motor de Inferência** (Médio Prazo)
-- [ ] `CriteriaEvaluator` — engine de regras DSM-5-TR/CID-11
-- [ ] `InferenceEngine` — cálculo probabilístico
-- [ ] `DSM_ICD_Mapper` — mapeamento entre taxonomias
-- [ ] Testes clínicos com casos de uso reais
-
-### **Fase 3: APIs Clínicas** (Médio Prazo)
-- [ ] `POST /patients` — criar paciente
-- [ ] `POST /consultations` — iniciar consulta
-- [ ] `POST /diagnoses/calculate` — calcular diagnóstico
-- [ ] `GET /diagnoses/{id}/explanation` — rastreabilidade
-- [ ] Documentação OpenAPI completa
-
-### **Fase 4: Segurança & Autenticação** (Longo Prazo)
-- [ ] JWT token management (`auth.py`)
-- [ ] RBAC (Role-Based Access Control) — `rbac.py`
-- [ ] Criptografia de campos sensíveis — `encryption.py`
-- [ ] Auditoria de acesso
-
-### **Fase 5: Escalas Psicométricas** (Longo Prazo)
-- [ ] Implementar PHQ-9 (depressão)
-- [ ] Implementar GAD-7 (ansiedade)
-- [ ] Implementar MADRS (depressão moderada-severa)
-- [ ] Scoring automático e validação
-
-### **Fase 6: Redes Bayesianas** (Futuro)
-- [ ] Estruturar rede de transtornos e sintomas
-- [ ] Calibrar probabilidades *a priori* com dados epidemiológicos
-- [ ] Implementar inferência causal
-- [ ] Validação com dados reais de pacientes
-
-### **Fase 7: Dashboards** (Futuro)
-- [ ] Integração com Power BI ou Apache Superset
-- [ ] Painel de evolução longitudinal do paciente
-- [ ] Métricas clínicas e alertas
-
----
-
-## 🛠️ Como Configurar o Ambiente
-
-### **1. Clone e Ative o Venv**
 ```bash
-cd m.i.n.d
-python -m venv .venv
-.venv\Scripts\Activate.ps1  # Windows
-source .venv/bin/activate   # Linux/Mac
+pytest tests/ -v           # Todos (140)
+pytest tests/unit/ -v      # Unitários
+pytest tests/integration/ -v  # Integração
+pytest --cov=app --cov-report=html  # Cobertura
 ```
 
-### **2. Instale as Dependências**
+---
+
+## CI/CD — GitHub Actions
+
+`.github/workflows/ci.yml` executa em push/PR para `main`:
+
+1. PostgreSQL 16 service container
+2. `pip install -e .`
+3. `flake8 app/ tests/`
+4. `black --check app/ tests/`
+5. `mypy app/`
+6. `pytest tests/ --cov=app --cov-report=xml`
+7. Codecov upload
+
+---
+
+## LGPD / GDPR
+
+- **UUIDs** — Identificadores não sequenciais, sem PII
+- **PII isolado** — `patient_identity` separado de `patient_profile`
+- **Fernet AES** — Criptografia de campos sensíveis
+- **Audit trail** — `audit_logs` com timestamp, profissional, operação
+- **Retenção** — 5 anos (previsto)
+- **Human-in-the-loop** — Nenhum diagnóstico é definitivo sem validação clínica
+
+---
+
+## Serviços Docker
+
+```yaml
+services:
+  postgres:     # PostgreSQL 16, porta 5432
+  pgadmin:      # Adminer web, porta 5050
+  app:          # FastAPI, porta 8001, healthcheck
+  airflow-webserver:  # Airflow UI, porta 8080
+  airflow-scheduler:  # Executor de DAGs
+```
+
 ```bash
+docker compose up -d           # Iniciar todos
+docker compose down            # Parar
+docker compose logs -f app     # Logs da aplicação
+```
+
+---
+
+## Comandos Rápidos
+
+```bash
+.venv\Scripts\Activate.ps1     # Ativar venv (Windows)
 pip install -r requirements.txt
-pip install -e .  # Instalar projeto em modo desenvolvimento
-```
-
-### **3. Configure Variáveis de Ambiente**
-```bash
-cp .env.example .env
-# Editar .env conforme necessário
-```
-
-### **4. Inicie o Banco de Dados**
-```bash
-docker-compose up -d
-```
-
-### **5. Execute as Migrations**
-```bash
 alembic upgrade head
-```
-
-### **6. Rode a Aplicação**
-```bash
-uvicorn app.main:app --reload
-```
-Acesse em: `http://localhost:8000`
-
-### **7. Execute Testes**
-```bash
-pytest tests/ -v --cov=app
+uvicorn app.main:app --reload --port 8001
+pytest tests/ -v
+black app/ tests/
+flake8 app/ tests/
+mypy app/
+python spark/submit.py population_metrics
 ```
 
 ---
 
-## 📊 Métricas de Código
+## Histórico de Commits (resumo)
 
-| Métrica | Valor |
-|---------|-------|
-| Linhas de código principal | ~200 |
-| Arquivos Python criados | 12 |
-| Pastas/módulos | 8 |
-| Testes criados | 2 (exemplos) |
-| Dependências principais | 18 |
-| Python mínimo requerido | 3.11 |
-
----
-
-## 🔐 Conformidade & Segurança
-
-### **LGPD (Lei Geral de Proteção de Dados)**
-- ✅ UUIDs para identificação (sem sequencial)
-- ✅ Separação de PII/PHI
-- ✅ Audit trail automático
-- ✅ Retenção por 5 anos
-- ✅ Estrutura para criptografia AES-256
-
-### **Clínico & Profissional**
-- ✅ Human-in-the-loop (profissional decide)
-- ✅ DSM-5-TR & CID-11 ready
-- ✅ Rastreabilidade completa
-- ✅ Comorbididade e exclusão diagnóstica
-
-### **Dev & DevOps**
-- ✅ Type hints (mypy)
-- ✅ Code formatting (black)
-- ✅ Linting (flake8, pylint)
-- ✅ Docker ready
-- ✅ CI/CD structure (TODO)
-
----
-
-## 📚 Referências & Fontes
-
-### Diagnósticas
-- [DSM-5-TR Official](https://dsm.psychiatryonline.org/)
-- [ICD-11 WHO](https://icd.who.int/)
-- [Level 1 & 2 Cross-Cutting Measures](https://www.psychiatry.org/psychiatrists/practice/dsm/educational-resources/assessment-measures)
-
-### Dados de Treino
-- [MIMIC-IV (MIT/PhysioNet)](https://physionet.org/content/mimiciv/)
-- [UCI ML Repository](https://archive.ics.uci.edu/)
-- [UMLS (NLM)](https://www.nlm.nih.gov/research/umls/)
-
-### Epidemiologia
-- [VIGITEL (Brasil)](https://www.gov.br/saude/)
-- [Global Burden of Disease (IHME)](https://www.healthdata.org/gbd)
-
----
-
-## 👥 Autores & Licença
-
-- **Projeto:** M.I.N.D Team
-- **Licença:** MIT
-- **Contribuidores:** Susana (scbcd)
-- **Email:** team@mind.local
-
----
-
-## 📝 Notas Importantes
-
-1. **Este é um MVP (Minimum Viable Product):** Foco em núcleo de inferência diagnóstica.
-2. **Human-in-the-loop:** O sistema nunca substitui o profissional.
-3. **Evolução planejada:** Arquitetura preparada para Redes Bayesianas.
-4. **Conformidade regulatória:** LGPD, CFM, CFP já estruturados.
-
----
-
-**Última atualização:** 01 de Junho de 2026  
-**Status:** ✅ MVP - Infraestrutura Pronta  
-**Próxima revisão:** Quando modelos ORM forem concluídos
+- Fase 1–8: Models → Schemas → Repositories → Services → API → Auth/Audit → Escalas/Bayes → Métricas/Airflow/Spark
+- CI/CD, Docker Compose (5 serviços), Clinical Manual
+- Bug fixes: encoding, PYTHONPATH, healthcheck, credenciais
+- PySpark 3.5 instalado, jobs de inferência em lote + métricas + ETL

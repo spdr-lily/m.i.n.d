@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.schemas.common import TimestampMixin
 
 
@@ -11,8 +11,7 @@ class SexTypeResponse(BaseModel):
     code: str
     description: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GenderIdentityResponse(BaseModel):
@@ -21,8 +20,7 @@ class GenderIdentityResponse(BaseModel):
     code: str
     description: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EducationLevelResponse(BaseModel):
@@ -31,8 +29,7 @@ class EducationLevelResponse(BaseModel):
     code: str
     description: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EthnicityResponse(BaseModel):
@@ -41,8 +38,7 @@ class EthnicityResponse(BaseModel):
     code: str
     description: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PatientProfileBase(BaseModel):
@@ -75,5 +71,4 @@ class PatientProfileResponse(PatientProfileBase, TimestampMixin):
     education_level: Optional[EducationLevelResponse] = None
     ethnicity: Optional[EthnicityResponse] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

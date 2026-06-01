@@ -1,196 +1,164 @@
-# M.I.N.D Project Structure
-
-## Directory Organization
+# M.I.N.D — Estrutura do Projeto
 
 ```
-project/
-├── alembic/                       # Database migration scripts (Alembic)
-│   ├── versions/                  # Versioned migration files
-│   └── env.py                     # Alembic environment configuration
+m.i.n.d/
 │
-├── app/                           # Main application package
-│   ├── __init__.py
-│   ├── main.py                    # FastAPI entry point
+├── app/                           # Pacote principal
+│   ├── main.py                    # FastAPI entry point (uvicorn)
 │   │
-│   ├── core/                      # Core utilities and configuration
-│   │   ├── __init__.py
-│   │   ├── config.py              # Application settings (BaseSettings)
-│   │   └── exceptions.py          # Domain-specific exceptions
+│   ├── core/
+│   │   ├── config.py              # BaseSettings (DB, JWT, CORS, etc.)
+│   │   ├── database.py            # Engine + SessionLocal
+│   │   ├── exceptions.py          # Exceções clínicas customizadas
+│   │   └── logging_config.py      # Configuração de logging
 │   │
-│   ├── models/                    # SQLAlchemy ORM models
-│   │   ├── __init__.py
-│   │   ├── base.py                # Base model with UUID PKs
-│   │   ├── patient.py             # Patient profile model
-│   │   ├── disorder.py            # Disorder registry
-│   │   ├── symptoms.py            # Symptom catalog
-│   │   ├── consultation.py        # Clinical consultation records
-│   │   ├── assessment_scales.py   # Psychometric instruments
-│   │   └── diagnosis.py           # Diagnosis results
+│   ├── models/
+│   │   ├── base.py                # Base ORM (UUID pk, timestamps)
+│   │   └── __init__.py
 │   │
-│   ├── schemas/                   # Pydantic request/response models
-│   │   ├── __init__.py
-│   │   ├── patient.py             # Patient DTOs
-│   │   ├── diagnosis.py           # Diagnosis request/response schemas
-│   │   ├── assessment.py          # Assessment scale schemas
-│   │   └── consultation.py        # Consultation schemas
+│   ├── schemas/                   # Pydantic v2
+│   │   ├── assessment.py
+│   │   ├── audit.py
+│   │   ├── auth.py
+│   │   ├── common.py
+│   │   ├── consultation.py
+│   │   ├── disorder.py
+│   │   ├── episode.py
+│   │   ├── inference.py
+│   │   ├── patient_identity.py
+│   │   ├── patient_profile.py
+│   │   ├── professional.py
+│   │   └── scale.py
 │   │
-│   ├── services/                  # Business logic layer
-│   │   ├── __init__.py
-│   │   ├── patient_service.py     # Patient management
-│   │   ├── diagnosis_service.py   # Diagnosis calculation orchestration
-│   │   ├── assessment_service.py  # Psychometric assessment scoring
-│   │   └── consultation_service.py # Consultation workflow
+│   ├── services/
+│   │   ├── alerts_service.py       # Geração de alertas clínicos
+│   │   ├── assessment_service.py   # Scoring de escalas
+│   │   ├── audit_service.py        # Logs de auditoria
+│   │   ├── consultation_service.py
+│   │   ├── disorder_service.py
+│   │   ├── episode_service.py
+│   │   ├── inference_service.py    # Orquestração de inferência
+│   │   ├── metrics_service.py      # Pandas: trends, correlações
+│   │   ├── patient_service.py
+│   │   ├── professional_service.py
+│   │   └── scale_service.py
 │   │
 │   ├── repositories/              # Data access layer
-│   │   ├── __init__.py
-│   │   ├── base.py                # Base repository with CRUD
-│   │   ├── patient_repository.py
-│   │   ├── disorder_repository.py
+│   │   ├── base.py                # Base CRUD genérico
+│   │   ├── auth_repository.py
 │   │   ├── consultation_repository.py
-│   │   └── assessment_repository.py
+│   │   ├── disorder_repository.py
+│   │   ├── episode_repository.py
+│   │   ├── inference_repository.py
+│   │   ├── patient_repository.py
+│   │   ├── professional_repository.py
+│   │   └── scale_repository.py
 │   │
-│   ├── ml/                        # Machine Learning & Inference
-│   │   ├── __init__.py
-│   │   ├── bayesian_network.py    # Probabilistic graphical models
-│   │   ├── inference_engine.py    # Conditional probability calculations
-│   │   ├── dsm_icd_mapper.py      # DSM-5-TR ↔ ICD-11 mapping logic
-│   │   └── criteria_evaluator.py  # Diagnostic criteria rule engine
+│   ├── ml/                        # Machine Learning & Inferência
+│   │   ├── assessment_scales.py   # 10 escalas psicométricas
+│   │   ├── bayesian_inference_service.py
+│   │   ├── bayesian_network.py    # Naive Bayes classifier
+│   │   ├── criteria_evaluator.py  # Regras DSM-5-TR
+│   │   ├── dsm_icd_mapper.py      # Mapeamento DSM-5 ↔ CID-11
+│   │   ├── inference_engine.py    # Cálculo probabilístico
+│   │   └── network_definition.py  # Estrutura da rede
 │   │
 │   ├── api/                       # FastAPI routes
-│   │   ├── __init__.py
-│   │   ├── patients.py            # POST/GET patient endpoints
-│   │   ├── diagnoses.py           # POST /calculate-diagnosis
-│   │   ├── consultations.py       # POST/GET consultation endpoints
-│   │   ├── assessment_scales.py   # GET/POST assessment endpoints
-│   │   └── health.py              # Health check routes
+│   │   ├── alerts.py
+│   │   ├── assessments.py
+│   │   ├── audit.py
+│   │   ├── auth.py
+│   │   ├── consultations.py
+│   │   ├── disorders.py
+│   │   ├── episodes.py
+│   │   ├── health.py
+│   │   ├── inferences.py
+│   │   ├── metrics.py
+│   │   ├── patients.py
+│   │   ├── professionals.py
+│   │   ├── reference.py
+│   │   └── scales.py
 │   │
-│   └── security/                  # Authentication & Authorization
-│       ├── __init__.py
-│       ├── auth.py                # JWT token management
+│   ├── middleware/
+│   │   └── audit_middleware.py    # Auditoria de requisições
+│   │
+│   └── security/
+│       ├── auth.py                # JWT (login, refresh, verify)
 │       ├── rbac.py                # Role-based access control
-│       └── encryption.py          # AES encryption utilities (LGPD)
+│       └── encryption.py          # Fernet AES (LGPD)
 │
-├── tests/                         # Test suite
-│   ├── __init__.py
-│   ├── conftest.py                # pytest fixtures & configuration
-│   ├── unit/                      # Unit tests
+├── dags/                          # Apache Airflow DAGs
+│   ├── config.py                  # Shared config (DB connection)
+│   ├── clinical_inference_dag.py  # 02h - inferência em lote
+│   ├── data_quality_dag.py        # 03h - 6 checagens de qualidade
+│   ├── metrics_aggregation_dag.py # 04h - agregação de métricas
+│   └── alert_generation_dag.py    # 6/6h - ideação + deterioração
+│
+├── spark/                         # PySpark jobs
+│   ├── config.py                  # JDBC URL, DB_PROPERTIES
+│   ├── submit.py                  # CLI helper
+│   └── jobs/
+│       ├── batch_inference.py     # Inferência em lote
+│       ├── population_metrics.py  # Métricas populacionais
+│       └── data_import.py         # ETL CSV → PostgreSQL
+│
+├── migrations/                    # Alembic
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions/
+│       └── 05ecbb7b2bc1_initial_schema.py  # 17 tabelas iniciais
+│
+├── tests/
+│   ├── conftest.py                # Fixtures globais
+│   ├── unit/
+│   │   ├── conftest.py
+│   │   ├── test_assessment_scales.py
+│   │   ├── test_auth.py
+│   │   ├── test_bayesian_network.py
 │   │   ├── test_criteria_evaluator.py
+│   │   ├── test_dsm_icd_mapper.py
 │   │   ├── test_inference_engine.py
-│   │   └── test_assessment_scoring.py
-│   │
-│   └── integration/               # Integration tests
-│       ├── test_consultation_workflow.py
-│       ├── test_diagnosis_calculation.py
-│       └── test_patient_flow.py
+│   │   └── test_metrics.py
+│   └── integration/
+│       ├── test_api.py
+│       ├── test_audit.py
+│       ├── test_audit_api.py
+│       └── test_repositories.py
 │
-├── migrations/                    # Manual SQL migration scripts
-│   └── 001_initial_schema.sql     # Initial database schema
+├── .github/workflows/
+│   └── ci.yml                     # CI: flake8, black, mypy, pytest, codecov
 │
-├── alembic.ini                    # Alembic configuration file
-├── requirements.txt               # Python dependencies
-├── docker-compose.yml             # Local PostgreSQL + pgAdmin
-├── .env.example                   # Environment variables template
-├── pyproject.toml                 # Project metadata (poetry/build)
-└── README.md                      # Project documentation
+├── docker-compose.yml             # 5 serviços: postgres, app, pgadmin, airflow-webserver, airflow-scheduler
+├── Dockerfile                     # Python 3.12 + entrypoint.sh
+├── entrypoint.sh                  # Alembic upgrade + uvicorn
+├── alembic.ini
+├── pyproject.toml
+├── requirements.txt
+├── .env.example
+├── .env                           # Credenciais + chaves (não versionado)
+│
+├── CLINICAL_MANUAL.md             # Manual clínico (pt-BR)
+├── README.md
+├── QUICKSTART.md
+├── STRUCTURE.md                   # Este arquivo
+├── DESENVOLVIMENTO.md
+└── ANCHORED SUMMARY.md            # Sumário executivo da sessão
 ```
 
-## Key Files Descriptions
+## Convenções
 
-### Configuration & Setup
-- **app/core/config.py** — Application settings from environment variables
-- **app/core/exceptions.py** — Domain-specific exceptions for error handling
-- **requirements.txt** — Python package dependencies
-- **.env.example** — Template for environment variables (LGPD: no secrets in repo)
+- **UUIDs** — Todas as PKs de pacientes usam UUID (LGPD)
+- **PII isolado** — Identidade do paciente separada dos dados analíticos
+- **Schemas PostgreSQL** — `core` (pacientes), `clinical` (consultas, escalas), `diagnostic` (transtornos, inferências), `audit` (logs)
+- **Pydantic v2** — Schemas com `model_validator` e `field_serializer`
+- **Human-in-the-loop** — Toda inferência requer validação clínica
 
-### Database Layer
-- **app/models/** — SQLAlchemy ORM models (all use UUID primary keys for LGPD compliance)
-- **app/repositories/** — Data access layer (pure data operations)
-- **migrations/** — SQL scripts for database schema versioning
-- **alembic/** — Alembic migration management
+## Serviços Docker
 
-### Business Logic
-- **app/services/** — Business logic & orchestration (uses repositories + ML pipelines)
-- **app/ml/** — Bayesian inference, probability calculations, DSM/ICD mapping
-
-### API & Web Layer
-- **app/api/** — FastAPI route handlers
-- **app/schemas/** — Pydantic DTOs for request/response validation
-- **app/security/** — Authentication, authorization, encryption
-
-### Testing
-- **tests/conftest.py** — pytest configuration and shared fixtures
-- **tests/unit/** — Unit tests for individual components
-- **tests/integration/** — End-to-end workflow tests
-
-## Development Workflow
-
-### 1. Setting Up the Environment
-```bash
-# Create virtual environment
-python -m venv .venv
-
-# Activate it
-.venv\Scripts\Activate.ps1  # Windows
-source .venv/bin/activate   # Linux/Mac
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Copy environment variables
-cp .env.example .env
-# Edit .env with your settings
-```
-
-### 2. Database Setup
-```bash
-# Start PostgreSQL (docker)
-docker-compose up -d
-
-# Create migrations
-alembic revision --autogenerate -m "Add patient table"
-
-# Apply migrations
-alembic upgrade head
-```
-
-### 3. Running the Application
-```bash
-# From root directory
-uvicorn app.main:app --reload
-```
-
-### 4. Running Tests
-```bash
-# Run all tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=app --cov-report=html
-
-# Run specific test file
-pytest tests/unit/test_criteria_evaluator.py -v
-```
-
-## LGPD/GDPR Compliance Notes
-
-- **UUIDs Only** — All patient data uses UUID identifiers, never names
-- **PII Separation** — Patient names/contact info stored in separate encrypted table
-- **Encryption** — Sensitive fields (consultation notes) use AES-256
-- **Audit Trail** — All diagnoses logged with timestamp, clinician, rationale
-- **Data Retention** — 5-year retention period per Brazilian healthcare regulations
-- **Deletion** — Archive and anonymization procedures in `app/security/`
-
-## Clinical Safeguards
-
-- ✅ **Human-in-the-loop** — All diagnoses flagged for clinician review
-- ✅ **Probabilistic** — Results include confidence intervals, not definitive diagnosis
-- ✅ **DSM-5-TR & ICD-11** — All criteria validated against official standards
-- ✅ **Comorbidity Logic** — Exclusionary rules prevent conflicting diagnoses
-- ✅ **Differential Diagnoses** — Multiple possibilities ranked by probability
-
-## External Resources
-
-- [DSM-5-TR Official](https://dsm.psychiatryonline.org/)
-- [ICD-11 Browser](https://icd.who.int/browse11/)
-- [MIMIC-IV Dataset](https://mimic.physionet.org/)
-- [Brazilian LGPD](https://www.gov.br/cidadania/pt-br/acesso-a-informacao/lgpd)
+| Serviço | Porta | Credenciais |
+|---|---|---|
+| postgres | 5432 | `postgres` / `137_Cmspelo` / `mind` |
+| pgadmin | 5050 | `admin@mind.com` / `admin` |
+| app | 8001 | — |
+| airflow-webserver | 8080 | `admin` / `admin` |
+| airflow-scheduler | — | — |

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from app.schemas.common import TimestampMixin
 
 
@@ -21,8 +21,7 @@ class PatientIdentityResponse(PatientIdentityBase, TimestampMixin):
     """Schema for patient identity response (no hashed PII)."""
     patient_uuid: UUID
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
     def dict(self, **kwargs):
         """Override dict to exclude sensitive fields in responses."""

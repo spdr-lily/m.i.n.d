@@ -297,6 +297,26 @@ class BayesianRelationship(Base):
 
 
 # ============================================================================
+# ============================================================================
+# SECURITY SCHEMA - Users and authentication
+# ============================================================================
+
+class User(Base):
+    __tablename__ = "users"
+    __table_args__ = {"schema": "security"}
+
+    user_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    username = Column(String(100), unique=True, nullable=False)
+    email_hash = Column(String(255))
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(255))
+    role = Column(String(50), nullable=False, server_default="clinician")
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+
+# ============================================================================
 # AUDIT SCHEMA - Audit logging for compliance
 # ============================================================================
 
@@ -306,8 +326,40 @@ class AuditLog(Base):
 
     audit_id = Column(Integer, primary_key=True)
     entity_name = Column(String(100), nullable=False)
+    entity_id = Column(String(100))
     operation_type = Column(String(20), nullable=False)
     performed_by = Column(String(255))
     old_data = Column(Text)
     new_data = Column(Text)
+    ip_address = Column(String(45))
+    user_agent = Column(String(500))
+    status_code = Column(Integer)
+    latency_ms = Column(Integer)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+# ============================================================================
+# ADMIN SCHEMA - Role & route permissions
+# ============================================================================
+
+class RolePermission(Base):
+    __tablename__ = "role_permissions"
+    __table_args__ = {"schema": "admin"}
+
+    id = Column(Integer, primary_key=True)
+    role = Column(String(50), nullable=False)
+    permission = Column(String(100), nullable=False)
+    created_at = Column(DateTime, server_default=func.now())
+
+
+class RoutePermission(Base):
+    __tablename__ = "route_permissions"
+    __table_args__ = {"schema": "admin"}
+
+    id = Column(Integer, primary_key=True)
+    http_method = Column(String(10), nullable=False)
+    path_pattern = Column(String(255), nullable=False)
+    permission_required = Column(String(100), nullable=False)
+    description = Column(String(255))
+    is_active = Column(Boolean, server_default="true")
     created_at = Column(DateTime, server_default=func.now())
