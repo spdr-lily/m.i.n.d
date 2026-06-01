@@ -266,11 +266,3 @@ A arquitetura foi desenhada para futura integração com:
 * **Protagonismo Humano:** O sistema atua estritamente como um assistente de validação estatística. A metodologia e a decisão clínica final permanecem 100% sob a responsabilidade do profissional de saúde habilitado.
 * **Conformidade com a LGPD (Lei nº 13.709/2018):** Anonimização obrigatória e irreversível de dados sensíveis dos pacientes (Artigo 11). Identificadores pessoais são completamente dissociados da camada analítica e preditiva.
 * **Segurança e Sigilo:** Criptografia ponta a ponta e aderência estrita às resoluções do CFM (Conselho Federal de Medicina) e CFP (Conselho Federal de Psicologia) relativas à segurança do prontuário eletrônico.
-
----
-
-## 7. Próximos Passos Recomendados (Plano de Ação Prático)
-1. **Modelagem de Dados Inicial (SQL):** Implementar o schema relacional contendo o mapeamento de dependências entre CID-11 e DSM-5-TR focado no primeiro grupo de transtornos do MVP.
-2. **Curadoria e Simulação (Data Sourcing):** Ingestão de microdados das fontes validadas (UCI/UMLS) ou estruturação de uma base sintética rigorosa baseada nos critérios de corte das duas taxonomias.
-3. **Desenvolvimento do MVP (Python):** Codificação da árvore lógica de restrições do DSM e do modelo de probabilidades condicionais para o módulo de Transtornos do Humor (Depressão e Bipolaridade).
-4. **Calibragem Clínica:** Validação dos outputs probabilísticos do modelo junto a profissionais da área para ajuste fino dos pesos das variáveis.
