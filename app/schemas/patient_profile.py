@@ -58,7 +58,7 @@ class PatientProfileBase(BaseModel):
 
 class PatientProfileCreate(PatientProfileBase):
     """Schema for creating patient profile."""
-    patient_uuid: UUID
+    patient_uuid: Optional[UUID] = None
 
 
 class PatientProfileUpdate(PatientProfileBase):

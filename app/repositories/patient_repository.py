@@ -21,7 +21,7 @@ class PatientRepository:
             email_hash=email_hash
         )
         self.session.add(patient_identity)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(patient_identity)
         return patient_identity
 

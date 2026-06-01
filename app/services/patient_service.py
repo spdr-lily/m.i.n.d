@@ -28,7 +28,7 @@ class PatientService:
                 email_hash=patient_identity.email_hash
             )
 
-            # Create profile linked to identity
+            # Create profile linked to identity (use generated UUID)
             profile = self.repository.create_patient_profile(
                 patient_uuid=patient_id.patient_uuid,
                 birth_date=patient_profile.birth_date,
@@ -40,6 +40,7 @@ class PatientService:
                 occupation=patient_profile.occupation
             )
 
+            self.session.commit()
             return patient_id, profile
         except Exception as e:
             self.session.rollback()

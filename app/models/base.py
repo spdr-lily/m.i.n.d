@@ -18,7 +18,7 @@ class PatientIdentity(Base):
     __tablename__ = "patient_identity"
     __table_args__ = {"schema": "security"}
 
-    patient_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    patient_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     full_name = Column(String(255), nullable=False)
     cpf_hash = Column(String(255))
     email_hash = Column(String(255))
@@ -76,7 +76,7 @@ class PatientProfile(Base):
     __tablename__ = "patient_profile"
     __table_args__ = {"schema": "clinical"}
 
-    profile_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    profile_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     patient_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("security.patient_identity.patient_uuid"), unique=True, nullable=False)
     birth_date = Column(Date)
     sex_type_id = Column(Integer, ForeignKey("core.sex_types.sex_type_id"))
@@ -101,7 +101,7 @@ class HealthcareProfessional(Base):
     __tablename__ = "healthcare_professionals"
     __table_args__ = {"schema": "clinical"}
 
-    professional_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    professional_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     full_name = Column(String(255), nullable=False)
     professional_license = Column(String(100))
     specialty = Column(String(100))
@@ -114,7 +114,7 @@ class ClinicalConsultation(Base):
     __tablename__ = "clinical_consultation"
     __table_args__ = {"schema": "clinical"}
 
-    consultation_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    consultation_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     profile_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.patient_profile.profile_uuid"), nullable=False)
     professional_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.healthcare_professionals.professional_uuid"))
     consultation_date = Column(DateTime, nullable=False)
@@ -132,7 +132,7 @@ class ClinicalEpisode(Base):
     __tablename__ = "clinical_episode"
     __table_args__ = {"schema": "clinical"}
 
-    episode_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    episode_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     profile_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.patient_profile.profile_uuid"), nullable=False)
     episode_start = Column(DateTime)
     episode_end = Column(DateTime)
@@ -254,7 +254,7 @@ class DiagnosticInference(Base):
     __tablename__ = "diagnostic_inference"
     __table_args__ = {"schema": "diagnostic"}
 
-    inference_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True)
+    inference_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
     consultation_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.clinical_consultation.consultation_uuid"), nullable=False)
     disorder_id = Column(Integer, ForeignKey("diagnostic.disorders.disorder_id"), nullable=False)
     inference_probability = Column(Numeric(8, 6))
