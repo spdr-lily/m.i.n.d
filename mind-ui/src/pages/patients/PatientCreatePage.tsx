@@ -106,10 +106,10 @@ export default function PatientCreatePage() {
                 <Select
                   allowClear
                   options={[
-                    { value: 'single', label: 'Solteiro(a)' },
-                    { value: 'married', label: 'Casado(a)' },
-                    { value: 'divorced', label: 'Divorciado(a)' },
-                    { value: 'widowed', label: 'Viúvo(a)' },
+                    { value: 'solteiro', label: 'Solteiro(a)' },
+                    { value: 'casado', label: 'Casado(a)' },
+                    { value: 'divorciado', label: 'Divorciado(a)' },
+                    { value: 'viuvo', label: 'Viúvo(a)' },
                   ]}
                 />
               </Form.Item>

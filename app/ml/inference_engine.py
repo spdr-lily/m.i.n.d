@@ -53,6 +53,14 @@ class InferenceEngine:
     def _build_result(self, eval_result: DisorderEvaluation) -> InferenceResult:
         probability = eval_result.probability
 
+        matched = [r for r in eval_result.criteria_results if r.present]
+        if matched:
+            scores = [r.intensity_score for r in matched if r.intensity_score is not None]
+            if scores:
+                avg_intensity = sum(scores) / len(scores)
+                intensity_factor = 0.5 + (avg_intensity / 100.0) * 0.5
+                probability *= intensity_factor
+
         if not eval_result.required_met:
             probability *= 0.3
 
@@ -77,6 +85,12 @@ class InferenceEngine:
             return 0.0
         ratio = eval_result.met_criteria / eval_result.total_criteria
         base_confidence = (probability + ratio) / 2
+        matched = [r for r in eval_result.criteria_results if r.present]
+        scores = [r.intensity_score for r in matched if r.intensity_score is not None]
+        if scores:
+            avg = sum(scores) / len(scores)
+            intensity_bonus = (avg / 100.0) * 0.1
+            base_confidence += intensity_bonus
         return min(base_confidence + 0.05, 1.0)
 
     def _apply_exclusion_rules(

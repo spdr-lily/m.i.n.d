@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { Table, Button, Card, Typography, Breadcrumb, message, Tag } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { Table, Button, Card, Typography, Breadcrumb, theme } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { consultationsApi } from '../../api/consultations'
-import type { ConsultationResponse } from '../../types'
+import type { ConsultationListItem } from '../../types'
 
 const { Title } = Typography
 
 export default function ConsultationListPage() {
-  const [consultations, setConsultations] = useState<ConsultationResponse[]>([])
+  const [consultations, setConsultations] = useState<ConsultationListItem[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { token } = theme.useToken()
 
   useEffect(() => {
     setLoading(true)
@@ -40,12 +41,28 @@ export default function ConsultationListPage() {
           onRow={(record) => ({ onClick: () => navigate(`/consultations/${record.consultation_uuid}`), style: { cursor: 'pointer' } })}
           columns={[
             { title: 'Data', dataIndex: 'consultation_date', width: 160 },
-            { title: 'Paciente', dataIndex: 'patient_uuid', ellipsis: true, render: (v: string) => <Tag>{v.slice(0, 8)}...</Tag> },
             { title: 'Profissional', dataIndex: 'professional_name', ellipsis: true },
             { title: 'Observações', dataIndex: 'consultation_notes', ellipsis: true },
           ]}
         />
       </Card>
+
+      <Button
+        type="primary"
+        shape="circle"
+        size="large"
+        icon={<PlusOutlined />}
+        onClick={() => navigate('/consultations/new')}
+        style={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          width: 56,
+          height: 56,
+          boxShadow: token.boxShadow,
+          zIndex: 1000,
+        }}
+      />
     </>
   )
 }

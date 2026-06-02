@@ -3,7 +3,7 @@ import type { Disorder, Symptom, DiagnosticCriteria } from '../types'
 
 export const disordersApi = {
   listSymptoms: () =>
-    apiClient.get<Symptom[]>('/symptoms').then((r) => r.data),
+    apiClient.get<{ total: number; symptoms: Symptom[] }>('/symptoms').then((r) => r.data.symptoms),
 
   listDisorders: () =>
     apiClient.get<Disorder[]>('/disorders').then((r) => r.data),

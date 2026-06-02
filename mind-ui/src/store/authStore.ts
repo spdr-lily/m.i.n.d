@@ -11,15 +11,15 @@ interface AuthState {
   loadUser: () => Promise<void>
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   token: localStorage.getItem('mind_token'),
   loading: false,
 
   login: async (data) => {
-    const { access_token } = await authApi.login(data)
-    localStorage.setItem('mind_token', access_token)
-    set({ token: access_token })
+    const res = await authApi.login(data)
+    localStorage.setItem('mind_token', res.access_token)
+    set({ token: res.access_token })
     const user = await authApi.me()
     set({ user })
   },

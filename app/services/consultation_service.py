@@ -2,11 +2,12 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.models.base import ClinicalConsultation, SymptomObservation, ScaleResponse
+from sqlalchemy.orm import joinedload
+from app.models.base import ClinicalConsultation, ClinicalNote, SymptomObservation, ScaleResponse
 from app.repositories.consultation_repository import ConsultationRepository
 from app.schemas.consultation import (
     ClinicalConsultationCreate, SymptomObservationCreate,
-    ScaleResponseCreate, ConsultationWithDataCreate
+    ScaleResponseCreate, ConsultationWithDataCreate, ClinicalNoteCreate
 )
 
 
@@ -66,10 +67,20 @@ class ConsultationService:
                     )
                     scale_responses.append(scale_resp)
 
+            # Create clinical note if provided
+            if consultation_data.clinical_note:
+                clinical_note = self.create_or_update_clinical_note(
+                    consultation_uuid=consultation.consultation_uuid,
+                    note_data=consultation_data.clinical_note
+                )
+            else:
+                clinical_note = None
+
             return {
                 "consultation": consultation,
                 "symptom_observations": symptom_observations,
-                "scale_responses": scale_responses
+                "scale_responses": scale_responses,
+                "clinical_note": clinical_note
             }
         except Exception as e:
             self.session.rollback()
@@ -77,7 +88,12 @@ class ConsultationService:
 
     def get_consultation(self, consultation_uuid: UUID) -> Optional[ClinicalConsultation]:
         """Get consultation by UUID."""
-        return self.repository.get_consultation(consultation_uuid)
+        return (
+            self.session.query(ClinicalConsultation)
+            .options(joinedload(ClinicalConsultation.clinical_note))
+            .filter(ClinicalConsultation.consultation_uuid == consultation_uuid)
+            .first()
+        )
 
     def list_consultations(self, profile_uuid: UUID, skip: int = 0, limit: int = 100) -> List[ClinicalConsultation]:
         """List consultations for a patient."""
@@ -128,6 +144,50 @@ class ConsultationService:
     def update_consultation(self, consultation_uuid: UUID, **updates) -> Optional[ClinicalConsultation]:
         """Update consultation."""
         return self.repository.update_consultation(consultation_uuid, **updates)
+
+    def create_or_update_clinical_note(
+        self,
+        consultation_uuid: UUID,
+        note_data: ClinicalNoteCreate
+    ) -> ClinicalNote:
+        """Create or update clinical note for a consultation."""
+        existing = (
+            self.session.query(ClinicalNote)
+            .filter_by(consultation_uuid=consultation_uuid)
+            .first()
+        )
+        if existing:
+            for field in ('chief_complaint', 'history_present_illness', 'subjective_findings',
+                          'objective_findings', 'clinical_assessment', 'treatment_plan', 'follow_up'):
+                value = getattr(note_data, field, None)
+                if value is not None:
+                    setattr(existing, field, value)
+            self.session.commit()
+            self.session.refresh(existing)
+            return existing
+        else:
+            note = ClinicalNote(
+                consultation_uuid=consultation_uuid,
+                chief_complaint=note_data.chief_complaint,
+                history_present_illness=note_data.history_present_illness,
+                subjective_findings=note_data.subjective_findings,
+                objective_findings=note_data.objective_findings,
+                clinical_assessment=note_data.clinical_assessment,
+                treatment_plan=note_data.treatment_plan,
+                follow_up=note_data.follow_up,
+            )
+            self.session.add(note)
+            self.session.commit()
+            self.session.refresh(note)
+            return note
+
+    def get_clinical_note(self, consultation_uuid: UUID) -> Optional[ClinicalNote]:
+        """Get clinical note for a consultation."""
+        return (
+            self.session.query(ClinicalNote)
+            .filter_by(consultation_uuid=consultation_uuid)
+            .first()
+        )
 
     def delete_consultation(self, consultation_uuid: UUID) -> bool:
         """Delete consultation."""

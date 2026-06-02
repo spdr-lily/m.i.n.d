@@ -105,10 +105,146 @@ MADRS = ScaleDefinition(
 )
 
 
+MDQ = ScaleDefinition(
+    name="MDQ",
+    description="Mood Disorder Questionnaire — screening for bipolar spectrum disorder",
+    max_score_per_item=1.0,
+    questions=[
+        "Felt so good or so hyper that other people thought you were not normal?",
+        "Felt so irritable that you shouted at people or started fights?",
+        "Felt much more self-confident than usual?",
+        "Got much less sleep than usual and did not feel tired?",
+        "Was much more talkative or spoke faster than usual?",
+        "Thoughts raced through your head?",
+        "Were easily distracted by unimportant things?",
+        "Had much more energy than usual?",
+        "Was much more active or did many things at once?",
+        "Was much more social or outgoing than usual?",
+        "Was much more interested in sex than usual?",
+        "Did things that could have caused trouble (spending, sex, investments)?",
+        "Spent money that caused financial problems?",
+    ],
+    severity_thresholds=[
+        (0, "Negative", "No indication of bipolar spectrum disorder."),
+        (7, "Positive", "Positive screen for bipolar spectrum disorder. Comprehensive diagnostic evaluation recommended."),
+    ],
+)
+
+
+PCL5 = ScaleDefinition(
+    name="PCL-5",
+    description="PTSD Checklist for DSM-5 — trauma exposure symptoms",
+    max_score_per_item=4.0,
+    questions=[
+        "Repeated upsetting memories of the stressful event?",
+        "Repeated distressing dreams about the event?",
+        "Suddenly feeling or acting as if the event were happening again?",
+        "Feeling very upset when something reminded you of the event?",
+        "Having strong physical reactions when reminded of the event?",
+        "Avoiding memories, thoughts, or feelings about the event?",
+        "Avoiding external reminders of the event?",
+        "Trouble remembering important parts of the event?",
+        "Having strong negative beliefs about yourself or the world?",
+        "Blaming yourself or others for the event?",
+        "Having strong negative feelings (fear, guilt, shame)?",
+        "Loss of interest in activities you used to enjoy?",
+        "Feeling distant or cut off from others?",
+        "Trouble experiencing positive feelings?",
+        "Irritable or aggressive behavior?",
+        "Reckless or self-destructive behavior?",
+        "Being overly alert or watchful?",
+        "Being jumpy or easily startled?",
+        "Trouble concentrating?",
+        "Trouble falling or staying asleep?",
+    ],
+    severity_thresholds=[
+        (0, "None", "No clinically significant PTSD symptoms."),
+        (31, "Mild", "Mild PTSD symptoms. Monitor and consider psychotherapy."),
+        (45, "Moderate", "Moderate PTSD symptoms. Evidence-based psychotherapy (CBT, EMDR) recommended."),
+        (56, "Severe", "Severe PTSD symptoms. Intensive treatment and specialist referral recommended."),
+    ],
+)
+
+
+YBOCS = ScaleDefinition(
+    name="Y-BOCS",
+    description="Yale-Brown Obsessive Compulsive Scale — OCD severity",
+    max_score_per_item=4.0,
+    questions=[
+        "Time spent on obsessive thoughts?",
+        "Interference from obsessive thoughts?",
+        "Distress from obsessive thoughts?",
+        "Resistance against obsessive thoughts?",
+        "Control over obsessive thoughts?",
+        "Time spent on compulsive behaviors?",
+        "Interference from compulsive behaviors?",
+        "Distress when prevented from performing compulsions?",
+        "Resistance against compulsions?",
+        "Control over compulsions?",
+    ],
+    severity_thresholds=[
+        (0, "None", "No clinically significant OCD symptoms."),
+        (8, "Mild", "Mild OCD symptoms. Consider monitoring and CBT."),
+        (16, "Moderate", "Moderate OCD severity. CBT/ERP and pharmacotherapy recommended."),
+        (24, "Severe", "Severe OCD symptoms. Intensive treatment and specialist referral."),
+        (32, "Extreme", "Extreme OCD symptoms. Urgent intensive treatment required."),
+    ],
+)
+
+
+AUDIT = ScaleDefinition(
+    name="AUDIT",
+    description="Alcohol Use Disorders Identification Test — alcohol consumption screening",
+    max_score_per_item=4.0,
+    questions=[
+        "How often do you have a drink containing alcohol?",
+        "How many drinks do you have on a typical day?",
+        "How often do you have six or more drinks on one occasion?",
+        "How often have you found you could not stop drinking once started?",
+        "How often have you failed to do what was expected because of drinking?",
+        "How often have you needed a drink in the morning to get going?",
+        "How often have you felt guilt or remorse after drinking?",
+        "How often have you been unable to remember the night before?",
+        "Has someone been injured because of your drinking?",
+        "Has a relative, friend, or doctor suggested you cut down?",
+    ],
+    severity_thresholds=[
+        (0, "Low risk", "Low-risk alcohol use. Maintain current pattern."),
+        (8, "Hazardous", "Hazardous alcohol use. Brief intervention and advice recommended."),
+        (16, "Harmful", "Harmful alcohol use. Diagnostic evaluation and intervention required."),
+        (20, "Dependence", "Possible alcohol dependence. Specialist assessment and treatment recommended."),
+    ],
+)
+
+
+ASRM = ScaleDefinition(
+    name="ASRM",
+    description="Altman Self-Rating Mania Scale — manic symptom screening",
+    max_score_per_item=4.0,
+    questions=[
+        "Happier or more cheerful than usual?",
+        "More self-confident than usual?",
+        "Slept less than usual without feeling tired?",
+        "Talked more than usual?",
+        "Was so active that others found it unusual?",
+    ],
+    severity_thresholds=[
+        (0, "None", "No manic symptoms detected."),
+        (6, "Possible hypomania/mania", "Elevated score suggesting possible manic or hypomanic episode. Further evaluation recommended."),
+        (10, "Probable mania", "Highly suggestive of current manic episode. Immediate psychiatric evaluation recommended."),
+    ],
+)
+
+
 SCALES_REGISTRY: Dict[str, ScaleDefinition] = {
     "PHQ-9": PHQ9,
     "GAD-7": GAD7,
     "MADRS": MADRS,
+    "MDQ": MDQ,
+    "PCL-5": PCL5,
+    "Y-BOCS": YBOCS,
+    "AUDIT": AUDIT,
+    "ASRM": ASRM,
 }
 
 

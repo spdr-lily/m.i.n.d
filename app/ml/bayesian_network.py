@@ -1,3 +1,4 @@
+import math
 from typing import Dict, List, Optional, Set, Tuple
 from dataclasses import dataclass, field
 
@@ -87,25 +88,34 @@ class BayesianNetwork:
         prior = self.get_prior(disorder_name)
         prior_odds = prior / (1 - prior + 1e-10)
 
-        joint_given_disorder = 1.0
-        joint_given_no_disorder = 1.0
+        log_p_given_d = 0.0
+        log_p_given_nd = 0.0
 
         for ev in evidence:
             cpt = self.get_cpt(disorder_name, ev.symptom_name)
             if cpt is None:
                 continue
+
+            w = (ev.intensity / 100.0) if ev.intensity is not None else 1.0
+            w = max(0.1, min(w, 1.0))
+
             if ev.present:
-                joint_given_disorder *= cpt.disorder_present
-                joint_given_no_disorder *= cpt.disorder_absent
+                p_d = cpt.disorder_present ** w
+                p_nd = cpt.disorder_absent ** w
             else:
-                joint_given_disorder *= (1 - cpt.disorder_present)
-                joint_given_no_disorder *= (1 - cpt.disorder_absent)
+                p_d = (1 - cpt.disorder_present) ** w
+                p_nd = (1 - cpt.disorder_absent) ** w
 
-        likelihood_given_disorder = joint_given_disorder
-        likelihood_given_no_disorder = joint_given_no_disorder
+            p_d = max(p_d, 1e-10)
+            p_nd = max(p_nd, 1e-10)
 
-        bayes_factor = (likelihood_given_disorder / (likelihood_given_no_disorder + 1e-10))
+            log_p_given_d += math.log(p_d)
+            log_p_given_nd += math.log(p_nd)
 
+        log_bayes_factor = log_p_given_d - log_p_given_nd
+        log_bayes_factor = max(min(log_bayes_factor, 100), -100)
+
+        bayes_factor = math.exp(log_bayes_factor)
         posterior_odds = prior_odds * bayes_factor
         posterior = posterior_odds / (1 + posterior_odds)
         posterior = max(0.0, min(1.0, posterior))
@@ -121,7 +131,7 @@ class BayesianNetwork:
     def infer(
         self,
         evidence: List[InferenceEvidence],
-        top_k: int = 5,
+        top_k: int = 15,
     ) -> List[BayesianInferenceResult]:
         results = []
         for disorder_name in self.disorder_list:
@@ -152,16 +162,18 @@ class BayesianNetwork:
             cpt = self.get_cpt(disorder_name, ev.symptom_name)
             if cpt is None:
                 continue
+            w = (ev.intensity / 100.0) if ev.intensity is not None else 1.0
             if ev.present:
-                contrib = cpt.disorder_present
+                contrib = (cpt.disorder_present ** w) / (cpt.disorder_absent ** w + 1e-10)
             else:
-                contrib = 1 - cpt.disorder_absent
+                contrib = ((1 - cpt.disorder_present) ** w) / ((1 - cpt.disorder_absent) ** w + 1e-10)
             symptom_impacts.append({
                 "symptom": ev.symptom_name,
                 "present": ev.present,
-                "likelihood_contribution": round(contrib, 4),
+                "intensity": ev.intensity,
+                "likelihood_ratio": round(contrib, 4),
             })
-        symptom_impacts.sort(key=lambda x: x["likelihood_contribution"], reverse=True)
+        symptom_impacts.sort(key=lambda x: x["likelihood_ratio"], reverse=True)
         return {
             "disorder": disorder_name,
             "prior": result.prior_probability,
@@ -173,13 +185,13 @@ class BayesianNetwork:
 
     def _interpret_result(self, result: BayesianInferenceResult) -> str:
         if result.posterior_probability >= 0.8:
-            return "High clinical probability — strongly suggestive of diagnosis"
+            return "Alta probabilidade clinica — fortemente sugestivo do diagnostico"
         elif result.posterior_probability >= 0.5:
-            return "Moderate probability — consider as differential diagnosis"
+            return "Probabilidade moderada — considerar como diagnostico diferencial"
         elif result.posterior_probability >= 0.2:
-            return "Low probability — unlikely but not ruled out"
+            return "Baixa probabilidade — improvavel, mas nao excluido"
         else:
-            return "Very low probability — diagnosis unlikely"
+            return "Probabilidade muito baixa — diagnostico improvavel"
 
     def validate_network(self) -> List[str]:
         errors = []

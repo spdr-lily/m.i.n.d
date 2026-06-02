@@ -9,9 +9,9 @@ class TestPatientsAPI:
         response = client.post("/api/patients", json=sample_patient_data)
         assert response.status_code == 201
         data = response.json()
-        assert "patient_identity" in data
-        assert "patient_profile" in data
-        assert data["patient_identity"]["full_name"] == "Maria Silva"
+        assert "identity" in data
+        assert "profile" in data
+        assert data["identity"]["full_name"] == "Maria Silva"
 
     def test_list_patients(self, client, db_session):
         client.post("/api/patients", json={

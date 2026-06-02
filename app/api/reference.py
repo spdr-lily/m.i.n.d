@@ -15,10 +15,7 @@ router = APIRouter(prefix="/api/reference", tags=["reference"])
 async def list_sex_types(db: Session = Depends(get_db)):
     """List all sex types."""
     sex_types = db.query(SexType).all()
-    return {
-        "total": len(sex_types),
-        "sex_types": [SexTypeResponse.model_validate(st) for st in sex_types]
-    }
+    return [SexTypeResponse.model_validate(st) for st in sex_types]
 
 
 @router.get("/sex-types/{sex_type_id}")
@@ -58,10 +55,7 @@ async def create_sex_type(
 async def list_gender_identities(db: Session = Depends(get_db)):
     """List all gender identities."""
     identities = db.query(GenderIdentity).all()
-    return {
-        "total": len(identities),
-        "gender_identities": [GenderIdentityResponse.model_validate(gi) for gi in identities]
-    }
+    return [GenderIdentityResponse.model_validate(gi) for gi in identities]
 
 
 @router.get("/gender-identities/{gender_identity_id}")
@@ -103,10 +97,7 @@ async def create_gender_identity(
 async def list_education_levels(db: Session = Depends(get_db)):
     """List all education levels."""
     levels = db.query(EducationLevel).all()
-    return {
-        "total": len(levels),
-        "education_levels": [EducationLevelResponse.model_validate(el) for el in levels]
-    }
+    return [EducationLevelResponse.model_validate(el) for el in levels]
 
 
 @router.get("/education-levels/{education_level_id}")
@@ -148,10 +139,7 @@ async def create_education_level(
 async def list_ethnicities(db: Session = Depends(get_db)):
     """List all ethnicities."""
     ethnicities = db.query(Ethnicity).all()
-    return {
-        "total": len(ethnicities),
-        "ethnicities": [EthnicityResponse.model_validate(eth) for eth in ethnicities]
-    }
+    return [EthnicityResponse.model_validate(eth) for eth in ethnicities]
 
 
 @router.get("/ethnicities/{ethnicity_id}")

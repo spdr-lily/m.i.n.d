@@ -1,25 +1,32 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Form, Input, Button, Card, Typography, message, Alert } from 'antd'
+import { Form, Input, Button, Card, Typography, message, Alert, Checkbox } from 'antd'
 import { UserOutlined, LockOutlined } from '@ant-design/icons'
 import { useAuthStore } from '../../store/authStore'
+import MindLogo from '../../components/MindLogo'
 
 const { Title, Text } = Typography
+
+const GRADIENT = 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)'
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
   const location = useLocation()
-  const login = useAuthStore((s) => s.login)
+  const { user, token, login } = useAuthStore()
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
 
-  const handleSubmit = async (values: { username: string; password: string }) => {
+  useEffect(() => {
+    if (token && user) navigate(from, { replace: true })
+  }, [token, user, navigate, from])
+
+  const handleSubmit = async (values: { username: string; password: string; remember?: boolean }) => {
     setLoading(true)
     setError('')
     try {
-      await login(values)
+      await login({ username: values.username, password: values.password })
       message.success('Login realizado com sucesso')
       navigate(from, { replace: true })
     } catch (err: unknown) {
@@ -37,29 +44,95 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: GRADIENT,
         padding: 24,
       }}
     >
-      <Card style={{ width: 400, borderRadius: 12, boxShadow: '0 8px 24px rgba(0,0,0,0.15)' }}>
-        <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <Title level={2} style={{ margin: 0 }}>M.I.N.D</Title>
-          <Text type="secondary">Clinical Decision Support System</Text>
+      <Card
+        style={{
+          width: 420,
+          borderRadius: 16,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          border: 'none',
+        }}
+        styles={{ body: { padding: 40 } }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 36 }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+            <MindLogo size={576} />
+          </div>
+          <Title level={3} style={{ margin: 0, fontWeight: 700 }}>
+            MIND
+          </Title>
+          <Text type="secondary" style={{ fontSize: 13 }}>
+            Clinical Decision Support System
+          </Text>
         </div>
-        {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
-        <Form layout="vertical" onFinish={handleSubmit} autoComplete="off">
-          <Form.Item name="username" rules={[{ required: true, message: 'Informe o usuário' }]}>
-            <Input prefix={<UserOutlined />} placeholder="Usuário" size="large" />
+
+        {error && (
+          <Alert
+            message={error}
+            type="error"
+            showIcon
+            closable
+            onClose={() => setError('')}
+            style={{ marginBottom: 20, borderRadius: 8 }}
+          />
+        )}
+
+        <Form
+          layout="vertical"
+          onFinish={handleSubmit}
+          autoComplete="off"
+          initialValues={{ remember: true }}
+          size="large"
+        >
+          <Form.Item
+            name="username"
+            rules={[{ required: true, message: 'Informe o usuário' }]}
+            style={{ marginBottom: 16 }}
+          >
+            <Input
+              prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
+              placeholder="Usuário"
+              autoFocus
+            />
           </Form.Item>
-          <Form.Item name="password" rules={[{ required: true, message: 'Informe a senha' }]}>
-            <Input.Password prefix={<LockOutlined />} placeholder="Senha" size="large" />
+
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: 'Informe a senha' }]}
+            style={{ marginBottom: 12 }}
+          >
+            <Input.Password
+              prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
+              placeholder="Senha"
+            />
           </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" block size="large" loading={loading}>
+
+          <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: 20 }}>
+            <Checkbox>Lembrar-me</Checkbox>
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0 }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              block
+              size="large"
+              loading={loading}
+              style={{ height: 44, borderRadius: 8, fontSize: 15 }}
+            >
               Entrar
             </Button>
           </Form.Item>
         </Form>
+
+        <div style={{ textAlign: 'center', marginTop: 24 }}>
+          <Text type="secondary" style={{ fontSize: 12 }}>
+            Sistema autorizado para uso clínico
+          </Text>
+        </div>
       </Card>
     </div>
   )

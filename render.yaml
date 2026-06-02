@@ -1,0 +1,41 @@
+services:
+  - type: web
+    name: mind-api
+    env: docker
+    repo: https://github.com/spdr-lily/m.i.n.d
+    plan: free
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: ./
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mind-db
+          property: connectionString
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: ENCRYPTION_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://mind-api.onrender.com
+      - key: DEBUG
+        value: "false"
+      - key: HUMAN_IN_LOOP_REQUIRED
+        value: "true"
+      - key: MIN_CONFIDENCE_THRESHOLD
+        value: "0.5"
+      - key: DATA_RETENTION_DAYS
+        value: "1825"
+
+databases:
+  - name: mind-db
+    plan: free
+    region: oregon
+    databaseName: mind
+    user: mind_user
+    ipAllowList: []

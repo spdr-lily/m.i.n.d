@@ -102,6 +102,30 @@ class DiagnosticInferenceResponse(TimestampMixin):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ClinicalNoteCreate(BaseModel):
+    chief_complaint: Optional[str] = None
+    history_present_illness: Optional[str] = None
+    subjective_findings: Optional[str] = None
+    objective_findings: Optional[str] = None
+    clinical_assessment: Optional[str] = None
+    treatment_plan: Optional[str] = None
+    follow_up: Optional[str] = None
+
+
+class ClinicalNoteResponse(TimestampMixin):
+    note_uuid: UUID
+    consultation_uuid: UUID
+    chief_complaint: Optional[str] = None
+    history_present_illness: Optional[str] = None
+    subjective_findings: Optional[str] = None
+    objective_findings: Optional[str] = None
+    clinical_assessment: Optional[str] = None
+    treatment_plan: Optional[str] = None
+    follow_up: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ClinicalConsultationResponse(ClinicalConsultationBase, TimestampMixin):
     """Schema for consultation response."""
     consultation_uuid: UUID
@@ -110,6 +134,7 @@ class ClinicalConsultationResponse(ClinicalConsultationBase, TimestampMixin):
     symptom_observations: Optional[List[SymptomObservationResponse]] = None
     scale_responses: Optional[List[ScaleResponseResponse]] = None
     diagnostic_inferences: Optional[List[DiagnosticInferenceResponse]] = None
+    clinical_note: Optional[ClinicalNoteResponse] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -118,3 +143,4 @@ class ConsultationWithDataCreate(ClinicalConsultationCreate):
     """Schema for creating consultation with symptom observations and scale responses."""
     symptom_observations: Optional[List[SymptomObservationCreate]] = None
     scale_responses: Optional[List[ScaleResponseCreate]] = None
+    clinical_note: Optional[ClinicalNoteCreate] = None

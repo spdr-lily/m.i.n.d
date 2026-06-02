@@ -15,9 +15,11 @@ import {
   MenuUnfoldOutlined,
   TeamOutlined,
   MedicineBoxOutlined,
+  OrderedListOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../store/authStore'
 import { ROLE_LABELS } from '../utils/constants'
+import MindLogo from './MindLogo'
 
 const { Header, Sider, Content } = AntLayout
 const { Text } = Typography
@@ -30,6 +32,7 @@ const menuItems = [
   { key: '/inferences', icon: <ExperimentOutlined />, label: 'Inferência', roles: ['admin', 'clinician'] },
   { key: '/alerts', icon: <AlertOutlined />, label: 'Alertas', roles: ['admin', 'clinician', 'viewer'] },
   { key: '/admin/users', icon: <TeamOutlined />, label: 'Admin', roles: ['admin'] },
+  { key: '/admin/scales', icon: <OrderedListOutlined />, label: 'Gerenciar Escalas', roles: ['admin', 'clinician'] },
   { key: '/admin/permissions', icon: <SettingOutlined />, label: 'Permissões', roles: ['admin'] },
   { key: '/admin/monitoring', icon: <MedicineBoxOutlined />, label: 'Monitoramento', roles: ['admin'] },
   { key: '/audit', icon: <AuditOutlined />, label: 'Auditoria', roles: ['admin'] },
@@ -64,9 +67,9 @@ export default function MainLayout() {
     <AntLayout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
         <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #f0f0f0' }}>
-          <Text strong style={{ fontSize: collapsed ? 14 : 18, color: themeToken.colorPrimary }}>
-            {collapsed ? 'M' : 'M.I.N.D CDSS'}
-          </Text>
+          <div style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+            <MindLogo size={collapsed ? 40 : 180} collapsed={collapsed} />
+          </div>
         </div>
         <Menu
           mode="inline"

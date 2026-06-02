@@ -1,10 +1,10 @@
 # M.I.N.D — Documentação de Desenvolvimento
 
 **Data:** Junho 2026
-**Versão:** 0.8.0
-**Status:** MVP Completo — 8 fases implementadas
-**Testes:** 140 (unitários + integração)
-**Stack:** FastAPI + PostgreSQL + Pandas + Airflow + PySpark
+**Versão:** 0.9.0
+**Status:** MVP Completo — 10 fases implementadas
+**Testes:** 174 (unitários + integração)
+**Stack:** FastAPI + PostgreSQL + React + Pandas + Airflow + PySpark
 
 ---
 
@@ -16,10 +16,19 @@
 - **SQLAlchemy 2.0** — ORM
 - **Pydantic v2** — Validação e serialização
 
+### Frontend
+- **React 18** — UI components
+- **TypeScript** — Tipagem estática
+- **Vite 5** — Build tool e dev server
+- **Ant Design 5** — Componentes UI (Table, Form, DatePicker, Layout)
+- **Recharts** — Gráficos e dashboards
+- **Zustand** — Gerenciamento de estado
+- **Axios** — HTTP client com interceptor JWT
+
 ### Banco de Dados
-- **PostgreSQL 16** — Relacional com schemas (`core`, `clinical`, `diagnostic`, `audit`)
+- **PostgreSQL 16** — Relacional com schemas (`core`, `clinical`, `diagnostic`, `audit`, `admin`)
 - **Alembic** — Migrations versionadas
-- **17 tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, auditoria
+- **19 tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, auditoria, permissões
 
 ### Inferência & ML
 - **Rede Bayesiana (Naive Bayes)** — `app/ml/bayesian_network.py`
@@ -38,8 +47,14 @@
 - **Fernet AES** — Criptografia de campos sensíveis (LGPD)
 - **Audit Middleware** — Log de todas as requisições a entidades clínicas
 
+### Administração
+- **RolePermission** — Permissões granulares por role
+- **RoutePermission** — Controle de acesso por rota
+- **MonitorService** — Métricas de desempenho em tempo real (in-memory)
+- **12 endpoints** `/api/admin/` — CRUD de roles, permissões, monitoramento
+
 ### Qualidade & DevOps
-- **pytest** — 140 testes
+- **pytest** — 174 testes (7 unitários + 5 integração, incluindo admin)
 - **black, isort** — Formatação
 - **flake8, mypy** — Lint e tipos
 - **GitHub Actions** — CI com PostgreSQL service, flake8, black --check, mypy, pytest + codecov
@@ -72,6 +87,10 @@
 ### `audit`
 - `audit_logs` — Log de auditoria completo
 
+### `admin`
+- `role_permissions` — Permissões por role
+- `route_permissions` — Permissões por rota
+
 ---
 
 ## API — Endpoints
@@ -79,22 +98,23 @@
 ### Auth
 | Método | Rota | Descrição |
 |---|---|---|
-| POST | `/api/auth/register` | Cadastro de profissional |
+| POST | `/api/auth/register` | Cadastro de profissional (requer MANAGE_USERS) |
 | POST | `/api/auth/login` | Login (retorna JWT) |
 
 ### Pacientes
 | Método | Rota | Descrição |
 |---|---|---|
 | POST | `/api/patients/` | Criar paciente |
-| GET | `/api/patients/{uuid}` | Obter paciente |
-| GET | `/api/patients/` | Listar pacientes |
-| PUT | `/api/patients/{uuid}` | Atualizar paciente |
+| GET | `/api/patients/{uuid}` | Obter paciente (identity + profile com refs aninhadas) |
+| GET | `/api/patients/` | Listar pacientes (com profile join: idade, sexo, ocupação) |
+| PUT | `/api/patients/{uuid}/profile` | Atualizar perfil do paciente |
 
 ### Consultas
 | Método | Rota | Descrição |
 |---|---|---|
 | POST | `/api/consultations/` | Criar consulta |
 | GET | `/api/consultations/{uuid}` | Obter consulta |
+| GET | `/api/consultations/?patient_uuid={uuid}` | Listar consultas por paciente |
 
 ### Inferência
 | Método | Rota | Descrição |
@@ -128,12 +148,81 @@
 | GET | `/api/alerts/` | Listar alertas clínicos |
 | PUT | `/api/alerts/{id}/acknowledge` | Reconhecer alerta |
 
+### Administração
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/admin/roles/` | Listar roles |
+| POST | `/api/admin/roles/` | Criar role |
+| GET | `/api/admin/permissions/` | Listar permissões |
+| POST | `/api/admin/permissions/` | Criar permissão |
+| GET | `/api/admin/role-permissions/` | Listar permissões de role |
+| POST | `/api/admin/role-permissions/` | Atribuir permissão a role |
+| DELETE | `/api/admin/role-permissions/{id}` | Remover permissão de role |
+| GET | `/api/admin/route-permissions/` | Listar permissões de rota |
+| POST | `/api/admin/route-permissions/` | Criar permissão de rota |
+| DELETE | `/api/admin/route-permissions/{id}` | Remover permissão de rota |
+| GET | `/api/admin/monitoring/` | Métricas de desempenho (status_code, latency_ms) |
+| GET | `/api/admin/monitoring/summary` | Sumário do monitoramento |
+
+### Referência
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/reference/sex-types` | Tipos de sexo biológico |
+| GET | `/api/reference/education-levels` | Níveis de escolaridade |
+| GET | `/api/reference/ethnicities` | Etnias |
+| GET | `/api/reference/gender-identities` | Identidades de gênero |
+
 ### CRUD Padrão
 | Entidade | Rotas |
 |---|---|
 | Profissionais | `/api/professionals/` |
 | Transtornos | `/api/disorders/` |
 | Episódios | `/api/episodes/` |
+
+---
+
+## Frontend
+
+### Estrutura
+```
+mind-ui/src/
+├── api/           # API client (Axios com interceptor JWT)
+├── components/    # Componentes reutilizáveis (MainLayout, MindLogo)
+├── pages/         # Páginas por domínio
+├── store/         # Zustand stores (auth, theme)
+├── types/         # Interfaces TypeScript
+└── utils/         # Constantes e helpers
+```
+
+### Páginas
+| Rota | Página | Descrição |
+|---|---|---|
+| `/login` | LoginPage | Autenticação com gradiente escuro, "Lembrar-me" |
+| `/` | Dashboard | Cards de resumo + gráficos Recharts |
+| `/patients` | PatientList | Lista com Ant Design Table |
+| `/patients/:uuid` | PatientDetail | Detalhes + consultas do paciente |
+| `/consultations` | ConsultationList | Histórico de consultas |
+| `/assessments` | AssessmentList | Escalas psicométricas |
+| `/inferences` | InferencePage | Motor de diagnóstico |
+| `/alerts` | AlertList | Alertas clínicos |
+| `/admin/users` | AdminUsers | Gerenciamento de usuários |
+| `/admin/permissions` | AdminPermissions | Gerenciamento de permissões |
+| `/admin/monitoring` | AdminMonitoring | Monitoramento em tempo real |
+| `/audit` | AuditLog | Logs de auditoria |
+
+### Build
+```bash
+cd mind-ui
+npm install
+npm run dev       # Dev server (porta 3000, proxy /api → :8001)
+npm run build     # Produção (dist/)
+npx tsc --noEmit  # Type check
+```
+
+### Logo
+A logo em `public/logo.png` é servida em:
+- **LoginPage:** 64×64 centralizada
+- **Sidebar:** 180px expanded / 40px collapsed via `MindLogo.tsx`
 
 ---
 
@@ -164,6 +253,8 @@ Uso: `python spark/submit.py <job_name> [--csv path]`
 
 ## Testes
 
+**174 testes** (7 unitários + 5 de integração):
+
 ```
 tests/
 ├── unit/                           (7 arquivos)
@@ -174,7 +265,8 @@ tests/
 │   ├── test_dsm_icd_mapper.py      — Mapeamento DSM ↔ CID
 │   ├── test_inference_engine.py    — Cálculo probabilístico
 │   └── test_metrics.py             — Métricas e correlações
-└── integration/                    (4 arquivos)
+└── integration/                    (5 arquivos)
+    ├── test_admin.py               — 18 testes do sistema administrativo
     ├── test_api.py                 — End-to-end API
     ├── test_audit.py               — Auditoria
     ├── test_audit_api.py           — API de auditoria
@@ -182,7 +274,7 @@ tests/
 ```
 
 ```bash
-pytest tests/ -v           # Todos (140)
+pytest tests/ -v           # Todos (174)
 pytest tests/unit/ -v      # Unitários
 pytest tests/integration/ -v  # Integração
 pytest --cov=app --cov-report=html  # Cobertura
@@ -234,6 +326,23 @@ docker compose logs -f app     # Logs da aplicação
 
 ---
 
+## Dados de Exemplo
+
+```bash
+# Seed de referências (obrigatório antes de usar o sistema)
+python db/seed.py
+
+# Dados clínicos populados (7 pacientes, 6 consultas, PHQ-9, GAD-7)
+python db/populate_clinical.py
+```
+
+Usuários criados pelo seed:
+- `admin` (role admin)
+- `clinician` (role clinician)
+- Senha: `Cmspelo_137`
+
+---
+
 ## Comandos Rápidos
 
 ```bash
@@ -248,11 +357,21 @@ mypy app/
 python spark/submit.py population_metrics
 ```
 
+### Frontend
+```powershell
+cd mind-ui
+$env:Path = "$env:TEMP\node-portable\node-v20.12.0-win-x64;$env:Path"  # Node portable
+npm run dev
+```
+
 ---
 
 ## Histórico de Commits (resumo)
 
 - Fase 1–8: Models → Schemas → Repositories → Services → API → Auth/Audit → Escalas/Bayes → Métricas/Airflow/Spark
-- CI/CD, Docker Compose (5 serviços), Clinical Manual
+- Fase 9: Admin System (RolePermission, RoutePermission, monitoramento)
+- Fase 10: Frontend React + TypeScript + Vite + Ant Design (13 páginas)
+- SSL: Certificado autoassinado para desenvolvimento
+- Dados: Seed de referências + população clínica (7 pacientes, escalas)
 - Bug fixes: encoding, PYTHONPATH, healthcheck, credenciais
 - PySpark 3.5 instalado, jobs de inferência em lote + métricas + ETL

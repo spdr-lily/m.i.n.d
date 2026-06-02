@@ -17,7 +17,7 @@ export default function AssessmentPage() {
 
   useEffect(() => {
     scalesApi.list().then((data) => {
-      setScales(data)
+      setScales(data.scales)
     }).finally(() => setInitLoading(false))
   }, [])
 

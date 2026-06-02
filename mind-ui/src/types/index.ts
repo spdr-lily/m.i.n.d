@@ -7,17 +7,18 @@ export interface LoginRequest {
 export interface TokenResponse {
   access_token: string
   token_type: string
+  user_uuid: string
+  role: string
+  username: string
 }
 
 export interface User {
   user_uuid: string
   username: string
-  full_name: string
-  email_hash?: string
-  role: 'admin' | 'clinician' | 'viewer'
+  full_name?: string
+  role: string
   is_active: boolean
-  created_at: string
-  updated_at: string
+  created_at?: string
 }
 
 export interface RegisterRequest {
@@ -37,11 +38,13 @@ export interface PatientIdentity {
 
 export interface PatientProfile {
   profile_uuid?: string
+  patient_uuid?: string
   birth_date: string
-  sex_type_id: number
-  gender_identity_id: number
-  education_level_id: number
-  ethnicity_id: number
+  sex_type_id?: number
+  sex_type?: SexType
+  gender_identity_id?: number
+  education_level_id?: number
+  ethnicity_id?: number
   marital_status?: string
   occupation?: string
 }
@@ -59,9 +62,10 @@ export interface PatientResponse {
 export interface PatientListItem {
   patient_uuid: string
   full_name: string
-  birth_date: string
-  sex_type: string
-  age: number
+  birth_date: string | null
+  sex_type: string | null
+  age: number | null
+  occupation?: string | null
 }
 
 export interface PaginatedPatients {
@@ -83,23 +87,95 @@ export interface Professional {
 export interface SymptomObservation {
   symptom_id: number
   intensity?: number
-  frequency?: number
+  frequency?: string
   duration_days?: number
+  clinical_notes?: string
 }
 
 export interface ConsultationCreate {
-  patient_uuid: string
-  professional_uuid: string
+  profile_uuid: string
+  consultation_date: string
+  professional_uuid?: string
   consultation_notes?: string
-  symptoms: SymptomObservation[]
+  symptom_observations?: SymptomObservation[]
+  scale_responses?: { question_id: number; response_value?: number; response_text?: string }[]
+  clinical_note?: ClinicalNote
+}
+
+export interface HealthcareProfessionalResponse {
+  professional_uuid: string
+  full_name: string
+  professional_license?: string
+  specialty?: string
+}
+
+export interface SymptomObservationResponse {
+  observation_id: number
+  consultation_uuid: string
+  symptom_id: number
+  intensity?: number
+  frequency?: string
+  duration_days?: number
+  clinical_notes?: string
+  symptom?: Symptom
+}
+
+export interface ScaleResponseResponse {
+  response_id: number
+  consultation_uuid: string
+  question_id: number
+  response_value?: number
+  response_text?: string
+}
+
+export interface DisorderResponse {
+  disorder_id: number
+  cid_code?: string
+  dsm_code?: string
+  disorder_name: string
+  disorder_description?: string
+}
+
+export interface DiagnosticInferenceResponse {
+  inference_uuid: string
+  consultation_uuid: string
+  disorder_id: number
+  inference_probability: number
+  confidence_level?: number
+  generated_by_model?: string
+  model_version?: string
+  disorder?: DisorderResponse
+}
+
+export interface ClinicalNote {
+  note_uuid?: string
+  consultation_uuid?: string
+  chief_complaint?: string
+  history_present_illness?: string
+  subjective_findings?: string
+  objective_findings?: string
+  clinical_assessment?: string
+  treatment_plan?: string
+  follow_up?: string
 }
 
 export interface ConsultationResponse {
   consultation_uuid: string
-  patient_uuid: string
-  professional_uuid: string
-  professional_name: string
   consultation_date: string
+  profile_uuid: string
+  professional_uuid?: string
+  consultation_notes?: string
+  healthcare_professional?: HealthcareProfessionalResponse
+  symptom_observations?: SymptomObservationResponse[]
+  scale_responses?: ScaleResponseResponse[]
+  diagnostic_inferences?: DiagnosticInferenceResponse[]
+  clinical_note?: ClinicalNote | null
+}
+
+export interface ConsultationListItem {
+  consultation_uuid: string
+  consultation_date: string
+  professional_name?: string
   consultation_notes?: string
 }
 
@@ -157,6 +233,36 @@ export interface ScaleHistoryItem {
   severity: string
 }
 
+export interface ScaleCreateRequest {
+  scale_name: string
+  scale_description?: string
+}
+
+export interface ScaleUpdateRequest {
+  scale_name?: string
+  scale_description?: string
+}
+
+export interface ScaleQuestionCreateRequest {
+  question_text: string
+  question_order: number
+}
+
+export interface ScaleQuestionUpdateRequest {
+  question_text?: string
+  question_order?: number
+}
+
+export interface PaginatedScales {
+  total: number
+  scales: AssessmentScale[]
+}
+
+export interface PaginatedQuestions {
+  total: number
+  questions: ScaleQuestion[]
+}
+
 // --- Inferences ---
 export interface InferenceRequest {
   consultation_uuid: string
@@ -164,32 +270,24 @@ export interface InferenceRequest {
 }
 
 export interface InferenceResult {
-  inference_uuid: string
+  disorder_id: number
   disorder_name: string
-  probability: number
-  confidence_level: string
-  criteria_met: boolean
-  supporting_symptoms: string[]
-  exclusion_applied?: boolean
+  cid_code?: string
+  dsm_code?: string
+  inference_probability: number
+  confidence_level?: number
 }
 
 export interface InferenceResponse {
-  results: InferenceResult[]
-  explanation?: string
+  consultation_uuid: string
+  inferences: InferenceResult[]
+  generated_by_model: string
+  model_version: string
+  requires_human_review: boolean
 }
 
 export interface BayesianInferenceRequest {
-  evidence: Record<string, boolean>
-  top_k?: number
-}
-
-export interface BayesianResult {
-  disorder_name: string
-  prior_probability: number
-  posterior_probability: number
-  confidence: number
-  supporting_symptoms: string[]
-  excluding_symptoms: string[]
+  consultation_uuid: string
 }
 
 // --- Alerts ---
@@ -281,6 +379,14 @@ export interface AuditLog {
 export interface PaginatedAuditLogs {
   total: number
   logs: AuditLog[]
+}
+
+// --- Completeness ---
+export interface ConsultationCompleteness {
+  score: number
+  max_score: number
+  missing: string[]
+  complete: boolean
 }
 
 // --- Pagination ---

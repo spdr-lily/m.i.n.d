@@ -1,5 +1,9 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from starlette.middleware.base import BaseHTTPMiddleware
 from app.core.database import engine, Base
 from app.models import base as models
 from app.api import health, patients, consultations, reference, professionals, episodes, disorders, scales, inferences, auth, assessments, audit, metrics, alerts, admin
@@ -29,6 +33,24 @@ app.add_middleware(
 
 # Add audit middleware
 app.add_middleware(AuditMiddleware)
+
+
+# Serve built frontend (single-container deployment)
+frontend_dir = os.path.join(os.path.dirname(__file__), "..", "mind-ui", "dist")
+if os.path.isdir(frontend_dir):
+    app.mount("/assets", StaticFiles(directory=os.path.join(frontend_dir, "assets")), name="assets")
+
+    class SPAFallbackMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request, call_next):
+            response = await call_next(request)
+            if response.status_code == 404 and not request.url.path.startswith("/api/"):
+                return FileResponse(os.path.join(frontend_dir, "index.html"))
+            return response
+
+    app.add_middleware(SPAFallbackMiddleware)
+    print(f"[OK] Serving frontend from {frontend_dir}")
+else:
+    print(f"[WARN] Frontend dist not found at {frontend_dir} — API only")
 
 
 # Initialize database

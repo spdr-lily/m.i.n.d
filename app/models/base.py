@@ -126,6 +126,7 @@ class ClinicalConsultation(Base):
     symptom_observations = relationship("SymptomObservation", back_populates="clinical_consultation", cascade="all, delete-orphan")
     scale_responses = relationship("ScaleResponse", back_populates="clinical_consultation", cascade="all, delete-orphan")
     diagnostic_inferences = relationship("DiagnosticInference", back_populates="clinical_consultation", cascade="all, delete-orphan")
+    clinical_note = relationship("ClinicalNote", back_populates="clinical_consultation", cascade="all, delete-orphan", uselist=False)
 
 
 class ClinicalEpisode(Base):
@@ -173,6 +174,25 @@ class ScaleResponse(Base):
 
     clinical_consultation = relationship("ClinicalConsultation", back_populates="scale_responses")
     scale_question = relationship("ScaleQuestion")
+
+
+class ClinicalNote(Base):
+    __tablename__ = "clinical_notes"
+    __table_args__ = {"schema": "clinical"}
+
+    note_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    consultation_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.clinical_consultation.consultation_uuid"), unique=True, nullable=False)
+    chief_complaint = Column(Text)
+    history_present_illness = Column(Text)
+    subjective_findings = Column(Text)
+    objective_findings = Column(Text)
+    clinical_assessment = Column(Text)
+    treatment_plan = Column(Text)
+    follow_up = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    clinical_consultation = relationship("ClinicalConsultation", back_populates="clinical_note")
 
 
 # ============================================================================

@@ -4,14 +4,14 @@ import { Card, Descriptions, Tag, Button, Space, Typography, Breadcrumb, Spin, T
 import { EditOutlined, CalendarOutlined } from '@ant-design/icons'
 import { patientsApi } from '../../api/patients'
 import { consultationsApi } from '../../api/consultations'
-import type { PatientResponse, ConsultationResponse } from '../../types'
+import type { PatientResponse, ConsultationListItem } from '../../types'
 
 const { Title } = Typography
 
 export default function PatientDetailPage() {
   const { uuid } = useParams<{ uuid: string }>()
   const [patient, setPatient] = useState<PatientResponse | null>(null)
-  const [consultations, setConsultations] = useState<ConsultationResponse[]>([])
+  const [consultations, setConsultations] = useState<ConsultationListItem[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
@@ -23,15 +23,16 @@ export default function PatientDetailPage() {
     ])
       .then(([p, c]) => {
         setPatient(p)
-        setConsultations(c.consultations)
+        setConsultations(c.consultations || [])
       })
       .finally(() => setLoading(false))
   }, [uuid])
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
-  if (!patient) return <Typography.Text type="danger">Paciente não encontrado</Typography.Text>
+  if (!patient) return <Typography.Text type="danger">Paciente nao encontrado</Typography.Text>
 
   const { identity, profile } = patient
+  const sexo = profile.sex_type?.description || (profile.sex_type_id === 1 ? 'Masculino' : 'Feminino')
 
   return (
     <>
@@ -46,10 +47,10 @@ export default function PatientDetailPage() {
           </Space>
         </div>
         <Descriptions bordered column={2} size="small">
-          <Descriptions.Item label="Data Nascimento">{profile.birth_date}</Descriptions.Item>
-          <Descriptions.Item label="Sexo">{profile.sex_type_id === 1 ? 'Masculino' : 'Feminino'}</Descriptions.Item>
+          <Descriptions.Item label="Data Nascimento">{profile.birth_date || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Sexo">{sexo}</Descriptions.Item>
           <Descriptions.Item label="Estado Civil">{profile.marital_status || '-'}</Descriptions.Item>
-          <Descriptions.Item label="Profissão">{profile.occupation || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Profissao">{profile.occupation || '-'}</Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -66,7 +67,7 @@ export default function PatientDetailPage() {
           columns={[
             { title: 'Data', dataIndex: 'consultation_date', width: 160 },
             { title: 'Profissional', dataIndex: 'professional_name', ellipsis: true },
-            { title: 'Observações', dataIndex: 'consultation_notes', ellipsis: true },
+            { title: 'Observacoes', dataIndex: 'consultation_notes', ellipsis: true },
           ]}
           locale={{ emptyText: 'Nenhuma consulta registrada' }}
         />

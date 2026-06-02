@@ -1,13 +1,25 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from datetime import date
+from fastapi import APIRouter, Depends, HTTPException, status, Query
+from sqlalchemy.orm import Session, joinedload
+from sqlalchemy import func
 from app.core.database import get_db
 from app.services.patient_service import PatientService
+from app.models.base import PatientIdentity, PatientProfile, SexType
 from app.schemas.patient_identity import PatientIdentityCreate, PatientIdentityResponse
 from app.schemas.patient_profile import PatientProfileCreate, PatientProfileResponse, PatientProfileUpdate
-from app.schemas.common import PaginationParams
+from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/patients", tags=["patients"])
+
+
+class PatientListItem(BaseModel):
+    patient_uuid: UUID
+    full_name: str
+    birth_date: str | None = None
+    sex_type: str | None = None
+    age: int | None = None
+    occupation: str | None = None
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -21,8 +33,8 @@ async def create_patient(
     try:
         patient_id, patient_prof = service.create_patient(identity, profile)
         return {
-            "patient_identity": PatientIdentityResponse.model_validate(patient_id),
-            "patient_profile": PatientProfileResponse.model_validate(patient_prof)
+            "identity": PatientIdentityResponse.model_validate(patient_id),
+            "profile": PatientProfileResponse.model_validate(patient_prof)
         }
     except Exception as e:
         raise HTTPException(
@@ -43,24 +55,54 @@ async def get_patient(patient_uuid: UUID, db: Session = Depends(get_db)):
         )
     patient_id, patient_prof = result
     return {
-        "patient_identity": PatientIdentityResponse.model_validate(patient_id),
-        "patient_profile": PatientProfileResponse.model_validate(patient_prof)
+        "identity": PatientIdentityResponse.model_validate(patient_id),
+        "profile": PatientProfileResponse.model_validate(patient_prof)
     }
 
 
 @router.get("")
 async def list_patients(
-    skip: int = 0,
-    limit: int = 100,
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db)
 ):
-    """List all patients with pagination."""
-    service = PatientService(db)
-    patients = service.list_patients(skip=skip, limit=limit)
-    return {
-        "total": len(patients),
-        "patients": [PatientIdentityResponse.model_validate(p) for p in patients]
-    }
+    """List all patients with profiles."""
+    identities = (
+        db.query(PatientIdentity)
+        .order_by(PatientIdentity.full_name)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+    total = db.query(PatientIdentity).count()
+    today = date.today()
+
+    items = []
+    for ident in identities:
+        profile = db.query(PatientProfile).filter_by(patient_uuid=ident.patient_uuid).first()
+        sex_desc = None
+        birth = None
+        age = None
+        occ = None
+        if profile:
+            birth = str(profile.birth_date) if profile.birth_date else None
+            if profile.birth_date:
+                age = today.year - profile.birth_date.year - ((today.month, today.day) < (profile.birth_date.month, profile.birth_date.day))
+            sex = db.query(SexType).filter_by(sex_type_id=profile.sex_type_id).first()
+            if sex:
+                sex_desc = sex.description
+            occ = profile.occupation
+
+        items.append(PatientListItem(
+            patient_uuid=ident.patient_uuid,
+            full_name=ident.full_name,
+            birth_date=birth,
+            sex_type=sex_desc,
+            age=age,
+            occupation=occ,
+        ))
+
+    return {"total": total, "patients": items}
 
 
 @router.patch("/{patient_uuid}/profile")

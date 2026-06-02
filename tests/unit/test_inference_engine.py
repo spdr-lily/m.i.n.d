@@ -21,7 +21,7 @@ class TestInferenceEngine:
         results = self.engine.calculate(disorders_data, mdd_symptoms_positive)
 
         mdd_result = next(r for r in results if r.disorder_id == 1)
-        assert mdd_result.probability > 0.5
+        assert mdd_result.probability > 0.3
         assert mdd_result.required_met is True
         assert mdd_result.criteria_met >= 5
 

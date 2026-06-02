@@ -191,7 +191,7 @@ class TestBayesianExplanation:
             InferenceEvidence("suicidal_ideation", present=True),
         ]
         explanation = bn.calculate_explanation("Major Depressive Disorder", evidence)
-        impacts = [s["likelihood_contribution"] for s in explanation["symptom_contributions"]]
+        impacts = [s["likelihood_ratio"] for s in explanation["symptom_contributions"]]
         assert impacts == sorted(impacts, reverse=True)
 
     def test_explanation_interpretation_high(self):
@@ -204,7 +204,7 @@ class TestBayesianExplanation:
             InferenceEvidence("guilt_feelings", present=True),
         ]
         explanation = bn.calculate_explanation("Major Depressive Disorder", evidence)
-        assert "High" in explanation["interpretation"] or "Moderate" in explanation["interpretation"]
+        assert "Alta" in explanation["interpretation"] or "moderada" in explanation["interpretation"]
 
 
 class TestBayesianInferenceResult:

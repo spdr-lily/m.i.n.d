@@ -4,9 +4,12 @@
 
 - Python 3.12+
 - PostgreSQL 16 (ou Docker)
+- Node.js 20+ (para frontend)
 - Java 8+ (para PySpark)
 
 ## Setup
+
+### Backend
 
 ```powershell
 # 1. Ambiente virtual
@@ -31,18 +34,45 @@ alembic upgrade head
 uvicorn app.main:app --reload --port 8001
 ```
 
+### Frontend
+
+```powershell
+cd mind-ui
+npm install
+npm run dev    # http://localhost:3000
+```
+
+```bash
+# Ou com Node.js portable (Windows)
+$env:Path = "$env:TEMP\node-portable\node-v20.12.0-win-x64;$env:Path"
+npm run dev
+```
+
+### Dados de Exemplo
+
+```bash
+# Seed de referências (sintomas, transtornos, critérios, profissional)
+python db/seed.py
+
+# Dados clínicos (7 pacientes, 6 consultas, escalas PHQ-9/GAD-7)
+python db/populate_clinical.py
+```
+
 ## Serviços
 
 | Serviço | URL | Auth |
 |---|---|---|
+| Frontend (Vite) | http://localhost:3000 | JWT |
 | API (FastAPI) | http://localhost:8001/docs | JWT |
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 
+Usuários padrão: `admin` / `clinician` — senha `Cmspelo_137`
+
 ## Testes
 
 ```bash
-pytest tests/ -v                     # 140 testes
+pytest tests/ -v                     # 174 testes
 pytest tests/ --cov=app --cov-report=html
 ```
 
@@ -70,4 +100,4 @@ alembic upgrade head                 # Aplicar migrations
 - `STRUCTURE.md` — Estrutura detalhada
 - `DESENVOLVIMENTO.md` — Documentação dev
 
-**Status:** MVP completo — 8 fases implementadas, 140 testes, CI/CD ativo.
+**Status:** MVP completo — 10 fases implementadas, 174 testes, frontend React + backend FastAPI, CI/CD ativo.

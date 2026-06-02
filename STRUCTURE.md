@@ -3,7 +3,7 @@
 ```
 m.i.n.d/
 │
-├── app/                           # Pacote principal
+├── app/                           # Pacote principal (FastAPI)
 │   ├── main.py                    # FastAPI entry point (uvicorn)
 │   │
 │   ├── core/
@@ -14,9 +14,11 @@ m.i.n.d/
 │   │
 │   ├── models/
 │   │   ├── base.py                # Base ORM (UUID pk, timestamps)
+│   │   ├── admin.py               # RolePermission, RoutePermission
 │   │   └── __init__.py
 │   │
 │   ├── schemas/                   # Pydantic v2
+│   │   ├── admin.py               # Schemas do sistema administrativo
 │   │   ├── assessment.py
 │   │   ├── audit.py
 │   │   ├── auth.py
@@ -31,6 +33,7 @@ m.i.n.d/
 │   │   └── scale.py
 │   │
 │   ├── services/
+│   │   ├── admin_service.py        # Lógica de permissões e monitoramento
 │   │   ├── alerts_service.py       # Geração de alertas clínicos
 │   │   ├── assessment_service.py   # Scoring de escalas
 │   │   ├── audit_service.py        # Logs de auditoria
@@ -64,6 +67,7 @@ m.i.n.d/
 │   │   └── network_definition.py  # Estrutura da rede
 │   │
 │   ├── api/                       # FastAPI routes
+│   │   ├── admin.py               # 12 endpoints administrativos
 │   │   ├── alerts.py
 │   │   ├── assessments.py
 │   │   ├── audit.py
@@ -87,6 +91,47 @@ m.i.n.d/
 │       ├── rbac.py                # Role-based access control
 │       └── encryption.py          # Fernet AES (LGPD)
 │
+├── mind-ui/                       # Frontend (React + TypeScript + Vite)
+│   ├── src/
+│   │   ├── api/                   # Axios API client
+│   │   │   ├── auth.ts
+│   │   │   ├── patients.ts
+│   │   │   └── consultations.ts
+│   │   ├── components/
+│   │   │   ├── MainLayout.tsx     # Sidebar + Header (Ant Design)
+│   │   │   └── MindLogo.tsx       # Logo componente
+│   │   ├── pages/
+│   │   │   ├── auth/LoginPage.tsx
+│   │   │   ├── dashboard/
+│   │   │   ├── patients/
+│   │   │   ├── consultations/
+│   │   │   ├── assessments/
+│   │   │   ├── inferences/
+│   │   │   ├── alerts/
+│   │   │   ├── admin/
+│   │   │   └── audit/
+│   │   ├── store/
+│   │   │   ├── authStore.ts       # Zustand auth state
+│   │   │   └── themeStore.ts
+│   │   ├── utils/
+│   │   │   └── constants.ts
+│   │   ├── types/
+│   │   │   └── index.ts           # Interfaces TypeScript
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── public/
+│   │   └── logo.png               # Logo da aplicação
+│   ├── index.html
+│   ├── vite.config.ts             # Proxy /api → :8001
+│   ├── tsconfig.json
+│   └── package.json
+│
+├── db/                            # Scripts de banco de dados
+│   ├── seed.py                    # Dados de referência (sintomas, transtornos, critérios)
+│   ├── populate_clinical.py       # Dados clínicos de exemplo (7 pacientes, consultas, escalas)
+│   ├── add_patient.py             # Utilitário para inserir paciente
+│   └── check_data.py              # Utilitário para verificar registros
+│
 ├── dags/                          # Apache Airflow DAGs
 │   ├── config.py                  # Shared config (DB connection)
 │   ├── clinical_inference_dag.py  # 02h - inferência em lote
@@ -106,7 +151,8 @@ m.i.n.d/
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions/
-│       └── 05ecbb7b2bc1_initial_schema.py  # 17 tabelas iniciais
+│       ├── 05ecbb7b2bc1_initial_schema.py
+│       └── 005f85846e88_admin_system.py  # Admin (RolePermission, RoutePermission)
 │
 ├── tests/
 │   ├── conftest.py                # Fixtures globais
@@ -120,10 +166,17 @@ m.i.n.d/
 │   │   ├── test_inference_engine.py
 │   │   └── test_metrics.py
 │   └── integration/
+│       ├── test_admin.py          # 18 testes do sistema administrativo
 │       ├── test_api.py
 │       ├── test_audit.py
 │       ├── test_audit_api.py
 │       └── test_repositories.py
+│
+├── .certs/                        # Certificados SSL (desenvolvimento)
+│   ├── mind-dev.key               # Chave privada RSA
+│   ├── mind-dev.pem               # Certificado autoassinado
+│   ├── mind-dev-cert.pem          # Certificado PEM (HTTPS)
+│   └── mind-dev.pfx               # PKCS#12 (alternativa)
 │
 ├── .github/workflows/
 │   └── ci.yml                     # CI: flake8, black, mypy, pytest, codecov
@@ -149,7 +202,7 @@ m.i.n.d/
 
 - **UUIDs** — Todas as PKs de pacientes usam UUID (LGPD)
 - **PII isolado** — Identidade do paciente separada dos dados analíticos
-- **Schemas PostgreSQL** — `core` (pacientes), `clinical` (consultas, escalas), `diagnostic` (transtornos, inferências), `audit` (logs)
+- **Schemas PostgreSQL** — `core` (pacientes), `clinical` (consultas, escalas), `diagnostic` (transtornos, inferências), `audit` (logs), `admin` (permissões)
 - **Pydantic v2** — Schemas com `model_validator` e `field_serializer`
 - **Human-in-the-loop** — Toda inferência requer validação clínica
 
