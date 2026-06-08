@@ -1,5 +1,6 @@
-from app.security.auth import verify_password, get_password_hash, create_access_token, decode_access_token
-from app.security.rbac import Role, Permission, has_permission
+from app.security.hashing import verify_password, get_password_hash
+from app.security.jwt import create_access_token, decode_access_token
+from app.security.permissions import Role, Permission, has_permission
 from app.security.encryption import encrypt_text, decrypt_text, mask_email
 
 

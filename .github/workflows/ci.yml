@@ -58,6 +58,16 @@ jobs:
           pip install black
           black --check --diff app/ tests/ --line-length=100
 
+      - name: SAST scan with bandit
+        run: |
+          pip install bandit
+          bandit -c .bandit -r app/ scripts/ db/
+
+      - name: Dependency vulnerability scan
+        run: |
+          pip install safety
+          safety check --ignore=70612 --full-report || true
+
       - name: Type check with mypy
         run: |
           pip install mypy pydantic pydantic-settings

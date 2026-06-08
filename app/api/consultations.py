@@ -1,8 +1,7 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.models.base import ClinicalConsultation, PatientProfile
 from app.services.consultation_service import ConsultationService
 from app.schemas.consultation import (
     ClinicalConsultationCreate, ClinicalConsultationResponse,
@@ -10,16 +9,8 @@ from app.schemas.consultation import (
     SymptomObservationResponse, ScaleResponseCreate, ScaleResponseResponse,
     DiagnosticInferenceResponse, ClinicalNoteCreate, ClinicalNoteResponse
 )
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/consultations", tags=["consultations"])
-
-
-class ConsultationListItem(BaseModel):
-    consultation_uuid: UUID
-    consultation_date: str
-    professional_name: str | None = None
-    consultation_notes: str | None = None
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -97,39 +88,8 @@ async def list_consultations(
     db: Session = Depends(get_db)
 ):
     """List consultations, optionally filtered by patient UUID."""
-    if patient_uuid:
-        profile = db.query(PatientProfile).filter_by(patient_uuid=patient_uuid).first()
-        if not profile:
-            return {"total": 0, "consultations": []}
-        consults = (
-            db.query(ClinicalConsultation)
-            .filter_by(profile_uuid=profile.profile_uuid)
-            .order_by(ClinicalConsultation.consultation_date.desc())
-            .all()
-        )
-    else:
-        skip = (page - 1) * size
-        consults = (
-            db.query(ClinicalConsultation)
-            .order_by(ClinicalConsultation.consultation_date.desc())
-            .offset(skip)
-            .limit(size)
-            .all()
-        )
-
-    total = len(consults)
-    items = []
-    for c in consults:
-        prof_name = None
-        if c.healthcare_professional:
-            prof_name = c.healthcare_professional.full_name
-        items.append(ConsultationListItem(
-            consultation_uuid=c.consultation_uuid,
-            consultation_date=str(c.consultation_date),
-            professional_name=prof_name,
-            consultation_notes=c.consultation_notes,
-        ))
-
+    service = ConsultationService(db)
+    total, items = service.list_all_consultations(patient_uuid, page, size)
     return {"total": total, "consultations": items}
 
 
@@ -247,69 +207,10 @@ async def get_completeness(
 ):
     """Calculate clinical completeness for a consultation."""
     service = ConsultationService(db)
-    consultation = service.get_consultation(consultation_uuid)
-    if not consultation:
+    result = service.calculate_completeness(consultation_uuid)
+    if not result:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Consultation not found")
-
-    total = 0.0
-    reasons = []
-
-    # Professional (10%)
-    if consultation.professional_uuid:
-        total += 10
-    else:
-        reasons.append("Profissional nao registrado")
-
-    # Consultation notes (10%)
-    if consultation.consultation_notes:
-        total += 10
-    else:
-        reasons.append("Observacoes nao preenchidas")
-
-    # Symptom observations (20%)
-    if consultation.symptom_observations and len(consultation.symptom_observations) > 0:
-        total += 20
-    else:
-        reasons.append("Nenhum sintoma registrado")
-
-    # Scale responses (15%)
-    if consultation.scale_responses and len(consultation.scale_responses) > 0:
-        total += 15
-    else:
-        reasons.append("Nenhuma escala respondida")
-
-    # Clinical note (35% - 5% each for 7 fields)
-    note = consultation.clinical_note
-    if note:
-        note_fields = [
-            ("chief_complaint", "Queixa principal"),
-            ("history_present_illness", "HDA"),
-            ("subjective_findings", "Subjetivo"),
-            ("objective_findings", "Objetivo"),
-            ("clinical_assessment", "Avaliacao"),
-            ("treatment_plan", "Plano"),
-            ("follow_up", "Acompanhamento"),
-        ]
-        for field, label in note_fields:
-            if getattr(note, field, None):
-                total += 5
-            else:
-                reasons.append(f"{label} nao preenchido")
-    else:
-        reasons.append("Documentacao clinica nao iniciada")
-
-    # Diagnostic inferences (10%)
-    if consultation.diagnostic_inferences and len(consultation.diagnostic_inferences) > 0:
-        total += 10
-    else:
-        reasons.append("Inferencia diagnostica nao realizada")
-
-    return {
-        "score": round(total, 1),
-        "max_score": 100,
-        "missing": reasons,
-        "complete": total >= 80,
-    }
+    return result
 
 
 @router.delete("/{consultation_uuid}", status_code=status.HTTP_204_NO_CONTENT)

@@ -9,7 +9,8 @@ import {
 } from '@ant-design/icons'
 import { consultationsApi } from '../../api/consultations'
 import { inferencesApi } from '../../api/inferences'
-import type { ConsultationResponse, InferenceResponse, ScaleResponseResponse, ConsultationCompleteness } from '../../types'
+import { medicationsApi } from '../../api/medications'
+import type { ConsultationResponse, InferenceResponse, ScaleResponseResponse, ConsultationCompleteness, Prescription } from '../../types'
 import { scalesApi } from '../../api/scales'
 import type { AssessmentScale } from '../../types'
 
@@ -27,6 +28,25 @@ function probabilityStatus(v: number): 'success' | 'active' | 'exception' {
   return 'exception'
 }
 
+const DISORDER_PT_MAP: Record<string, { name: string; abbr: string }> = {
+  'MDD': { name: 'Transtorno Depressivo Maior', abbr: 'TDM' },
+  'GAD': { name: 'Transtorno de Ansiedade Generalizada', abbr: 'TAG' },
+  'PANIC': { name: 'Transtorno do Pânico', abbr: 'TP' },
+  'AGORAPHOBIA': { name: 'Agorafobia', abbr: 'AGO' },
+  'BIPOLAR': { name: 'Transtorno Bipolar', abbr: 'TB' },
+  'OCD': { name: 'Transtorno Obsessivo-Compulsivo', abbr: 'TOC' },
+  'PTSD': { name: 'Transtorno de Estresse Pós-Traumático', abbr: 'TEPT' },
+  'SUD': { name: 'Transtorno por Uso de Substâncias', abbr: 'TUS' },
+  'ANOREXIA': { name: 'Anorexia Nervosa', abbr: 'AN' },
+  'BULIMIA': { name: 'Bulimia Nervosa', abbr: 'BN' },
+  'BED': { name: 'Transtorno de Compulsão Alimentar', abbr: 'TCAP' },
+  'INSOMNIA': { name: 'Transtorno de Insônia', abbr: 'TI' },
+  'PSYCHOTIC': { name: 'Transtorno Psicótico', abbr: 'TPS' },
+  'SOMATIC': { name: 'Transtorno de Sintomas Somáticos', abbr: 'TSS' },
+  'ASD': { name: 'Transtorno do Espectro Autista', abbr: 'TEA' },
+  'ADHD': { name: 'Transtorno de Déficit de Atenção/Hiperatividade', abbr: 'TDAH' },
+}
+
 export default function ConsultationDetailPage() {
   const { uuid } = useParams<{ uuid: string }>()
   const [consultation, setConsultation] = useState<ConsultationResponse | null>(null)
@@ -38,6 +58,7 @@ export default function ConsultationDetailPage() {
   const [scales, setScales] = useState<AssessmentScale[]>([])
   const [scaleScores, setScaleScores] = useState<Record<string, { total: number; severity: string }>>({})
   const [completeness, setCompleteness] = useState<ConsultationCompleteness | null>(null)
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
   const navigate = useNavigate()
 
   const fetchConsultation = useCallback(() => {
@@ -47,18 +68,32 @@ export default function ConsultationDetailPage() {
       consultationsApi.get(uuid),
       scalesApi.list(0, 100),
       consultationsApi.getCompleteness(uuid),
-    ]).then(([c, sc, comp]) => {
+      medicationsApi.listPrescriptions(uuid),
+    ]).then(([c, sc, comp, rx]) => {
       setConsultation(c)
       setScales(sc.scales)
       computeScaleScores(c.scale_responses || [], sc.scales)
       setCompleteness(comp)
+      setPrescriptions(rx)
     }).finally(() => setLoading(false))
   }, [uuid])
 
   useEffect(() => { fetchConsultation() }, [fetchConsultation])
 
+  const SCALE_DISORDER_MAP: Record<string, string> = {
+    'PHQ-9': 'Depressão',
+    'GAD-7': 'Ansiedade',
+    'MDQ': 'Transtorno Bipolar',
+    'PCL-5': 'TEPT',
+    'Y-BOCS': 'TOC',
+    'AUDIT': 'Transtornos por Álcool',
+    'ASRM': 'Mania',
+    'ASRS': 'TDAH',
+    'AQ-10': 'Espectro Autista',
+  }
+
   const computeScaleScores = (responses: ScaleResponseResponse[], allScales: AssessmentScale[]) => {
-    const scores: Record<string, { total: number; severity: string }> = {}
+    const scores: Record<string, { total: number; severity: string; disorder: string }> = {}
     const qToScale: Record<number, string> = {}
     for (const scale of allScales) {
       for (const q of scale.questions) {
@@ -107,8 +142,14 @@ export default function ConsultationDetailPage() {
         if (total >= 10) severity = 'Provavel mania'
         else if (total >= 6) severity = 'Possivel mania'
         else severity = 'Normal'
+      } else if (name === 'ASRS') {
+        if (total >= 24) severity = 'Alta'
+        else if (total >= 17) severity = 'Moderada'
+        else severity = 'Baixa'
+      } else if (name === 'AQ-10') {
+        severity = total >= 6 ? 'Positivo' : 'Negativo'
       }
-      scores[name] = { total, severity }
+      scores[name] = { total, severity, disorder: SCALE_DISORDER_MAP[name] || name }
     }
     setScaleScores(scores)
   }
@@ -229,7 +270,7 @@ export default function ConsultationDetailPage() {
           title={
             <Space>
               <FileTextOutlined />
-              <Text strong>Documentacao Clinica (SOAP)</Text>
+              <Text strong>Documentação Clínica (SOAP)</Text>
             </Space>
           }
           size="small"
@@ -305,6 +346,7 @@ export default function ConsultationDetailPage() {
                 pagination={false}
                 columns={[
                   { title: 'Escala', dataIndex: 'name' },
+                  { title: 'Transtorno', dataIndex: 'disorder', ellipsis: true },
                   { title: 'Total', dataIndex: 'total', width: 80 },
                   {
                     title: 'Gravidade',
@@ -314,9 +356,11 @@ export default function ConsultationDetailPage() {
                       const colorMap: Record<string, string> = {
                         'Grave': 'red', 'Extremo': 'red', 'Provavel mania': 'red',
                         'Moderado': 'orange', 'Moderadamente grave': 'orange', 'Risco': 'orange',
+                        'Moderada': 'orange',
                         'Leve': 'blue', 'Possivel mania': 'blue', 'Positivo': 'gold',
                         'Minimo': 'green', 'Normal': 'green', 'Negativo': 'green',
-                        'Baixo risco': 'green', 'Dependencia': 'red', 'Prejudicial': 'orange',
+                        'Baixa': 'green', 'Baixo risco': 'green', 'Dependencia': 'red',
+                        'Prejudicial': 'orange', 'Alta': 'red',
                       }
                       return <Tag color={colorMap[v] || 'default'}>{v}</Tag>
                     },
@@ -356,14 +400,17 @@ export default function ConsultationDetailPage() {
               {
                 title: 'Transtorno',
                 dataIndex: 'disorder_name',
-                render: (v: string, r) => (
-                  <Space direction="vertical" size={0}>
-                    <Text strong>{v}</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {[r.cid_code && `CID: ${r.cid_code}`, r.dsm_code && `DSM: ${r.dsm_code}`].filter(Boolean).join(' | ')}
-                    </Text>
-                  </Space>
-                ),
+                render: (v: string, r) => {
+                  const pt = DISORDER_PT_MAP[v]
+                  return (
+                    <Space direction="vertical" size={0}>
+                      <Text strong>{pt ? `${pt.abbr} — ${pt.name}` : v}</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        {[r.cid_code && `CID: ${r.cid_code}`, r.dsm_code && `DSM: ${r.dsm_code}`].filter(Boolean).join(' | ')}
+                      </Text>
+                    </Space>
+                  )
+                },
               },
               {
                 title: 'Probabilidade',
@@ -416,14 +463,17 @@ export default function ConsultationDetailPage() {
               {
                 title: 'Transtorno',
                 dataIndex: 'disorder_name',
-                render: (v: string, r) => (
-                  <Space direction="vertical" size={0}>
-                    <Text strong>{v}</Text>
-                    <Text type="secondary" style={{ fontSize: 12 }}>
-                      {[r.cid_code && `CID: ${r.cid_code}`, r.dsm_code && `DSM: ${r.dsm_code}`].filter(Boolean).join(' | ')}
-                    </Text>
-                  </Space>
-                ),
+                render: (v: string, r) => {
+                  const pt = DISORDER_PT_MAP[v]
+                  return (
+                    <Space direction="vertical" size={0}>
+                      <Text strong>{pt ? `${pt.abbr} — ${pt.name}` : v}</Text>
+                      <Text type="secondary" style={{ fontSize: 12 }}>
+                        {[r.cid_code && `CID: ${r.cid_code}`, r.dsm_code && `DSM: ${r.dsm_code}`].filter(Boolean).join(' | ')}
+                      </Text>
+                    </Space>
+                  )
+                },
               },
               {
                 title: 'Probabilidade',
@@ -482,6 +532,49 @@ export default function ConsultationDetailPage() {
           }]}
           style={{ marginTop: 16 }}
         />
+      )}
+
+      {prescriptions.length > 0 && (
+        <Card title="Prescrições" size="small" style={{ marginTop: 16 }}>
+          {prescriptions.map((rx) => (
+            <Card
+              key={rx.prescription_uuid}
+              size="small"
+              type="inner"
+              title={`Prescrição — ${rx.created_at?.slice(0, 10) || ''}`}
+              style={{ marginBottom: 8 }}
+              extra={
+                <Button
+                  size="small"
+                  danger
+                  onClick={async () => {
+                    await medicationsApi.deletePrescription(rx.prescription_uuid)
+                    setPrescriptions((prev) => prev.filter((p) => p.prescription_uuid !== rx.prescription_uuid))
+                  }}
+                >
+                  Excluir
+                </Button>
+              }
+            >
+              {rx.notes && <Text type="secondary" style={{ display: 'block', marginBottom: 8 }}>{rx.notes}</Text>}
+              <Table
+                dataSource={rx.items}
+                rowKey="item_uuid"
+                size="small"
+                pagination={false}
+                columns={[
+                  { title: 'Medicamento', dataIndex: ['medication', 'name'], ellipsis: true },
+                  { title: 'Dosagem', dataIndex: 'dosage', width: 100 },
+                  { title: 'Frequência', dataIndex: 'frequency', width: 120 },
+                  { title: 'Via', dataIndex: 'route', width: 80, render: (v: string) => v || '-' },
+                  { title: 'Duração', dataIndex: 'duration_days', width: 80, render: (v: number) => v ? `${v}d` : '-' },
+                  { title: 'Observações', dataIndex: 'notes', ellipsis: true },
+                ]}
+                locale={{ emptyText: 'Nenhum item' }}
+              />
+            </Card>
+          ))}
+        </Card>
       )}
     </>
   )

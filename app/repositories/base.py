@@ -22,7 +22,7 @@ class BaseRepository(Generic[ModelType]):
         data = obj_in.model_dump() if hasattr(obj_in, 'model_dump') else (obj_in.dict() if hasattr(obj_in, 'dict') else obj_in)
         db_obj = self.model(**data)
         self.session.add(db_obj)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(db_obj)
         return db_obj
 
@@ -67,7 +67,7 @@ class BaseRepository(Generic[ModelType]):
             update_data = obj_in.model_dump(exclude_unset=True) if hasattr(obj_in, 'model_dump') else (obj_in.dict(exclude_unset=True) if hasattr(obj_in, 'dict') else obj_in)
             for field, value in update_data.items():
                 setattr(db_obj, field, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(db_obj)
         return db_obj
 
@@ -79,7 +79,7 @@ class BaseRepository(Generic[ModelType]):
         ).first()
         if db_obj:
             self.session.delete(db_obj)
-            self.session.commit()
+            self.session.flush()
             return True
         return False
 
@@ -91,5 +91,5 @@ class BaseRepository(Generic[ModelType]):
             if value is not None:
                 count = count.filter(getattr(self.model, key) == value)
         count = count.delete()
-        self.session.commit()
+        self.session.flush()
         return count

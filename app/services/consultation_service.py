@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
-from app.models.base import ClinicalConsultation, ClinicalNote, SymptomObservation, ScaleResponse
+from app.models.base import ClinicalConsultation, ClinicalNote, SymptomObservation, ScaleResponse, PatientProfile
 from app.repositories.consultation_repository import ConsultationRepository
 from app.schemas.consultation import (
     ClinicalConsultationCreate, SymptomObservationCreate,
@@ -162,7 +162,7 @@ class ConsultationService:
                 value = getattr(note_data, field, None)
                 if value is not None:
                     setattr(existing, field, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(existing)
             return existing
         else:
@@ -177,7 +177,7 @@ class ConsultationService:
                 follow_up=note_data.follow_up,
             )
             self.session.add(note)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(note)
             return note
 
@@ -188,6 +188,112 @@ class ConsultationService:
             .filter_by(consultation_uuid=consultation_uuid)
             .first()
         )
+
+    def list_all_consultations(
+        self,
+        patient_uuid: Optional[str] = None,
+        page: int = 1,
+        size: int = 20
+    ) -> tuple:
+        """List consultations with optional patient filter and pagination."""
+        if patient_uuid:
+            profile = self.session.query(PatientProfile).filter_by(patient_uuid=patient_uuid).first()
+            if not profile:
+                return 0, []
+            consults = (
+                self.session.query(ClinicalConsultation)
+                .filter_by(profile_uuid=profile.profile_uuid)
+                .order_by(ClinicalConsultation.consultation_date.desc())
+                .all()
+            )
+        else:
+            skip = (page - 1) * size
+            consults = (
+                self.session.query(ClinicalConsultation)
+                .order_by(ClinicalConsultation.consultation_date.desc())
+                .offset(skip)
+                .limit(size)
+                .all()
+            )
+
+        total = len(consults)
+        items = []
+        for c in consults:
+            prof_name = c.healthcare_professional.full_name if c.healthcare_professional else None
+            patient_name = None
+            pat_uuid = None
+            if c.patient_profile and c.patient_profile.patient_identity:
+                patient_name = c.patient_profile.patient_identity.full_name
+                pat_uuid = str(c.patient_profile.patient_uuid)
+            items.append({
+                "consultation_uuid": c.consultation_uuid,
+                "consultation_date": str(c.consultation_date),
+                "professional_name": prof_name,
+                "consultation_notes": c.consultation_notes,
+                "patient_name": patient_name,
+                "patient_uuid": pat_uuid,
+            })
+        return total, items
+
+    def calculate_completeness(self, consultation_uuid: UUID) -> dict:
+        """Calculate clinical completeness score for a consultation."""
+        consultation = self.get_consultation(consultation_uuid)
+        if not consultation:
+            return None
+
+        total = 0.0
+        reasons = []
+
+        if consultation.professional_uuid:
+            total += 10
+        else:
+            reasons.append("Profissional nao registrado")
+
+        if consultation.consultation_notes:
+            total += 10
+        else:
+            reasons.append("Observacoes nao preenchidas")
+
+        if consultation.symptom_observations and len(consultation.symptom_observations) > 0:
+            total += 20
+        else:
+            reasons.append("Nenhum sintoma registrado")
+
+        if consultation.scale_responses and len(consultation.scale_responses) > 0:
+            total += 15
+        else:
+            reasons.append("Nenhuma escala respondida")
+
+        note = consultation.clinical_note
+        if note:
+            note_fields = [
+                ("chief_complaint", "Queixa principal"),
+                ("history_present_illness", "HDA"),
+                ("subjective_findings", "Subjetivo"),
+                ("objective_findings", "Objetivo"),
+                ("clinical_assessment", "Avaliacao"),
+                ("treatment_plan", "Plano"),
+                ("follow_up", "Acompanhamento"),
+            ]
+            for field, label in note_fields:
+                if getattr(note, field, None):
+                    total += 5
+                else:
+                    reasons.append(f"{label} nao preenchido")
+        else:
+            reasons.append("Documentacao clinica nao iniciada")
+
+        if consultation.diagnostic_inferences and len(consultation.diagnostic_inferences) > 0:
+            total += 10
+        else:
+            reasons.append("Inferencia diagnostica nao realizada")
+
+        return {
+            "score": round(total, 1),
+            "max_score": 100,
+            "missing": reasons,
+            "complete": total >= 80,
+        }
 
     def delete_consultation(self, consultation_uuid: UUID) -> bool:
         """Delete consultation."""

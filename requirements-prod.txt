@@ -9,6 +9,7 @@ alembic>=1.13.0
 
 # Database & ORM
 python-dotenv>=1.0.0
+sqlalchemy-utils>=0.39.0
 
 # ML & Data Science
 numpy>=1.24.3
@@ -26,3 +27,6 @@ python-multipart>=0.0.6
 
 # Utilities
 requests>=2.31.0
+
+# PDF Export
+fpdf2>=2.8.7

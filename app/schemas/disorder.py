@@ -24,11 +24,25 @@ class SymptomResponse(SymptomBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ClassificationAuthorityResponse(BaseModel):
+    authority_id: int
+    name: str
+    short_name: str
+    description: Optional[str] = None
+    website_url: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
 class DisorderBase(BaseModel):
     cid_code: Optional[str] = None
     dsm_code: Optional[str] = None
     disorder_name: str
     disorder_description: Optional[str] = None
+    dsm_criteria: Optional[str] = None
+    dsm_exclusions: Optional[str] = None
+    dsm_differentials: Optional[str] = None
+    icd11_exclusions: Optional[str] = None
+    icd11_differentials: Optional[str] = None
 
 
 class DisorderCreate(DisorderBase):
@@ -40,12 +54,53 @@ class DisorderUpdate(BaseModel):
     dsm_code: Optional[str] = None
     disorder_name: Optional[str] = None
     disorder_description: Optional[str] = None
+    dsm_criteria: Optional[str] = None
+    dsm_exclusions: Optional[str] = None
+    dsm_differentials: Optional[str] = None
+    icd11_exclusions: Optional[str] = None
+    icd11_differentials: Optional[str] = None
 
 
 class DisorderResponse(DisorderBase):
     disorder_id: int
     created_at: Optional[datetime] = None
+    icd11_codes: Optional[List["ICD11CodeResponse"]] = None
 
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ICD11ExclusionResponse(BaseModel):
+    exclusion_id: int
+    code_id: int
+    excluded_code: Optional[str] = None
+    excluded_title: Optional[str] = None
+    reason: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ICD11DifferentialResponse(BaseModel):
+    differential_id: int
+    code_id: int
+    differential_code: Optional[str] = None
+    differential_title: Optional[str] = None
+    distinguishing_features: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ICD11CodeResponse(BaseModel):
+    code_id: int
+    disorder_id: int
+    authority_id: Optional[int] = None
+    icd11_code: str
+    icd11_title: Optional[str] = None
+    chapter: Optional[str] = None
+    chapter_code: Optional[str] = None
+    who_url: Optional[str] = None
+    clinical_description: Optional[str] = None
+    diagnostic_requirements: Optional[str] = None
+    authority: Optional[ClassificationAuthorityResponse] = None
+    exclusions: Optional[List[ICD11ExclusionResponse]] = None
+    differentials: Optional[List[ICD11DifferentialResponse]] = None
     model_config = ConfigDict(from_attributes=True)
 
 

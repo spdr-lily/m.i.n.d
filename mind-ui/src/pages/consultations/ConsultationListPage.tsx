@@ -41,6 +41,7 @@ export default function ConsultationListPage() {
           onRow={(record) => ({ onClick: () => navigate(`/consultations/${record.consultation_uuid}`), style: { cursor: 'pointer' } })}
           columns={[
             { title: 'Data', dataIndex: 'consultation_date', width: 160 },
+            { title: 'Paciente', dataIndex: 'patient_name', ellipsis: true },
             { title: 'Profissional', dataIndex: 'professional_name', ellipsis: true },
             { title: 'Observações', dataIndex: 'consultation_notes', ellipsis: true },
           ]}

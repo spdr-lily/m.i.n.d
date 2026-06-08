@@ -29,16 +29,14 @@ def fetch_pending_consultations(**context) -> list:
 
 
 def run_bayesian_inference(consultation_uuid: str, profile_uuid: str, **context) -> dict:
-    from app.ml.bayesian_inference_service import BayesianInferenceService
-    from app.ml.network_definition import build_mood_disorder_network
+    from app.ml.inference.disorder_predictor import DisorderPredictor
     from sqlalchemy import create_engine
     from sqlalchemy.orm import Session
 
-    bn = build_mood_disorder_network()
     engine = create_engine(Variable.get("database_url"))
     session = Session(engine)
 
-    service = BayesianInferenceService(session, bn)
+    service = DisorderPredictor(session)
     result = service.infer_from_consultation(consultation_uuid)
     service.persist_inferences(consultation_uuid, result)
 

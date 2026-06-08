@@ -25,7 +25,7 @@ class EpisodeRepository:
             clinical_description=clinical_description
         )
         self.session.add(episode)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(episode)
         return episode
 
@@ -45,7 +45,7 @@ class EpisodeRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(episode, key):
                     setattr(episode, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(episode)
         return episode
 
@@ -53,6 +53,6 @@ class EpisodeRepository:
         episode = self.get_by_uuid(episode_uuid)
         if episode:
             self.session.delete(episode)
-            self.session.commit()
+            self.session.flush()
             return True
         return False

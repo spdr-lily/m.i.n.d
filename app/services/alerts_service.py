@@ -9,7 +9,7 @@ from app.models.base import (
     DiagnosticInference, Disorder,
 )
 from app.repositories.patient_repository import PatientRepository
-from app.ml.assessment_scales import get_scale as get_scale_def
+from app.ml.models.assessment_scales import get_scale as get_scale_def
 
 
 SEVERITY_ORDER = {"low": 0, "medium": 1, "high": 2, "critical": 3}

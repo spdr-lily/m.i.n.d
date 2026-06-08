@@ -1,5 +1,5 @@
 import apiClient from './client'
-import type { PatientCreateRequest, PatientResponse, PaginatedPatients } from '../types'
+import type { PatientCreateRequest, PatientProfile, PatientResponse, PaginatedPatients } from '../types'
 
 export const patientsApi = {
   list: (page = 1, size = 20) =>
@@ -11,7 +11,7 @@ export const patientsApi = {
   create: (data: PatientCreateRequest) =>
     apiClient.post<PatientResponse>('/patients', data).then((r) => r.data),
 
-  update: (uuid: string, data: Partial<PatientCreateRequest>) =>
+  update: (uuid: string, data: Partial<PatientProfile>) =>
     apiClient.patch<PatientResponse>(`/patients/${uuid}/profile`, data).then((r) => r.data),
 
   delete: (uuid: string) =>

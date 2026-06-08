@@ -30,7 +30,7 @@ class ConsultationRepository:
             consultation_notes=consultation_notes
         )
         self.session.add(consultation)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(consultation)
         return consultation
 
@@ -53,7 +53,7 @@ class ConsultationRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(consultation, key):
                     setattr(consultation, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(consultation)
         return consultation
 
@@ -62,7 +62,7 @@ class ConsultationRepository:
         consultation = self.get_consultation(consultation_uuid)
         if consultation:
             self.session.delete(consultation)
-            self.session.commit()
+            self.session.flush()
             return True
         return False
 
@@ -86,7 +86,7 @@ class ConsultationRepository:
             clinical_notes=clinical_notes
         )
         self.session.add(observation)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(observation)
         return observation
 
@@ -112,7 +112,7 @@ class ConsultationRepository:
             response_text=response_text
         )
         self.session.add(response)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(response)
         return response
 
@@ -142,7 +142,7 @@ class ConsultationRepository:
             model_version=model_version
         )
         self.session.add(inference)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(inference)
         return inference
 
@@ -170,7 +170,7 @@ class ConsultationRepository:
             clinical_description=clinical_description
         )
         self.session.add(episode)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(episode)
         return episode
 

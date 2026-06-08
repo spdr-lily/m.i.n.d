@@ -27,8 +27,8 @@
 
 ### Banco de Dados
 - **PostgreSQL 16** — Relacional com schemas (`core`, `clinical`, `diagnostic`, `audit`, `admin`)
-- **Alembic** — Migrations versionadas
-- **19 tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, auditoria, permissões
+- **Alembic** — Migrations versionadas (8 revisões lineares)
+- **29 tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, notas clínicas, medicações, prescrições, relatórios, auditoria, permissões, usuários
 
 ### Inferência & ML
 - **Rede Bayesiana (Naive Bayes)** — `app/ml/bayesian_network.py`
@@ -339,7 +339,7 @@ python db/populate_clinical.py
 Usuários criados pelo seed:
 - `admin` (role admin)
 - `clinician` (role clinician)
-- Senha: `Cmspelo_137`
+- Senha: definida via variável de ambiente (`.env`)
 
 ---
 

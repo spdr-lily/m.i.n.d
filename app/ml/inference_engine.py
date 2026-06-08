@@ -1,7 +1,8 @@
 from typing import List, Optional
 from dataclasses import dataclass, field
-from app.ml.criteria_evaluator import CriteriaEvaluator, DisorderEvaluation
-from app.ml.dsm_icd_mapper import DSMICDMapper
+from app.ml.evaluation.criteria_evaluator import CriteriaEvaluator, DisorderEvaluation
+from app.ml.models.dsm_icd_mapper import DSMICDMapper
+from app.ml.inference.confidence_calculator import calculate_criteria_confidence
 from app.models.base import DiagnosticCriteria, SymptomObservation, DiagnosisRelationship
 
 
@@ -67,7 +68,7 @@ class InferenceEngine:
         if not eval_result.duration_met:
             probability *= 0.5
 
-        confidence = self._calculate_confidence(probability, eval_result)
+        confidence = calculate_criteria_confidence(probability, eval_result)
 
         return InferenceResult(
             disorder_id=eval_result.disorder_id,
@@ -79,19 +80,6 @@ class InferenceEngine:
             criteria_met=eval_result.met_criteria,
             criteria_total=eval_result.total_criteria
         )
-
-    def _calculate_confidence(self, probability: float, eval_result: DisorderEvaluation) -> float:
-        if eval_result.total_criteria == 0:
-            return 0.0
-        ratio = eval_result.met_criteria / eval_result.total_criteria
-        base_confidence = (probability + ratio) / 2
-        matched = [r for r in eval_result.criteria_results if r.present]
-        scores = [r.intensity_score for r in matched if r.intensity_score is not None]
-        if scores:
-            avg = sum(scores) / len(scores)
-            intensity_bonus = (avg / 100.0) * 0.1
-            base_confidence += intensity_bonus
-        return min(base_confidence + 0.05, 1.0)
 
     def _apply_exclusion_rules(
         self,

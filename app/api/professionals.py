@@ -21,7 +21,9 @@ async def create_professional(
         professional = service.create_professional(
             full_name=data.full_name,
             professional_license=data.professional_license,
-            specialty=data.specialty
+            profession=data.profession,
+            specialty=data.specialty,
+            start_date=data.start_date
         )
         return HealthcareProfessionalResponse.model_validate(professional)
     except Exception as e:

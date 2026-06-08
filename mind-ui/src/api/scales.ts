@@ -44,4 +44,9 @@ export const scalesApi = {
     apiClient
       .get<ScaleHistoryItem[]>('/assessments/history', { params: { patient_uuid: patientUuid, scale_name: scaleName } })
       .then((r) => r.data),
+
+  patientHistory: (patientUuid: string) =>
+    apiClient
+      .get<{ total: number; assessments: { scale_name: string; consultation_uuid: string; date: string; total_score: number }[] }>(`/assessments/patient/${patientUuid}/history`)
+      .then((r) => r.data),
 }

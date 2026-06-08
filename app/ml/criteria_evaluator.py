@@ -31,7 +31,9 @@ class DisorderEvaluation:
 
 class CriteriaEvaluator:
 
+    # DSM-5-TR: MDD requires at least 1 of these 2 core symptoms
     DSM5_MDD_REQUIRED_SYMPTOMS = {1, 2}
+    MDD_MINIMUM_COUNT = 5
 
     def evaluate_disorder(
         self,
@@ -93,6 +95,15 @@ class CriteriaEvaluator:
             if r.required_presence
         )
         eval_result.required_met = all_required_met
+
+        # DSM-5-TR MDD: 5+ symptoms AND at least 1 of depressed mood or anhedonia
+        if disorder_name and disorder_name.upper() in ("MDD", "MAJOR DEPRESSIVE DISORDER"):
+            core_symptom_ids = self.DSM5_MDD_REQUIRED_SYMPTOMS
+            core_present = any(
+                r.symptom_id in core_symptom_ids and r.present and r.duration_met
+                for r in eval_result.criteria_results
+            )
+            eval_result.required_met = core_present and eval_result.met_criteria >= self.MDD_MINIMUM_COUNT
 
         all_durations_met = all(
             r.duration_met for r in eval_result.criteria_results if r.present

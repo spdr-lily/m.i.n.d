@@ -5,7 +5,7 @@ from app.repositories.patient_repository import PatientRepository
 from app.repositories.base import BaseRepository
 from app.models.base import PatientIdentity, PatientProfile, AssessmentScale, ScaleQuestion, User
 from app.repositories.auth_repository import AuthRepository
-from app.security.auth import get_password_hash
+from app.security.hashing import get_password_hash
 
 
 class TestPatientRepository:

@@ -1,4 +1,4 @@
-import os
+import ospython m.i
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,8 +6,20 @@ from fastapi.responses import FileResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from app.core.database import engine, Base
 from app.models import base as models
-from app.api import health, patients, consultations, reference, professionals, episodes, disorders, scales, inferences, auth, assessments, audit, metrics, alerts, admin
+from app.api import health
+from app.api.v1.clinical import (
+    patients, consultations, reference, professionals, episodes,
+    scales, assessments, metrics, alerts, medications
+)
+from app.api.v1.diagnostic import disorders, inferences
+from app.api.v1.auth import auth, admin, audit, consent
+from app.api.v1.ml import training as ml_training
 from app.middleware.audit_middleware import AuditMiddleware
+from app.middleware.security_middleware import (
+    SecurityHeadersMiddleware, RateLimitMiddleware,
+    SQLInjectionProtectionMiddleware,
+)
+from app.core.config import settings
 from app.core.logging_config import setup_logging
 
 # Setup logging
@@ -22,16 +34,24 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
+# CORS — use settings.origins or restrict to same-origin in production
+cors_origins = settings.cors_origins.split(",") if settings.cors_origins else ["*"]
+if "*" in cors_origins and settings.environment == "production":
+    cors_origins = [f"http://localhost:{settings.port}"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
 
-# Add audit middleware
+# Security middleware stack
+app.add_middleware(SQLInjectionProtectionMiddleware)
+app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
+app.add_middleware(SecurityHeadersMiddleware)
+
+# Audit middleware
 app.add_middleware(AuditMiddleware)
 
 
@@ -77,11 +97,16 @@ app.include_router(audit.router)
 app.include_router(metrics.router)
 app.include_router(alerts.router)
 app.include_router(admin.router)
+app.include_router(medications.router)
+app.include_router(consent.router)
+app.include_router(ml_training.router)
 
 
-# Root endpoint
+# Root endpoint — serve frontend SPA if built, otherwise API info
 @app.get("/")
 async def root():
+    if os.path.isdir(frontend_dir):
+        return FileResponse(os.path.join(frontend_dir, "index.html"))
     return {
         "service": "M.I.N.D CDSS",
         "version": "0.1.0",
@@ -92,4 +117,4 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)  # nosec - development only, restricted in production

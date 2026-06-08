@@ -10,14 +10,16 @@ class ProfessionalRepository:
         self.session = session
         self.repo = BaseRepository(session, HealthcareProfessional)
 
-    def create(self, full_name: str, professional_license: Optional[str] = None, specialty: Optional[str] = None) -> HealthcareProfessional:
+    def create(self, full_name: str, professional_license: Optional[str] = None, profession: Optional[str] = None, specialty: Optional[str] = None, start_date: Optional[str] = None) -> HealthcareProfessional:
         professional = HealthcareProfessional(
             full_name=full_name,
             professional_license=professional_license,
-            specialty=specialty
+            profession=profession,
+            specialty=specialty,
+            start_date=start_date
         )
         self.session.add(professional)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(professional)
         return professional
 
@@ -35,7 +37,7 @@ class ProfessionalRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(professional, key):
                     setattr(professional, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(professional)
         return professional
 
@@ -43,6 +45,6 @@ class ProfessionalRepository:
         professional = self.get_by_uuid(professional_uuid)
         if professional:
             self.session.delete(professional)
-            self.session.commit()
+            self.session.flush()
             return True
         return False

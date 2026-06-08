@@ -47,6 +47,7 @@ export interface PatientProfile {
   ethnicity_id?: number
   marital_status?: string
   occupation?: string
+  trans_status?: string
 }
 
 export interface PatientCreateRequest {
@@ -73,16 +74,6 @@ export interface PaginatedPatients {
   patients: PatientListItem[]
 }
 
-// --- Professionals ---
-export interface Professional {
-  professional_uuid?: string
-  full_name: string
-  license_number: string
-  specialty: string
-  email?: string
-  phone?: string
-}
-
 // --- Consultations ---
 export interface SymptomObservation {
   symptom_id: number
@@ -102,11 +93,22 @@ export interface ConsultationCreate {
   clinical_note?: ClinicalNote
 }
 
+export interface PatientAssignment {
+  assignment_id: number
+  patient_uuid: string
+  patient_name?: string
+  assigned_at?: string
+  is_active?: boolean
+}
+
 export interface HealthcareProfessionalResponse {
   professional_uuid: string
   full_name: string
   professional_license?: string
+  profession?: string
   specialty?: string
+  start_date?: string
+  patient_assignments?: PatientAssignment[]
 }
 
 export interface SymptomObservationResponse {
@@ -134,6 +136,11 @@ export interface DisorderResponse {
   dsm_code?: string
   disorder_name: string
   disorder_description?: string
+  dsm_criteria?: string
+  dsm_exclusions?: string
+  dsm_differentials?: string
+  icd11_exclusions?: string
+  icd11_differentials?: string
 }
 
 export interface DiagnosticInferenceResponse {
@@ -177,6 +184,8 @@ export interface ConsultationListItem {
   consultation_date: string
   professional_name?: string
   consultation_notes?: string
+  patient_name?: string
+  patient_uuid?: string
 }
 
 // --- Disorders / Symptoms ---
@@ -192,13 +201,20 @@ export interface Disorder {
   cid_code: string
   dsm_code: string
   disorder_description?: string
+  dsm_criteria?: string
+  dsm_exclusions?: string
+  dsm_differentials?: string
+  icd11_exclusions?: string
+  icd11_differentials?: string
 }
 
 export interface DiagnosticCriteria {
   criteria_id: number
+  disorder_id: number
   symptom_id: number
   required_presence: boolean
   minimum_duration_days?: number
+  clinical_notes?: string
 }
 
 // --- Assessment Scales ---
@@ -323,6 +339,57 @@ export interface CorrelationData {
   p_value: number
 }
 
+export interface SexDistribution {
+  [key: string]: number
+}
+
+export interface AgeDistribution {
+  '0-18': number
+  '19-35': number
+  '36-50': number
+  '51-65': number
+  '65+': number
+}
+
+export interface DemographicsResponse {
+  total_patients: number
+  sex_distribution: SexDistribution
+  age_distribution: AgeDistribution
+}
+
+export interface ConsultationMetricsResponse {
+  period_days: number
+  total_consultations: number
+  unique_patients: number
+  avg_per_day: number
+  daily_breakdown: Record<string, number>
+  trend: {
+    daily_counts: Record<string, number>
+    moving_avg_7d: Record<string, number>
+  }
+}
+
+export interface DisorderPrevalenceItem {
+  disorder_id: number
+  disorder_name: string
+  cid_code?: string
+  inference_count: number
+  avg_probability: number
+}
+
+export interface ScaleDistributionResponse {
+  scale_name: string
+  total_assessments: number
+  statistics?: Record<string, number>
+  distribution: {
+    minimal: number
+    mild: number
+    moderate: number
+    moderately_severe: number
+    severe: number
+  }
+}
+
 // --- Admin ---
 export interface RolePermission {
   id?: number
@@ -418,4 +485,110 @@ export interface Ethnicity {
   ethnicity_id: number
   code: string
   description: string
+}
+
+export interface Medication {
+  medication_id: number
+  name: string
+  active_ingredient?: string
+  classification?: string
+  description?: string
+  created_at?: string
+}
+
+export interface PrescriptionItem {
+  item_uuid: string
+  medication_id: number
+  dosage: string
+  frequency: string
+  route?: string
+  duration_days?: number
+  notes?: string
+  created_at?: string
+  medication?: Medication
+}
+
+export interface Prescription {
+  prescription_uuid: string
+  consultation_uuid: string
+  notes?: string
+  created_at?: string
+  items: PrescriptionItem[]
+}
+
+// --- Timeline ---
+export interface SymptomObservationBrief {
+  symptom_name: string
+  intensity?: number
+  frequency?: string
+}
+
+export interface DiagnosticInferenceBrief {
+  disorder_name: string
+  inference_probability: number
+}
+
+export interface PrescriptionBrief {
+  medication_name: string
+  dosage: string
+  frequency: string
+  route?: string
+  duration_days?: number
+}
+
+export interface ClinicalNoteBrief {
+  chief_complaint?: string
+  clinical_assessment?: string
+  treatment_plan?: string
+}
+
+export interface ScaleScoreBrief {
+  scale_name: string
+  total_score: number
+}
+
+export interface ConsultationTimelineEvent {
+  consultation_uuid: string
+  consultation_date: string
+  professional_name?: string
+  consultation_notes?: string
+  symptoms: SymptomObservationBrief[]
+  scale_scores: ScaleScoreBrief[]
+  inferences: DiagnosticInferenceBrief[]
+  prescriptions: PrescriptionBrief[]
+  clinical_note?: ClinicalNoteBrief
+}
+
+export interface EpisodeTimelineEvent {
+  episode_uuid: string
+  episode_start?: string
+  episode_end?: string
+  episode_type?: string
+  clinical_description?: string
+}
+
+export interface TimelineEvent {
+  date: string
+  event_type: string
+  consultation?: ConsultationTimelineEvent
+  episode?: EpisodeTimelineEvent
+}
+
+// --- Medical Reports ---
+export interface MedicalReport {
+  report_uuid: string
+  patient_uuid: string
+  title: string
+  content: string
+  report_type: string
+  is_pinned: boolean
+  created_by?: string
+  created_at: string
+  updated_at: string
+}
+
+export interface TimelineResponse {
+  patient_uuid: string
+  patient_name: string
+  events: TimelineEvent[]
 }

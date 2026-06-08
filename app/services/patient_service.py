@@ -1,10 +1,12 @@
 from uuid import UUID, uuid4
+from datetime import date
 from typing import Optional, List
 from sqlalchemy.orm import Session
-from app.models.base import PatientIdentity, PatientProfile
+from app.models.base import PatientIdentity, PatientProfile, SexType
 from app.repositories.patient_repository import PatientRepository
 from app.schemas.patient_identity import PatientIdentityCreate
 from app.schemas.patient_profile import PatientProfileCreate, PatientProfileUpdate
+from app.security.lgpd import encrypt_field, decrypt_pii
 
 
 class PatientService:
@@ -21,9 +23,10 @@ class PatientService:
     ) -> tuple[PatientIdentity, PatientProfile]:
         """Create new patient with identity and profile (atomic operation)."""
         try:
-            # Create identity first
+            # Create identity first (encrypt full_name for LGPD compliance)
+            encrypted_name = encrypt_field(patient_identity.full_name) or patient_identity.full_name
             patient_id = self.repository.create_patient_identity(
-                full_name=patient_identity.full_name,
+                full_name=encrypted_name,
                 cpf_hash=patient_identity.cpf_hash,
                 email_hash=patient_identity.email_hash
             )
@@ -54,9 +57,44 @@ class PatientService:
         profile = self.repository.get_patient_profile(patient_uuid)
         return identity, profile
 
-    def list_patients(self, skip: int = 0, limit: int = 100) -> List[PatientIdentity]:
-        """List all patients."""
-        return self.repository.list_patients(skip=skip, limit=limit)
+    def _decrypt_name(self, encrypted: str) -> str:
+        try:
+            return decrypt_pii(encrypted)
+        except Exception:
+            return encrypted
+
+    def list_patients_with_details(self, skip: int = 0, limit: int = 100) -> tuple:
+        """List all patients with computed details (age, sex description)."""
+        identities = self.repository.list_patients(skip=skip, limit=limit)
+        total = self.repository.count_patients()
+        today = date.today()
+
+        items = []
+        for ident in identities:
+            profile = self.repository.get_patient_profile(ident.patient_uuid)
+            sex_desc = None
+            birth = None
+            age = None
+            occ = None
+            if profile:
+                birth = str(profile.birth_date) if profile.birth_date else None
+                if profile.birth_date:
+                    age = today.year - profile.birth_date.year - ((today.month, today.day) < (profile.birth_date.month, profile.birth_date.day))
+                if profile.sex_type_id:
+                    sex = self.session.query(SexType).filter_by(sex_type_id=profile.sex_type_id).first()
+                    if sex:
+                        sex_desc = sex.description
+                occ = profile.occupation
+
+            items.append({
+                "patient_uuid": ident.patient_uuid,
+                "full_name": self._decrypt_name(ident.full_name),
+                "birth_date": birth,
+                "sex_type": sex_desc,
+                "age": age,
+                "occupation": occ,
+            })
+        return total, items
 
     def update_patient_profile(self, patient_uuid: UUID, updates: PatientProfileUpdate) -> Optional[PatientProfile]:
         """Update patient profile."""

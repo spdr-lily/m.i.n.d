@@ -19,7 +19,7 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 | Orquestração | Apache Airflow (4 DAGs) |
 | Batch/ETL | PySpark 3.5 (inferência, métricas populacionais, importação CSV) |
 | Segurança | JWT + RBAC + Fernet AES (LGPD) |
-| Auditoria | Middleware com rastreabilidade completa |
+| Auditoria | Middleware com rastreabilidade (entity_id, request body, operação semântica) |
 | CI/CD | GitHub Actions (flake8, black, mypy, pytest, codecov) |
 | Deploy | Docker Compose (5 serviços) |
 
@@ -110,7 +110,7 @@ Aplicação React + TypeScript + Vite em `mind-ui/`:
 ```bash
 cd mind-ui
 npm install
-npm run dev    # http://localhost:3000 (proxy /api → :8001)
+npm run dev    # http://localhost:3000 (API em http://127.0.0.1:8008/api via CORS)
 ```
 
 ---
@@ -160,7 +160,7 @@ docker compose up -d          # postgres + pgadmin + airflow
 alembic upgrade head
 
 # 3. Servidor
-uvicorn app.main:app --reload --port 8001
+uvicorn app.main:app --host 0.0.0.0 --port 8008
 ```
 
 ### Frontend
@@ -172,13 +172,16 @@ npm run dev    # http://localhost:3000
 
 ### Acesso
 | Serviço | URL | Auth |
-|---|---|---|
-| Frontend | http://localhost:3000 | JWT |
-| API (Swagger) | http://localhost:8001/docs | JWT |
+|---|---|---|---|
+| Frontend (Vite dev) | http://localhost:3000 | JWT |
+| Frontend (produção) | http://localhost:8000 | JWT |
+| API (Swagger) | http://localhost:8008/docs | JWT |
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 
-Usuários padrão: `admin` / `clinician` — senha `Cmspelo_137`
+Usuários padrão: `admin` / `clinician` — senha altere no `.env`
+
+> **Nota sobre CORS + Proxy:** O Vite não usa mais proxy. Configure `VITE_API_URL=http://127.0.0.1:8008/api` em `mind-ui/.env` para desenvolvimento. O backend deve estar em `0.0.0.0:8008`.
 
 ### PySpark (opcional)
 ```bash
@@ -196,6 +199,24 @@ python spark/submit.py data_import --csv data/pacientes.csv
 - `STRUCTURE.md` — Estrutura de diretórios detalhada
 - `QUICKSTART.md` — Guia rápido de configuração
 - `DESENVOLVIMENTO.md` — Documentação de desenvolvimento
+
+---
+
+## Changelog
+
+### 2026-06-03 — Correções de infraestrutura e auditoria
+
+- **Proxy removido**: Vite agora chama backend diretamente via `VITE_API_URL=http://127.0.0.1:8008/api`. Causa raiz: Node.js resolvia `localhost` para IPv6 (`::1`), backend escutava apenas IPv4.
+- **CORS**: `allow_origins=["*"]` com porta 8008; frontend sem proxy.
+- **Export CSV/PDF**: Endpoint `GET /api/patients/{uuid}/export?format=csv|pdf` com `fpdf2`.
+- **Medical Reports**: Modelo `MedicalReport`, migration, schemas, service CRUD + togglePin, API com 6 endpoints, frontend `PatientReportsPage.tsx`.
+- **Audit fix**: Migration `41991f22ee27` adicionou colunas `entity_id`, `ip_address`, `user_agent` à tabela `audit_logs`.
+- **Atomicidade transacional**: Todos os repositórios agora usam `flush()` em vez de `commit()`. O `get_db()` faz auto-commit no sucesso e auto-rollback em exceção — a transação é a requisição HTTP inteira.
+- **Auditoria aprimorada**: Middleware captura `entity_id` (UUID da URL), `new_data` (corpo da requisição), `operation_type` semântico (READ/CREATE/UPDATE/DELETE). `db.close()` movido para `finally` (elimina leak).
+- **`ConsultationService`**: `create_or_update_clinical_note()` usa `flush()` para não quebrar atomicidade da criação de consulta multi-step.
+- **`InferenceService.run_inference()`**: Adicionado try/except/rollback.
+- **scale_options**: `constants.ts` unificado com todas as 10 escalas e chaves corretas. `ConsultationCreatePage.tsx` agora importa `SCALE_OPTIONS` em vez de definições locais duplicadas.
+- **Docker Compose**: `entrypoint.sh` executa `alembic upgrade head` antes do uvicorn. `requirements-prod.txt` inclui `fpdf2`.
 
 ---
 

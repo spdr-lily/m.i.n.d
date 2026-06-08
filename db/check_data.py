@@ -10,7 +10,7 @@ try:
              "ORDER BY table_schema, table_name")
     ).fetchall()
     for r in rows:
-        count = db.execute(text(f"SELECT COUNT(*) FROM {r[0]}.{r[1]}")).scalar()
+        count = db.execute(text(f"SELECT COUNT(*) FROM {r[0]}.{r[1]}")).scalar()  # nosec - script tool
         print(f"{r[0]}.{r[1]}: {count}")
 except Exception as e:
     print(f"ERRO: {e}")

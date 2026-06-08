@@ -1,0 +1,9 @@
+{
+    "targets": ["app", "scripts", "db"],
+    "exclude_dirs": ["tests", "migrations", "__pycache__", ".venv", "node_modules"],
+    "skips": ["B101", "B311", "B303"],
+    "confidence_threshold": "medium",
+    "severity_threshold": "medium",
+    "report_format": "txt",
+    "output_file": "bandit_report.txt"
+}

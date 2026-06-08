@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 # 3. Configurar .env
 Copy-Item .env.example -Destination .env
-# Editar se necessário (padrão: postgres:137_Cmspelo@localhost:5432/mind)
+# Editar — alterar senha e nome do banco antes de usar
 
 # 4. Iniciar serviços
 docker compose up -d
@@ -67,7 +67,7 @@ python db/populate_clinical.py
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 
-Usuários padrão: `admin` / `clinician` — senha `Cmspelo_137`
+Usuários padrão: `admin` / `clinician` — senha definida via `.env`
 
 ## Testes
 

@@ -1,0 +1,4 @@
+[core]
+    remote = localremote
+['remote "localremote"']
+    url = C:\Users\scbcd\OneDrive\m.i.n.d\data\models

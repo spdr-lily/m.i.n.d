@@ -10,6 +10,7 @@ import { patientsApi } from '../../api/patients'
 import { professionalsApi } from '../../api/professionals'
 import { disordersApi } from '../../api/disorders'
 import { scalesApi } from '../../api/scales'
+import { SCALE_OPTIONS } from '../../utils/constants'
 import type { PatientListItem, HealthcareProfessionalResponse, Symptom, AssessmentScale, ClinicalNote } from '../../types'
 
 const { Title, Text } = Typography
@@ -37,18 +38,6 @@ const FREQUENCY_OPTIONS = [
   { value: 'occasionally', label: 'Ocasional' },
   { value: 'continuous', label: 'Continua' },
 ]
-
-const SCALE_MAX_MAP: Record<string, number> = {
-  'PHQ-9': 3,
-  'GAD-7': 3,
-  'MDQ': 1,
-}
-
-const SCALE_LABELS: Record<string, string[]> = {
-  'PHQ-9': ['0 - Nenhum dia', '1 - Varios dias', '2 - Mais da metade', '3 - Quase todos os dias'],
-  'GAD-7': ['0 - Nenhum dia', '1 - Varios dias', '2 - Mais da metade', '3 - Quase todos os dias'],
-  'MDQ': ['0 - Nao', '1 - Sim'],
-}
 
 export default function ConsultationCreatePage() {
   const [form] = Form.useForm()
@@ -253,7 +242,7 @@ export default function ConsultationCreatePage() {
               label: (
                 <Space>
                   <FileTextOutlined />
-                  <Text strong style={{ fontSize: 16 }}>Documentacao Clinica (SOAP)</Text>
+                   <Text strong style={{ fontSize: 16 }}>Documentação Clínica (SOAP)</Text>
                 </Space>
               ),
               children: (
@@ -452,8 +441,7 @@ export default function ConsultationCreatePage() {
           </Space>
 
           {selectedScales.map((sc) => {
-            const maxVal = SCALE_MAX_MAP[sc.scale_name] ?? 4
-            const labels = SCALE_LABELS[sc.scale_name]
+            const opts = SCALE_OPTIONS[sc.scale_name]?.options || Array.from({ length: 5 }, (_, i) => ({ value: i, label: String(i) }))
             return (
               <Card
                 key={sc.scale_id}
@@ -475,11 +463,7 @@ export default function ConsultationCreatePage() {
                           placeholder="Selecione..."
                           value={scaleResponses[q.question_id] ?? null}
                           onChange={(v) => setScaleResponse(q.question_id, v)}
-                          options={
-                            labels
-                              ? labels.map((l, idx) => ({ value: idx, label: l }))
-                              : Array.from({ length: maxVal + 1 }, (_, i) => ({ value: i, label: String(i) }))
-                          }
+                          options={opts}
                         />
                       </Col>
                     </Row>

@@ -4,6 +4,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    environment: str = "development"
+    port: int = 8000
     database_url: str = "postgresql://postgres:137_Cmspelo@localhost:5432/mind"
     database_echo: bool = False
     api_title: str = "M.I.N.D - Mental Intelligence & Network Data"

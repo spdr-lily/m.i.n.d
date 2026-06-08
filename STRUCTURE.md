@@ -151,8 +151,14 @@ m.i.n.d/
 │   ├── env.py
 │   ├── script.py.mako
 │   └── versions/
-│       ├── 05ecbb7b2bc1_initial_schema.py
-│       └── 005f85846e88_admin_system.py  # Admin (RolePermission, RoutePermission)
+│       ├── 05ecbb7b2bc1_initial_schema.py       # 22 tabelas (core, clinical, diagnostic, ml, audit, security)
+│       ├── 005f85846e88_admin_system.py         # Admin (RolePermission, RoutePermission)
+│       ├── 9e4c2f8a1b3d_add_trans_status.py      # trans_status em patient_profile
+│       ├── 7a1b3c5d8e9f_add_medications.py        # Medications, Prescriptions, PrescriptionItems
+│       ├── 2c8a1e3fae51_add_medical_reports.py    # MedicalReports
+│       ├── a29a8fdd7159_add_profession_fields.py  # profession, start_date em healthcare_professionals
+│       ├── b3c4d5e6f7a8_add_clinical_notes.py     # ClinicalNotes
+│       └── 41991f22ee27_noop_audit_columns.py     # No-op (colunas já existentes)
 │
 ├── tests/
 │   ├── conftest.py                # Fixtures globais
@@ -210,7 +216,7 @@ m.i.n.d/
 
 | Serviço | Porta | Credenciais |
 |---|---|---|
-| postgres | 5432 | `postgres` / `137_Cmspelo` / `mind` |
+| postgres | 5432 | configurar via `.env` |
 | pgadmin | 5050 | `admin@mind.com` / `admin` |
 | app | 8001 | — |
 | airflow-webserver | 8080 | `admin` / `admin` |

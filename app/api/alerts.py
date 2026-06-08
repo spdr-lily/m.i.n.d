@@ -6,6 +6,17 @@ from app.services.alerts_service import AlertsService
 router = APIRouter(prefix="/api/alerts", tags=["alerts"])
 
 
+@router.get("")
+def list_alerts(
+    resolved: bool = Query(False),
+    days: int = Query(7, ge=1, le=90),
+    db: Session = Depends(get_db),
+):
+    service = AlertsService(db)
+    result = service.run_all_checks(days=days)
+    return result["alerts"]
+
+
 @router.get("/check-all")
 def run_all_alerts(
     days: int = Query(7, ge=1, le=90),

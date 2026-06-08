@@ -1,6 +1,6 @@
 from typing import Dict, List
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -8,16 +8,16 @@ from app.schemas.assessment import (
     AssessmentRequest,
     AssessmentResult,
     AssessmentHistoryResponse,
-    AssessmentDetailResponse,
+    QuestionResponse,
 )
 from app.services.assessment_service import (
     score_assessment,
     get_scales_list,
     get_seeded_scale_data,
+    get_assessment_history,
+    get_scale_questions,
 )
-from app.ml.assessment_scales import list_scales
-from app.models.base import ScaleResponse, AssessmentScale, ScaleQuestion
-from app.schemas.assessment import QuestionResponse
+from app.ml.models.assessment_scales import list_scales
 
 router = APIRouter(prefix="/api/assessments", tags=["Assessments"])
 
@@ -42,35 +42,13 @@ def seed_scale_data(db: Session = Depends(get_db)):
 
 
 @router.get("/history/{consultation_uuid}", response_model=AssessmentHistoryResponse)
-def get_assessment_history(consultation_uuid: UUID, db: Session = Depends(get_db)):
-    responses = (
-        db.query(ScaleResponse)
-        .join(ScaleQuestion, ScaleResponse.question_id == ScaleQuestion.question_id)
-        .join(AssessmentScale, ScaleQuestion.scale_id == AssessmentScale.scale_id)
-        .filter(ScaleResponse.consultation_uuid == consultation_uuid)
-        .all()
-    )
-    if not responses:
-        return AssessmentHistoryResponse(assessments=[])
-    return AssessmentHistoryResponse(assessments=[])
+def get_assessment_history_endpoint(consultation_uuid: UUID, db: Session = Depends(get_db)):
+    return get_assessment_history(db, consultation_uuid)
 
 
 @router.get("/detail/{scale_name}", response_model=List[QuestionResponse])
-def get_scale_questions(scale_name: str, db: Session = Depends(get_db)):
-    scale = db.query(AssessmentScale).filter(AssessmentScale.scale_name == scale_name).first()
-    if not scale:
+def get_scale_questions_endpoint(scale_name: str, db: Session = Depends(get_db)):
+    questions = get_scale_questions(db, scale_name)
+    if questions is None:
         raise HTTPException(status_code=404, detail=f"Scale '{scale_name}' not found")
-    questions = (
-        db.query(ScaleQuestion)
-        .filter(ScaleQuestion.scale_id == scale.scale_id)
-        .order_by(ScaleQuestion.question_order)
-        .all()
-    )
-    return [
-        QuestionResponse(
-            question_id=q.question_id,
-            question_text=q.question_text,
-            response_value=0,
-        )
-        for q in questions
-    ]
+    return questions

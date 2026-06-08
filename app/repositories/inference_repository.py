@@ -27,7 +27,7 @@ class InferenceRepository:
             model_version=model_version
         )
         self.session.add(inference)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(inference)
         return inference
 
@@ -42,7 +42,7 @@ class InferenceRepository:
         ).first()
         if inference:
             self.session.delete(inference)
-            self.session.commit()
+            self.session.flush()
             return True
         return False
 

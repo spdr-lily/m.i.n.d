@@ -11,7 +11,7 @@ class ScaleRepository:
     def create_scale(self, scale_name: str, scale_description: Optional[str] = None) -> AssessmentScale:
         scale = AssessmentScale(scale_name=scale_name, scale_description=scale_description)
         self.session.add(scale)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(scale)
         return scale
 
@@ -29,7 +29,7 @@ class ScaleRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(scale, key):
                     setattr(scale, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(scale)
         return scale
 
@@ -37,7 +37,7 @@ class ScaleRepository:
         scale = self.get_scale(scale_id)
         if scale:
             self.session.delete(scale)
-            self.session.commit()
+            self.session.flush()
             return True
         return False
 
@@ -54,7 +54,7 @@ class ScaleRepository:
             question_order=question_order
         )
         self.session.add(question)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(question)
         return question
 
@@ -74,7 +74,7 @@ class ScaleRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(question, key):
                     setattr(question, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(question)
         return question
 
@@ -82,6 +82,6 @@ class ScaleRepository:
         question = self.get_question(question_id)
         if question:
             self.session.delete(question)
-            self.session.commit()
+            self.session.flush()
             return True
         return False

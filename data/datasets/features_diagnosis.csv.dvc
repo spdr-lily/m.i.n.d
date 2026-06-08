@@ -1,0 +1,5 @@
+outs:
+- md5: a26b7244567aefdabd97b983b7bfd551
+  size: 37952
+  hash: md5
+  path: features_diagnosis.csv

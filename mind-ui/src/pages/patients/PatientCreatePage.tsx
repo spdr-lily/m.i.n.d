@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card, Form, Input, Select, DatePicker, Button, Typography, Breadcrumb, message, Space, Row, Col } from 'antd'
+import { Card, Form, Input, Select, Button, Typography, Breadcrumb, message, Space, Row, Col } from 'antd'
 import dayjs from 'dayjs'
 import { patientsApi } from '../../api/patients'
 import { referenceApi } from '../../api/reference'
@@ -41,13 +41,18 @@ export default function PatientCreatePage() {
           email_hash: (v.email_hash as string) || undefined,
         },
         profile: {
-          birth_date: (v.birth_date as dayjs.Dayjs).format('YYYY-MM-DD'),
+          birth_date: (() => {
+            const bd = v.birth_date as string
+            const parsed = dayjs(bd, 'DD/MM/YYYY')
+            return parsed.isValid() ? parsed.format('YYYY-MM-DD') : bd
+          })(),
           sex_type_id: v.sex_type_id as number,
           gender_identity_id: v.gender_identity_id as number,
           education_level_id: v.education_level_id as number,
           ethnicity_id: v.ethnicity_id as number,
           marital_status: (v.marital_status as string) || undefined,
           occupation: (v.occupation as string) || undefined,
+          trans_status: (v.trans_status as string) || undefined,
         },
       }
       await patientsApi.create(payload)
@@ -73,8 +78,11 @@ export default function PatientCreatePage() {
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item name="birth_date" label="Data de Nascimento" rules={[{ required: true, message: 'Obrigatório' }]}>
-                <DatePicker style={{ width: '100%' }} />
+              <Form.Item name="birth_date" label="Data de Nascimento" rules={[
+                { required: true, message: 'Obrigatório' },
+                { pattern: /^\d{2}\/\d{2}\/\d{4}$/, message: 'Formato: DD/MM/AAAA' },
+              ]}>
+                <Input placeholder="DD/MM/AAAA" />
               </Form.Item>
             </Col>
           </Row>
@@ -121,7 +129,17 @@ export default function PatientCreatePage() {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={8}>
+              <Form.Item name="trans_status" label="Situação Transgênero">
+                <Select allowClear options={[
+                  { value: 'cis', label: 'Cisgênero' },
+                  { value: 'trans', label: 'Transgênero' },
+                  { value: 'intersex', label: 'Intersexo' },
+                  { value: 'prefer_not_to_say', label: 'Prefiro não informar' },
+                ]} />
+              </Form.Item>
+            </Col>
+            <Col span={8}>
               <Form.Item name="cpf_hash" label="CPF (hash)">
                 <Input.Password placeholder="Hash do CPF" />
               </Form.Item>

@@ -24,7 +24,7 @@ class AuthRepository:
             role=role
         )
         self.session.add(user)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(user)
         return user
 
@@ -43,6 +43,6 @@ class AuthRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(user, key):
                     setattr(user, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(user)
         return user

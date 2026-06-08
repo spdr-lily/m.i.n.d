@@ -1,25 +1,60 @@
-import { useEffect, useState } from 'react'
-import { Card, Form, Select, Button, Typography, Breadcrumb, message, Space, Row, Col, Tag, Result, Spin, Slider, Divider } from 'antd'
-import { ExperimentOutlined } from '@ant-design/icons'
+import { useEffect, useState, useCallback } from 'react'
+import { Card, Form, Select, Button, Typography, Breadcrumb, message, Space, Row, Col, Tag, Result, Spin, Divider, Table, Empty, Progress } from 'antd'
+import { ExperimentOutlined, HistoryOutlined } from '@ant-design/icons'
 import { scalesApi } from '../../api/scales'
-import type { AssessmentScale, ScaleScoreResponse } from '../../types'
+import { patientsApi } from '../../api/patients'
+import type { AssessmentScale, ScaleScoreResponse, PatientListItem } from '../../types'
 import { SCALE_OPTIONS, SEVERITY_COLORS } from '../../utils/constants'
+import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
 
+interface PatientAssessment {
+  scale_name: string
+  consultation_uuid: string
+  date: string
+  total_score: number
+}
+
 export default function AssessmentPage() {
   const [scales, setScales] = useState<AssessmentScale[]>([])
+  const [patients, setPatients] = useState<PatientListItem[]>([])
+  const [selectedPatient, setSelectedPatient] = useState<string>('')
   const [selectedScale, setSelectedScale] = useState<AssessmentScale | null>(null)
   const [responses, setResponses] = useState<Record<number, number>>({})
   const [result, setResult] = useState<ScaleScoreResponse | null>(null)
+  const [history, setHistory] = useState<PatientAssessment[]>([])
   const [loading, setLoading] = useState(false)
+  const [historyLoading, setHistoryLoading] = useState(false)
   const [initLoading, setInitLoading] = useState(true)
 
   useEffect(() => {
-    scalesApi.list().then((data) => {
-      setScales(data.scales)
+    Promise.all([
+      scalesApi.list(),
+      patientsApi.list(1, 100).then((d) => d.patients),
+    ]).then(([scaleData, patientData]) => {
+      setScales(scaleData.scales)
+      setPatients(patientData)
     }).finally(() => setInitLoading(false))
   }, [])
+
+  const loadHistory = useCallback(async (patientUuid: string) => {
+    if (!patientUuid) return
+    setHistoryLoading(true)
+    try {
+      const data = await scalesApi.patientHistory(patientUuid)
+      setHistory(data.assessments || [])
+    } catch {
+      setHistory([])
+    } finally {
+      setHistoryLoading(false)
+    }
+  }, [])
+
+  const handlePatientChange = (uuid: string) => {
+    setSelectedPatient(uuid)
+    loadHistory(uuid)
+  }
 
   const handleScaleSelect = (scaleName: string) => {
     const scale = scales.find((s) => s.scale_name === scaleName)
@@ -33,7 +68,7 @@ export default function AssessmentPage() {
     const questionIds = selectedScale.questions.sort((a, b) => a.question_order - b.question_order).map((q) => q.question_id)
     const missing = questionIds.filter((id) => responses[id] === undefined)
     if (missing.length > 0) {
-      message.warning(`Responda todas as questões antes de pontuar`)
+      message.warning('Responda todas as questões antes de pontuar')
       return
     }
     setLoading(true)
@@ -44,6 +79,7 @@ export default function AssessmentPage() {
         responses: sortedResponses,
       })
       setResult(res)
+      if (selectedPatient) loadHistory(selectedPatient)
     } catch {
       message.error('Erro ao calcular pontuação')
     } finally {
@@ -62,10 +98,21 @@ export default function AssessmentPage() {
     <>
       <Breadcrumb items={[{ title: 'Dashboard' }, { title: 'Escalas de Avaliação' }]} style={{ marginBottom: 16 }} />
       <Row gutter={16}>
-        <Col span={result ? 14 : 24}>
-          <Card title="Avaliação Clínica">
-            <Form layout="vertical">
-              <Form.Item label="Escala">
+        <Col xs={24} lg={14}>
+          <Card title="Avaliação Clínica" size="small">
+            <Form layout="vertical" size="small">
+              <Form.Item label="Paciente" style={{ marginBottom: 8 }}>
+                <Select
+                  showSearch
+                  placeholder="Selecione o paciente..."
+                  value={selectedPatient || undefined}
+                  onChange={handlePatientChange}
+                  options={patients.map((p) => ({ value: p.patient_uuid, label: p.full_name }))}
+                  allowClear
+                  onClear={() => { setSelectedPatient(''); setHistory([]) }}
+                />
+              </Form.Item>
+              <Form.Item label="Escala" style={{ marginBottom: 8 }}>
                 <Select
                   placeholder="Selecione uma escala"
                   options={scaleOptions}
@@ -79,8 +126,8 @@ export default function AssessmentPage() {
 
             {selectedScale && (
               <div>
-                <Divider />
-                <Text strong style={{ fontSize: 16 }}>{SCALE_OPTIONS[selectedScale.scale_name]?.label || selectedScale.scale_name}</Text>
+                <Divider style={{ margin: '8px 0' }} />
+                <Text strong style={{ fontSize: 14 }}>{SCALE_OPTIONS[selectedScale.scale_name]?.label || selectedScale.scale_name}</Text>
                 {selectedScale.questions
                   .sort((a, b) => a.question_order - b.question_order)
                   .map((q) => {
@@ -88,8 +135,8 @@ export default function AssessmentPage() {
                       { value: 0, label: '0' }, { value: 1, label: '1' }, { value: 2, label: '2' }, { value: 3, label: '3' },
                     ]
                     return (
-                      <div key={q.question_id} style={{ marginTop: 16 }}>
-                        <Text>{q.question_order}. {q.question_text}</Text>
+                      <div key={q.question_id} style={{ marginTop: 10 }}>
+                        <Text style={{ fontSize: 13 }}>{q.question_order}. {q.question_text}</Text>
                         <Select
                           style={{ width: '100%', marginTop: 4 }}
                           placeholder="Selecione..."
@@ -105,7 +152,7 @@ export default function AssessmentPage() {
                   icon={<ExperimentOutlined />}
                   onClick={handleScore}
                   loading={loading}
-                  style={{ marginTop: 16 }}
+                  style={{ marginTop: 12 }}
                   block
                   size="large"
                 >
@@ -114,11 +161,9 @@ export default function AssessmentPage() {
               </div>
             )}
           </Card>
-        </Col>
 
-        {result && (
-          <Col span={10}>
-            <Card title="Resultado">
+          {result && (
+            <Card title="Resultado" size="small" style={{ marginTop: 12 }}>
               <Result
                 status={result.severity === 'severe' || result.severity === 'moderate' ? 'warning' : 'success'}
                 title={`${result.total_score} pontos`}
@@ -130,8 +175,48 @@ export default function AssessmentPage() {
               />
               <Text>{result.interpretation}</Text>
             </Card>
-          </Col>
-        )}
+          )}
+        </Col>
+
+        <Col xs={24} lg={10}>
+          <Card
+            title={<Space><HistoryOutlined /> Histórico do Paciente</Space>}
+            size="small"
+            extra={history.length > 0 ? <Text type="secondary" style={{ fontSize: 12 }}>{history.length} registro(s)</Text> : null}
+          >
+            {!selectedPatient ? (
+              <Text type="secondary">Selecione um paciente para ver o histórico</Text>
+            ) : historyLoading ? (
+              <Spin />
+            ) : history.length === 0 ? (
+              <Empty description="Nenhuma avaliação anterior" image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            ) : (
+              <Table
+                dataSource={history}
+                rowKey={(r) => `${r.consultation_uuid}-${r.scale_name}`}
+                size="small"
+                pagination={{ pageSize: 8, size: 'small' }}
+                columns={[
+                  {
+                    title: 'Data', dataIndex: 'date', width: 90,
+                    render: (v: string) => dayjs(v).format('DD/MM'),
+                  },
+                  {
+                    title: 'Escala', dataIndex: 'scale_name', width: 100, ellipsis: true,
+                    render: (v: string) => SCALE_OPTIONS[v]?.label?.split(' (')[0] || v,
+                  },
+                  {
+                    title: 'Pontuação', dataIndex: 'total_score', width: 80,
+                    render: (v: number, r: PatientAssessment) => {
+                      const color = v >= 15 ? '#f5222d' : v >= 10 ? '#fa8c16' : v >= 5 ? '#faad14' : '#52c41a'
+                      return <Text strong style={{ color }}>{v}</Text>
+                    },
+                  },
+                ]}
+              />
+            )}
+          </Card>
+        </Col>
       </Row>
     </>
   )

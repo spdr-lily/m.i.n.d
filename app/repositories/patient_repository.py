@@ -48,7 +48,7 @@ class PatientRepository:
             occupation=occupation
         )
         self.session.add(patient_profile)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(patient_profile)
         return patient_profile
 
@@ -72,7 +72,11 @@ class PatientRepository:
 
     def list_patients(self, skip: int = 0, limit: int = 100) -> List[PatientIdentity]:
         """List all patients."""
-        return self.session.query(PatientIdentity).offset(skip).limit(limit).all()
+        return self.session.query(PatientIdentity).order_by(PatientIdentity.full_name).offset(skip).limit(limit).all()
+
+    def count_patients(self) -> int:
+        """Count total patients."""
+        return self.session.query(PatientIdentity).count()
 
     def update_patient_profile(self, patient_uuid: UUID, **updates) -> Optional[PatientProfile]:
         """Update patient profile."""
@@ -81,7 +85,7 @@ class PatientRepository:
             for key, value in updates.items():
                 if value is not None and hasattr(patient_profile, key):
                     setattr(patient_profile, key, value)
-            self.session.commit()
+            self.session.flush()
             self.session.refresh(patient_profile)
         return patient_profile
 
@@ -90,6 +94,6 @@ class PatientRepository:
         patient_identity = self.get_patient_identity(patient_uuid)
         if patient_identity:
             self.session.delete(patient_identity)
-            self.session.commit()
+            self.session.flush()
             return True
         return False

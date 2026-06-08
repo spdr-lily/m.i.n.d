@@ -36,7 +36,7 @@ class MetricsService:
         )
         sex_dist = {str(row.sex_type_id): row.count for row in sex_query}
 
-        sql = text("SELECT birth_date FROM core.patient_profile")
+        sql = text("SELECT birth_date FROM clinical.patient_profile")
         df = pd.read_sql_query(sql, self.session.bind)
         if df.empty or df["birth_date"].isna().all():
             age_dist = {}
@@ -106,8 +106,8 @@ class MetricsService:
         since = datetime.now(timezone.utc) - timedelta(days=days)
         sql = text("""
             SELECT c.consultation_date, sum(sr.response_value) as total_score
-            FROM clinical.scale_response sr
-            JOIN clinical.scale_question sq ON sr.question_id = sq.question_id
+            FROM clinical.scale_responses sr
+            JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
             JOIN clinical.clinical_consultation c ON sr.consultation_uuid = c.consultation_uuid
             WHERE sq.scale_id = :scale_id AND c.consultation_date >= :since
             GROUP BY c.consultation_uuid, c.consultation_date
@@ -144,8 +144,8 @@ class MetricsService:
         for name, sid in scale_map.items():
             sql = text("""
                 SELECT c.consultation_uuid, sum(sr.response_value) as total
-                FROM clinical.scale_response sr
-                JOIN clinical.scale_question sq ON sr.question_id = sq.question_id
+                FROM clinical.scale_responses sr
+                JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
                 JOIN clinical.clinical_consultation c ON sr.consultation_uuid = c.consultation_uuid
                 WHERE sq.scale_id = :sid
                 GROUP BY c.consultation_uuid
@@ -207,8 +207,8 @@ class MetricsService:
 
         sql = text("""
             SELECT sr.consultation_uuid, sum(sr.response_value) as total_score
-            FROM clinical.scale_response sr
-            JOIN clinical.scale_question sq ON sr.question_id = sq.question_id
+            FROM clinical.scale_responses sr
+            JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
             WHERE sq.scale_id = :scale_id
             GROUP BY sr.consultation_uuid
         """)
@@ -216,7 +216,7 @@ class MetricsService:
         if df.empty:
             return {"scale_name": scale_name, "total_responses": 0, "distribution": {}}
 
-        from app.ml.assessment_scales import get_scale as get_scale_def
+        from app.ml.models.assessment_scales import get_scale as get_scale_def
         scale_def = get_scale_def(scale_name)
         if not scale_def:
             return {"scale_name": scale_name, "total_responses": 0, "distribution": {}}
@@ -256,9 +256,9 @@ class MetricsService:
             SELECT c.consultation_uuid, c.consultation_date, a.scale_name,
                    sum(sr.response_value) as total_score
             FROM clinical.clinical_consultation c
-            JOIN clinical.scale_response sr ON c.consultation_uuid = sr.consultation_uuid
-            JOIN clinical.scale_question sq ON sr.question_id = sq.question_id
-            JOIN clinical.assessment_scale a ON sq.scale_id = a.scale_id
+            JOIN clinical.scale_responses sr ON c.consultation_uuid = sr.consultation_uuid
+            JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
+            JOIN diagnostic.assessment_scales a ON sq.scale_id = a.scale_id
             WHERE c.profile_uuid = :profile_uuid AND c.created_at >= :since
             GROUP BY c.consultation_uuid, c.consultation_date, a.scale_name
             ORDER BY c.consultation_date
@@ -322,4 +322,20 @@ class MetricsService:
             "total_disorders": disorders,
             "total_symptoms": symptoms,
             "avg_inferences_per_consultation": round(inferences / max(consultations, 1), 2),
+        }
+
+    def get_overview_stats(self) -> Dict[str, Any]:
+        from app.services.alerts_service import AlertsService
+        general = self.get_general_stats()
+        alerts_service = AlertsService(self.session)
+        alerts = alerts_service.run_all_checks()
+        avg_confidence = self.session.query(
+            func.avg(DiagnosticInference.confidence_level)
+        ).scalar() or 0
+        return {
+            "total_patients": general["total_patients"],
+            "total_consultations": general["total_consultations"],
+            "total_inferences": general["total_inferences"],
+            "active_alerts": alerts["total_alerts"],
+            "avg_confidence": round(float(avg_confidence), 4),
         }

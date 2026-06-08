@@ -33,6 +33,10 @@ def setup_database():
                 GenderIdentity(gender_identity_id=1, code="M", description="Masculino"),
                 GenderIdentity(gender_identity_id=2, code="F", description="Feminino"),
                 GenderIdentity(gender_identity_id=3, code="NB", description="Não-Binário"),
+                GenderIdentity(gender_identity_id=4, code="GF", description="Gênero Fluido"),
+                GenderIdentity(gender_identity_id=5, code="AG", description="Agênero"),
+                GenderIdentity(gender_identity_id=6, code="OT", description="Outro"),
+                GenderIdentity(gender_identity_id=7, code="PN", description="Prefiro não informar"),
                 EducationLevel(education_level_id=1, code="EF", description="Ensino Fundamental"),
                 EducationLevel(education_level_id=2, code="EM", description="Ensino Médio"),
                 EducationLevel(education_level_id=3, code="ES", description="Ensino Superior"),
@@ -106,10 +110,8 @@ def sample_patient_data() -> dict:
 def sample_professional_data() -> dict:
     return {
         "full_name": "Dr. Carlos Souza",
-        "license_number": "CRM-12345",
+        "professional_license": "CRM-12345",
         "specialty": "Psychiatry",
-        "email": "carlos@clinic.com",
-        "phone": "11999999999",
     }
 
 

@@ -16,6 +16,7 @@ import {
   TeamOutlined,
   MedicineBoxOutlined,
   OrderedListOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../store/authStore'
 import { ROLE_LABELS } from '../utils/constants'
@@ -30,9 +31,13 @@ const menuItems = [
   { key: '/consultations', icon: <CalendarOutlined />, label: 'Consultas', roles: ['admin', 'clinician', 'viewer'] },
   { key: '/assessments', icon: <FileTextOutlined />, label: 'Escalas', roles: ['admin', 'clinician'] },
   { key: '/inferences', icon: <ExperimentOutlined />, label: 'Inferência', roles: ['admin', 'clinician'] },
+  { key: '/professionals', icon: <TeamOutlined />, label: 'Profissionais', roles: ['admin', 'clinician', 'viewer'] },
   { key: '/alerts', icon: <AlertOutlined />, label: 'Alertas', roles: ['admin', 'clinician', 'viewer'] },
   { key: '/admin/users', icon: <TeamOutlined />, label: 'Admin', roles: ['admin'] },
   { key: '/admin/scales', icon: <OrderedListOutlined />, label: 'Gerenciar Escalas', roles: ['admin', 'clinician'] },
+  { key: '/admin/symptoms', icon: <UnorderedListOutlined />, label: 'Sintomas', roles: ['admin', 'clinician'] },
+  { key: '/admin/medications', icon: <MedicineBoxOutlined />, label: 'Medicamentos', roles: ['admin', 'clinician'] },
+  { key: '/admin/disorders', icon: <OrderedListOutlined />, label: 'Transtornos', roles: ['admin', 'clinician'] },
   { key: '/admin/permissions', icon: <SettingOutlined />, label: 'Permissões', roles: ['admin'] },
   { key: '/admin/monitoring', icon: <MedicineBoxOutlined />, label: 'Monitoramento', roles: ['admin'] },
   { key: '/audit', icon: <AuditOutlined />, label: 'Auditoria', roles: ['admin'] },

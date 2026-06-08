@@ -1,25 +1,12 @@
 from uuid import UUID
-from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import func
+from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.patient_service import PatientService
-from app.models.base import PatientIdentity, PatientProfile, SexType
 from app.schemas.patient_identity import PatientIdentityCreate, PatientIdentityResponse
 from app.schemas.patient_profile import PatientProfileCreate, PatientProfileResponse, PatientProfileUpdate
-from pydantic import BaseModel
 
 router = APIRouter(prefix="/api/patients", tags=["patients"])
-
-
-class PatientListItem(BaseModel):
-    patient_uuid: UUID
-    full_name: str
-    birth_date: str | None = None
-    sex_type: str | None = None
-    age: int | None = None
-    occupation: str | None = None
 
 
 @router.post("", status_code=status.HTTP_201_CREATED)
@@ -67,41 +54,8 @@ async def list_patients(
     db: Session = Depends(get_db)
 ):
     """List all patients with profiles."""
-    identities = (
-        db.query(PatientIdentity)
-        .order_by(PatientIdentity.full_name)
-        .offset(skip)
-        .limit(limit)
-        .all()
-    )
-    total = db.query(PatientIdentity).count()
-    today = date.today()
-
-    items = []
-    for ident in identities:
-        profile = db.query(PatientProfile).filter_by(patient_uuid=ident.patient_uuid).first()
-        sex_desc = None
-        birth = None
-        age = None
-        occ = None
-        if profile:
-            birth = str(profile.birth_date) if profile.birth_date else None
-            if profile.birth_date:
-                age = today.year - profile.birth_date.year - ((today.month, today.day) < (profile.birth_date.month, profile.birth_date.day))
-            sex = db.query(SexType).filter_by(sex_type_id=profile.sex_type_id).first()
-            if sex:
-                sex_desc = sex.description
-            occ = profile.occupation
-
-        items.append(PatientListItem(
-            patient_uuid=ident.patient_uuid,
-            full_name=ident.full_name,
-            birth_date=birth,
-            sex_type=sex_desc,
-            age=age,
-            occupation=occ,
-        ))
-
+    service = PatientService(db)
+    total, items = service.list_patients_with_details(skip=skip, limit=limit)
     return {"total": total, "patients": items}
 
 

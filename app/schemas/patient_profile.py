@@ -1,48 +1,39 @@
 from datetime import date, datetime
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 from app.schemas.common import TimestampMixin
 
 
 class SexTypeResponse(BaseModel):
-    """Sex type reference."""
     sex_type_id: int
     code: str
     description: str
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class GenderIdentityResponse(BaseModel):
-    """Gender identity reference."""
     gender_identity_id: int
     code: str
     description: str
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class EducationLevelResponse(BaseModel):
-    """Education level reference."""
     education_level_id: int
     code: str
     description: str
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class EthnicityResponse(BaseModel):
-    """Ethnicity reference."""
     ethnicity_id: int
     code: str
     description: str
-
     model_config = ConfigDict(from_attributes=True)
 
 
 class PatientProfileBase(BaseModel):
-    """Base patient profile schema."""
     birth_date: Optional[date] = None
     sex_type_id: Optional[int] = None
     gender_identity_id: Optional[int] = None
@@ -50,25 +41,29 @@ class PatientProfileBase(BaseModel):
     ethnicity_id: Optional[int] = None
     marital_status: Optional[str] = Field(None, max_length=50)
     occupation: Optional[str] = Field(None, max_length=120)
+    trans_status: Optional[str] = Field(None, max_length=30)
+
+    @field_validator("birth_date")
+    @classmethod
+    def validate_birth_date(cls, v: Optional[date]) -> Optional[date]:
+        if v is not None and v > date.today():
+            raise ValueError("birth_date cannot be in the future")
+        return v
 
 
 class PatientProfileCreate(PatientProfileBase):
-    """Schema for creating patient profile."""
     patient_uuid: Optional[UUID] = None
 
 
 class PatientProfileUpdate(PatientProfileBase):
-    """Schema for updating patient profile."""
     pass
 
 
 class PatientProfileResponse(PatientProfileBase, TimestampMixin):
-    """Schema for patient profile response."""
     profile_uuid: UUID
     patient_uuid: UUID
     sex_type: Optional[SexTypeResponse] = None
     gender_identity: Optional[GenderIdentityResponse] = None
     education_level: Optional[EducationLevelResponse] = None
     ethnicity: Optional[EthnicityResponse] = None
-
     model_config = ConfigDict(from_attributes=True)

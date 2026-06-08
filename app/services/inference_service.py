@@ -5,7 +5,7 @@ from app.models.base import DiagnosticInference
 from app.repositories.inference_repository import InferenceRepository
 from app.repositories.consultation_repository import ConsultationRepository
 from app.repositories.disorder_repository import DisorderRepository
-from app.ml.inference_engine import InferenceEngine
+from app.ml.inference.inference_engine import InferenceEngine
 
 
 class InferenceService:
@@ -39,7 +39,8 @@ class InferenceService:
             (
                 d.disorder_id,
                 d.disorder_name,
-                disorder_repo.list_criteria_by_disorder(d.disorder_id)
+                disorder_repo.list_criteria_by_disorder(d.disorder_id),
+                disorder_repo.list_criteria_groups(d.disorder_id),
             )
             for d in disorders
         ]
@@ -53,19 +54,23 @@ class InferenceService:
         )
 
         inferences = []
-        for result in results:
-            inference = self.repository.create_inference(
-                consultation_uuid=consultation_uuid,
-                disorder_id=result.disorder_id,
-                inference_probability=result.probability,
-                confidence_level=result.confidence_level,
-                generated_by_model=generated_by_model,
-                model_version=model_version
-            )
-            inferences.append(inference)
+        try:
+            for result in results:
+                inference = self.repository.create_inference(
+                    consultation_uuid=consultation_uuid,
+                    disorder_id=result.disorder_id,
+                    inference_probability=result.probability,
+                    confidence_level=result.confidence_level,
+                    generated_by_model=generated_by_model,
+                    model_version=model_version
+                )
+                inferences.append(inference)
 
-        self.session.commit()
-        return inferences
+            self.session.commit()
+            return inferences
+        except Exception:
+            self.session.rollback()
+            raise
 
     def get_explanation(self, consultation_uuid: UUID) -> Optional[dict]:
         consultation_repo = ConsultationRepository(self.session)

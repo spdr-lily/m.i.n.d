@@ -145,7 +145,51 @@ def get_or_create_scales():
             repo.create_question(asrm.scale_id, q, i)
         db.commit()
 
-    return phq9, gad7, mdq, pcl5, ybocs, audit, asrm
+    asrs = db.query(AssessmentScale).filter_by(scale_name="ASRS").first()
+    if not asrs:
+        asrs = repo.create_scale("ASRS", "Adult ADHD Self-Report Scale v1.1 — Rastreio TDAH adulto")
+        for i, q in enumerate([
+            "Com que frequencia tem dificuldade para finalizar os detalhes de um projeto?",
+            "Com que frequencia tem dificuldade para organizar tarefas?",
+            "Com que frequencia tem problemas para lembrar compromissos ou obrigacoes?",
+            "Com que frequencia evita ou adia iniciar tarefas que exigem muita concentracao?",
+            "Com que frequencia mexe as maos ou pes quando precisa ficar sentado muito tempo?",
+            "Com que frequencia se sente excessivamente ativo ou compelido a fazer coisas?",
+            "Com que frequencia comete erros por descuido em tarefas entediantes?",
+            "Com que frequencia tem dificuldade em manter a atencao em trabalhos repetitivos?",
+            "Com que frequencia tem dificuldade em se concentrar no que as pessoas dizem?",
+            "Com que frequencia perde ou tem dificuldade em encontrar objetos em casa ou no trabalho?",
+            "Com que frequencia se distrai com atividades ou ruidos ao redor?",
+            "Com que frequencia se levanta do lugar em reunioes quando deveria ficar sentado?",
+            "Com que frequencia se sente inquieto ou agitado?",
+            "Com que frequencia tem dificuldade em relaxar quando tem tempo livre?",
+            "Com que frequencia fala demais em situacoes sociais?",
+            "Com que frequencia completa as frases das pessoas durante conversas?",
+            "Com que frequencia tem dificuldade em esperar sua vez?",
+            "Com que frequencia interrompe os outros quando estao ocupados?",
+        ], 1):
+            repo.create_question(asrs.scale_id, q, i)
+        db.commit()
+
+    aq10 = db.query(AssessmentScale).filter_by(scale_name="AQ-10").first()
+    if not aq10:
+        aq10 = repo.create_scale("AQ-10", "Autism Spectrum Quotient 10-item — Rastreio TEA adulto")
+        for i, q in enumerate([
+            "Frequentemente noto sons suaves que outros nao percebem",
+            "Geralmente concentro-me mais no quadro geral do que nos pequenos detalhes",
+            "Acho facil fazer mais de uma coisa ao mesmo tempo",
+            "Se ha uma interrupcao, consigo voltar rapidamente ao que estava fazendo",
+            "Acho facil 'ler entrelinhas' quando alguem esta falando comigo",
+            "Sei identificar se alguem esta entediado ao me ouvir",
+            "Ao ler uma historia, tenho dificuldade em entender as intencoes dos personagens",
+            "Gosto de colecionar informacoes sobre categorias de coisas (carros, passaros etc)",
+            "Acho facil saber o que alguem esta pensando ou sentindo so de olhar para seu rosto",
+            "Tenho dificuldade em entender as intencoes das pessoas",
+        ], 1):
+            repo.create_question(aq10.scale_id, q, i)
+        db.commit()
+
+    return phq9, gad7, mdq, pcl5, ybocs, audit, asrm, asrs, aq10
 
 
 def find_patient(name):
@@ -196,7 +240,7 @@ def main():
         db.commit()
 
     sym_map = {s.symptom_name: s for s in db.query(Symptom).all()}
-    phq9, gad7, mdq, pcl5, ybocs, audit, asrm = get_or_create_scales()
+    phq9, gad7, mdq, pcl5, ybocs, audit, asrm, asrs, aq10 = get_or_create_scales()
     phq9_qs = db.query(ScaleQuestion).filter_by(scale_id=phq9.scale_id).order_by(ScaleQuestion.question_order).all()
     gad7_qs = db.query(ScaleQuestion).filter_by(scale_id=gad7.scale_id).order_by(ScaleQuestion.question_order).all()
 

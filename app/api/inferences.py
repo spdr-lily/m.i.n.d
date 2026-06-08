@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.inference_service import InferenceService
-from app.ml.bayesian_inference_service import BayesianInferenceService
+from app.ml.inference.disorder_predictor import DisorderPredictor
 from app.schemas.inference import (
     InferenceRequest, InferenceResponse, InferenceResult,
     DiagnosticInferenceResponse, ExplanationResponse
@@ -65,7 +65,7 @@ async def run_bayesian_inference(
     request: InferenceRequest,
     db: Session = Depends(get_db),
 ):
-    service = BayesianInferenceService(db)
+    service = DisorderPredictor(db)
     try:
         bayesian_results = service.infer_from_consultation(
             consultation_uuid=request.consultation_uuid,
@@ -116,7 +116,7 @@ async def get_bayesian_explanation(
     consultation_uuid: UUID,
     db: Session = Depends(get_db),
 ):
-    service = BayesianInferenceService(db)
+    service = DisorderPredictor(db)
     explanation = service.get_explanation(consultation_uuid)
     if not explanation:
         raise HTTPException(

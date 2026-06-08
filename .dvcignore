@@ -1,0 +1,9 @@
+# DVC ignore file
+.venv/
+.venv-1/
+__pycache__/
+*.pyc
+.mypy_cache/
+.pytest_cache/
+.git/
+node_modules/

@@ -24,6 +24,9 @@ export const consultationsApi = {
   updateClinicalNote: (uuid: string, data: ClinicalNote) =>
     apiClient.put<ClinicalNote>(`/consultations/${uuid}/clinical-note`, data).then((r) => r.data),
 
+  listByProfile: (profileUuid: string) =>
+    apiClient.get<{ total: number; consultations: ConsultationResponse[] }>(`/consultations/patient/${profileUuid}`).then((r) => r.data),
+
   getCompleteness: (uuid: string) =>
     apiClient.get<ConsultationCompleteness>(`/consultations/${uuid}/completeness`).then((r) => r.data),
 }
