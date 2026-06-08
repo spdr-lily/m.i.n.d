@@ -20,6 +20,7 @@ class PatientIdentityCreate(PatientIdentityBase):
 class PatientIdentityResponse(PatientIdentityBase, TimestampMixin):
     """Schema for patient identity response (no hashed PII)."""
     patient_uuid: UUID
+    full_name_encrypted: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

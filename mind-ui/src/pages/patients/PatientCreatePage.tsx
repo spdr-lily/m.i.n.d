@@ -140,13 +140,13 @@ export default function PatientCreatePage() {
               </Form.Item>
             </Col>
             <Col span={8}>
-              <Form.Item name="cpf_hash" label="CPF (hash)">
-                <Input.Password placeholder="Hash do CPF" />
+              <Form.Item name="cpf_hash" label="CPF">
+                <Input placeholder="CPF do paciente" />
               </Form.Item>
             </Col>
-            <Col span={12}>
-              <Form.Item name="email_hash" label="E-mail (hash)">
-                <Input.Password placeholder="Hash do e-mail" />
+            <Col span={8}>
+              <Form.Item name="email_hash" label="E-mail">
+                <Input placeholder="E-mail do paciente" />
               </Form.Item>
             </Col>
           </Row>

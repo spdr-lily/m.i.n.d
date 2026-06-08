@@ -14,7 +14,7 @@ export default function AlertsPage() {
 
   const fetchAlerts = () => {
     setLoading(true)
-    alertsApi.list(showResolved ? undefined : false).then(setAlerts).finally(() => setLoading(false))
+    alertsApi.list(showResolved ? true : false).then(setAlerts).finally(() => setLoading(false))
   }
 
   useEffect(() => { fetchAlerts() }, [showResolved])

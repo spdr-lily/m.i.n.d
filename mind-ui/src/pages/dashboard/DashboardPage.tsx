@@ -20,8 +20,9 @@ import { SEVERITY_COLORS } from '../../utils/constants'
 
 const { Title } = Typography
 
-const SEX_LABELS: Record<string, string> = { '1': 'Masculino', '2': 'Feminino', '0': 'Não informado' }
-const PIE_COLORS = ['#1677ff', '#ff69b4', '#d9d9d9']
+const SEX_LABELS: Record<string, string> = { '7': 'Masculino', '8': 'Feminino', '1': 'Masculino', '2': 'Feminino', '0': 'Não informado' }
+const PIE_COLORS = ['#1677ff', '#ff69b4', '#d9d9d9', '#52c41a', '#faad14', '#722ed1']
+const GENDER_PIE_COLORS = ['#52c41a', '#722ed1', '#1677ff', '#ff69b4', '#faad14', '#13c2c2']
 const BAR_COLORS = ['#1677ff', '#52c41a', '#faad14', '#f5222d', '#722ed1']
 
 export default function DashboardPage() {
@@ -62,6 +63,11 @@ export default function DashboardPage() {
 
   const sexPieData = demographics ? Object.entries(demographics.sex_distribution).map(([k, v]) => ({
     name: SEX_LABELS[k] || `Tipo ${k}`,
+    value: v,
+  })) : []
+
+  const genderPieData = demographics ? Object.entries(demographics.gender_identity_distribution).map(([k, v]) => ({
+    name: k,
     value: v,
   })) : []
 
@@ -172,6 +178,26 @@ export default function DashboardPage() {
                   ),
                 },
                 {
+                  key: 'identidade',
+                  label: 'Identidade de Gênero',
+                  children: genderPieData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height={220}>
+                      <PieChart>
+                        <Pie data={genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                          {genderPieData.map((_, i) => (
+                            <Cell key={i} fill={GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
+                          ))}
+                        </Pie>
+                        <Tooltip />
+                      </PieChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 40 }}>
+                      Sem dados de identidade de gênero
+                    </Typography.Text>
+                  ),
+                },
+                {
                   key: 'idade',
                   label: 'Idade',
                   children: ageBarData.some((d) => d.value > 0) ? (
@@ -206,7 +232,16 @@ export default function DashboardPage() {
                   <XAxis type="number" allowDecimals={false} />
                   <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
                   <Tooltip />
-                  <Bar dataKey="Inferências" fill="#722ed1" radius={[0, 4, 4, 0]} />
+                  <Bar dataKey="Inferências" radius={[0, 4, 4, 0]}>
+                    {disorderChartData.map((_, i) => {
+                      let color = '#1677ff'
+                      if (i < 3) color = '#ff0000'
+                      else if (i < 6) color = '#ff8500'
+                      else if (i < 9) color = '#ffbc00'
+                      else if (i < 12) color = '#52c41a'
+                      return <Cell key={i} fill={color} />
+                    })}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             ) : (
@@ -262,13 +297,13 @@ export default function DashboardPage() {
           </Card>
         </Col>
         <Col xs={24} lg={12}>
-          <Card title="Distribuição por Sexo" size="small">
-            {sexPieData.length > 0 ? (
+          <Card title="Distribuição por Identidade de Gênero" size="small">
+            {genderPieData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
                 <PieChart>
-                  <Pie data={sexPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                    {sexPieData.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  <Pie data={genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {genderPieData.map((_, i) => (
+                      <Cell key={i} fill={GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />
@@ -276,7 +311,7 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             ) : (
               <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 40 }}>
-                Sem dados demográficos
+                Sem dados de identidade de gênero
               </Typography.Text>
             )}
           </Card>

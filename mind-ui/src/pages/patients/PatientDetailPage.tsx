@@ -54,7 +54,12 @@ export default function PatientDetailPage() {
       <Breadcrumb items={[{ title: 'Dashboard' }, { title: 'Pacientes', href: '/patients' }, { title: identity.full_name }]} style={{ marginBottom: 16 }} />
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-          <Title level={4}>{identity.full_name}</Title>
+          <div>
+            <Title level={4} style={{ marginBottom: 4 }}>{identity.full_name}</Title>
+            {identity.full_name_encrypted && (
+              <Text type="secondary" style={{ fontSize: 11, wordBreak: 'break-all' }}>{identity.full_name_encrypted}</Text>
+            )}
+          </div>
           <Space>
             <Button icon={<HistoryOutlined />} onClick={() => navigate(`/patients/${uuid}/timeline`)}>
               Linha do Tempo
@@ -73,9 +78,12 @@ export default function PatientDetailPage() {
         <Descriptions bordered column={2} size="small">
           <Descriptions.Item label="Data Nascimento">{profile.birth_date || '-'}</Descriptions.Item>
           <Descriptions.Item label="Sexo">{sexo}</Descriptions.Item>
+          <Descriptions.Item label="Identidade de Gênero">{profile.gender_identity?.description || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Escolaridade">{profile.education_level?.description || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Etnia">{profile.ethnicity?.description || '-'}</Descriptions.Item>
           <Descriptions.Item label="Estado Civil">{profile.marital_status || '-'}</Descriptions.Item>
-          <Descriptions.Item label="Profissao">{profile.occupation || '-'}</Descriptions.Item>
-          <Descriptions.Item label="Situação Transgênero">{profile.trans_status ? ({ cis: 'Cisgênero', trans: 'Transgênero', intersex: 'Intersexo', prefer_not_to_say: 'Prefiro não informar' })[profile.trans_status] : '-'}</Descriptions.Item>
+          <Descriptions.Item label="Profissão">{profile.occupation || '-'}</Descriptions.Item>
+          <Descriptions.Item label="Situação Transgênero">{profile.trans_status ? ({ cis: 'Cisgênero', trans: 'Transgênero', intersex: 'Intersexo', prefer_not_to_say: 'Prefiro não informar' } as Record<string, string>)[profile.trans_status] : '-'}</Descriptions.Item>
         </Descriptions>
       </Card>
 

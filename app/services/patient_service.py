@@ -55,6 +55,10 @@ class PatientService:
         if not identity:
             return None
         profile = self.repository.get_patient_profile(patient_uuid)
+        encrypted = identity.full_name
+        self.session.expunge(identity)
+        identity.full_name_encrypted = encrypted
+        identity.full_name = self._decrypt_name(encrypted)
         return identity, profile
 
     def _decrypt_name(self, encrypted: str) -> str:

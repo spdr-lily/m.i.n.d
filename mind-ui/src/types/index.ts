@@ -32,6 +32,7 @@ export interface RegisterRequest {
 export interface PatientIdentity {
   patient_uuid?: string
   full_name: string
+  full_name_encrypted?: string
   cpf_hash?: string
   email_hash?: string
 }
@@ -43,8 +44,11 @@ export interface PatientProfile {
   sex_type_id?: number
   sex_type?: SexType
   gender_identity_id?: number
+  gender_identity?: GenderIdentity
   education_level_id?: number
+  education_level?: EducationLevel
   ethnicity_id?: number
+  ethnicity?: Ethnicity
   marital_status?: string
   occupation?: string
   trans_status?: string
@@ -354,6 +358,7 @@ export interface AgeDistribution {
 export interface DemographicsResponse {
   total_patients: number
   sex_distribution: SexDistribution
+  gender_identity_distribution: Record<string, number>
   age_distribution: AgeDistribution
 }
 

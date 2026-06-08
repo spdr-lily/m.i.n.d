@@ -4,7 +4,7 @@ import pandas as pd
 from sqlalchemy.orm import Session
 from sqlalchemy import func, text
 from app.models.base import (
-    PatientIdentity, PatientProfile, AssessmentScale,
+    PatientIdentity, PatientProfile, AssessmentScale, GenderIdentity,
 )
 
 AGE_BINS = [0, 18, 35, 50, 65, 200]
@@ -31,6 +31,18 @@ class StatisticsService:
         )
         sex_dist = {str(row.sex_type_id): row.count for row in sex_query}
 
+        gender_query = (
+            self.session.query(
+                GenderIdentity.description,
+                func.count().label("count"),
+            )
+            .select_from(PatientProfile)
+            .join(GenderIdentity, PatientProfile.gender_identity_id == GenderIdentity.gender_identity_id, isouter=True)
+            .group_by(GenderIdentity.description)
+            .all()
+        )
+        gender_dist = {row.description or "Não informado": row.count for row in gender_query}
+
         sql = text("SELECT birth_date FROM clinical.patient_profile")
         df = pd.read_sql_query(sql, self.session.bind)
         if df.empty or df["birth_date"].isna().all():
@@ -44,6 +56,7 @@ class StatisticsService:
         return {
             "total_patients": total,
             "sex_distribution": sex_dist,
+            "gender_identity_distribution": gender_dist,
             "age_distribution": age_dist,
         }
 
