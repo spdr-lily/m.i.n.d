@@ -2,10 +2,10 @@
 
 ## Pré-requisitos
 
-- Python 3.12+
+- Python 3.14+
 - PostgreSQL 16 (ou Docker)
 - Node.js 20+ (para frontend)
-- Java 8+ (para PySpark)
+- Java 8+ (para PySpark, opcional)
 
 ## Setup
 
@@ -30,8 +30,14 @@ docker compose up -d
 # 5. Migrations
 alembic upgrade head
 
-# 6. Servidor
-uvicorn app.main:app --reload --port 8001
+# 6. Seed (ordem correta — todos idempotentes)
+python db/seed.py
+python scripts/seed_icd11.py
+python scripts/seed_scales_groups.py
+python scripts/seed_diagnostic_data.py
+
+# 7. Servidor
+uvicorn app.main:app --reload --port 8008
 ```
 
 ### Frontend
@@ -51,11 +57,8 @@ npm run dev
 ### Dados de Exemplo
 
 ```bash
-# Seed de referências (sintomas, transtornos, critérios, profissional)
-python db/seed.py
-
-# Dados clínicos (7 pacientes, 6 consultas, escalas PHQ-9/GAD-7)
 python db/populate_clinical.py
+python scripts/check_integrity.py    # Verificar qualidade dos dados
 ```
 
 ## Serviços
@@ -63,7 +66,7 @@ python db/populate_clinical.py
 | Serviço | URL | Auth |
 |---|---|---|
 | Frontend (Vite) | http://localhost:3000 | JWT |
-| API (FastAPI) | http://localhost:8001/docs | JWT |
+| API (FastAPI) | http://localhost:8008/docs | JWT |
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 
@@ -72,8 +75,28 @@ Usuários padrão: `admin` / `clinician` — senha definida via `.env`
 ## Testes
 
 ```bash
-pytest tests/ -v                     # 174 testes
+pytest tests/ -v                     # 174+ testes
 pytest tests/ --cov=app --cov-report=html
+```
+
+## Segurança (QA)
+
+```bash
+python -m bandit -c .bandit -r app/ scripts/ db/
+python -m safety check
+```
+
+## ML Pipeline
+
+```bash
+python scripts/train_all.py          # Treinar 12 modelos
+mlflow ui                            # http://localhost:5000
+```
+
+## DW ETL
+
+```bash
+python -c "from app.etl.dw_loader import run_full_etl; run_full_etl()"
 ```
 
 ## PySpark (opcional)
@@ -96,8 +119,9 @@ alembic upgrade head                 # Aplicar migrations
 
 ## Documentação
 
-- `CLINICAL_MANUAL.md` — Manual clínico completo
-- `STRUCTURE.md` — Estrutura detalhada
-- `DESENVOLVIMENTO.md` — Documentação dev
+- `CLINICAL_MANUAL.md` — Manual clínico completo (19 transtornos, 10 escalas)
+- `STRUCTURE.md` — Estrutura detalhada do projeto
+- `DESENVOLVIMENTO.md` — Documentação de desenvolvimento
+- `SECURITY.md` — Política de segurança
 
-**Status:** MVP completo — 10 fases implementadas, 174 testes, frontend React + backend FastAPI, CI/CD ativo.
+**Status:** CDSS completo — 19 transtornos, 10 escalas, 12 modelos ML, 3 camadas de validação clínica.

@@ -2,9 +2,9 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-|---------|--------------------|
-| 0.1.x   | :white_check_mark: |
+| Version | Supported |
+|---------|-----------|
+| 1.0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
@@ -34,34 +34,42 @@ Include as much detail as possible:
 
 ### Authentication & Authorization
 - JWT-based authentication with configurable token expiration
-- Role-Based Access Control (RBAC) with granular permissions
+- Role-Based Access Control (RBAC) with granular permissions (admin, clinician, viewer)
 - bcrypt password hashing
 - HTTP Bearer token enforcement
 
 ### Data Protection (LGPD Compliance)
-- Field-level encryption for personally identifiable information (PII)
-- Pseudonymization via SHA-256 hashing
+- Field-level encryption for personally identifiable information (PII) via Fernet AES
+- Pseudonymization via SHA-256 hashing (CPF, email)
 - Configurable data retention (default 5 years)
-- Consent management system
+- Consent management system (`/api/v1/consent/`)
 - Full audit logging of all data access
+- UUID-based patient identification (no sequential IDs)
 
-### Network Security
+### Network & Application Security
 - CORS restricted to configured origins
-- Content-Security-Policy headers
-- HSTS with 1-year max-age
-- Rate limiting on API endpoints
+- Content-Security-Policy (CSP) headers
+- HTTP Strict-Transport-Security (HSTS) with 1-year max-age
+- Rate limiting: 100 requests/minute/IP on all API endpoints
 - SQL injection protection on query parameters
 - X-Content-Type-Options: nosniff
 - X-Frame-Options: DENY
 - Referrer-Policy: strict-origin-when-cross-origin
 
-### Dependency Security
-- Regular automated dependency scanning
-- Bandit SAST scanning for Python code
-- Safety CLI for dependency vulnerability checks
-
 ### Secure SDLC
+- Bandit SAST scanning for Python code (`python -m bandit -c .bandit -r app/ scripts/ db/`)
+- Safety CLI for dependency vulnerability checks
 - Pre-commit hooks with security checks
-- Automated CI pipeline with linting and type checking
+- Automated CI pipeline with linting, type checking, and security scanning
 - Code review required for all changes
 - Secrets detection in pre-commit hooks
+
+### Dependency Security
+- Regular automated dependency scanning via Safety CLI
+- Bandit static analysis for Python code
+- Automated security checks in CI pipeline
+
+### Clinical Data Integrity
+- 3-layer validation: Pydantic schema → ClinicalIntegrityService → DB CHECK constraints
+- DB constraints: birth_date, intensity (0-10), duration (≥1), frequency enum, response values (0-10), probability/confidence (0-1)
+- Data quality CLI: `python scripts/check_integrity.py`
