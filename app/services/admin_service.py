@@ -31,6 +31,11 @@ class AdminService:
     def activate_user(self, user_uuid: UUID) -> Optional[User]:
         return self.auth_repo.update_user(user_uuid, is_active=True)
 
+    def update_password(self, user_uuid: UUID, new_password: str) -> Optional[User]:
+        from app.security.hashing import get_password_hash
+        hashed = get_password_hash(new_password)
+        return self.auth_repo.update_user(user_uuid, hashed_password=hashed)
+
     # === Role Permission Management ===
 
     def list_role_permissions(self, role: Optional[str] = None) -> tuple[List[RolePermission], int]:

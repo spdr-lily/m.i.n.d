@@ -14,6 +14,9 @@ export const adminApi = {
   deleteUser: (uuid: string) =>
     apiClient.delete(`/admin/users/${uuid}`),
 
+  changePassword: (uuid: string, new_password: string) =>
+    apiClient.patch(`/admin/users/${uuid}/password`, { new_password }),
+
   // Permissions
   listPermissions: () =>
     apiClient.get<{ total: number; permissions: RolePermission[] }>('/admin/permissions').then((r) => r.data),

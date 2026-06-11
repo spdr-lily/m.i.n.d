@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, Table, Tag, Button, Typography, Breadcrumb, Space, Modal, Form, Input, Select, message } from 'antd'
-import { PlusOutlined, EditOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, KeyOutlined } from '@ant-design/icons'
 import { adminApi } from '../../api/admin'
 import type { User } from '../../types'
 import { ROLE_LABELS } from '../../utils/constants'
@@ -14,7 +14,10 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true)
   const [editModal, setEditModal] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
+  const [passwordModal, setPasswordModal] = useState(false)
+  const [passwordUser, setPasswordUser] = useState<User | null>(null)
   const [form] = Form.useForm()
+  const [pwForm] = Form.useForm()
 
   const fetchUsers = () => {
     setLoading(true)
@@ -30,6 +33,20 @@ export default function UsersPage() {
     setEditingUser(user)
     form.setFieldsValue({ role: user.role, is_active: user.is_active })
     setEditModal(true)
+  }
+
+  const handlePassword = (user: User) => {
+    setPasswordUser(user)
+    pwForm.resetFields()
+    setPasswordModal(true)
+  }
+
+  const handlePasswordSave = async () => {
+    if (!passwordUser) return
+    const values = await pwForm.validateFields()
+    await adminApi.changePassword(passwordUser.user_uuid, values.new_password)
+    message.success('Senha alterada com sucesso')
+    setPasswordModal(false)
   }
 
   const handleSave = async () => {
@@ -71,12 +88,37 @@ export default function UsersPage() {
               title: 'Ações',
               width: 100,
               render: (_: unknown, record: User) => (
-                <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Editar</Button>
+                <Space>
+                  <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Editar</Button>
+                  <Button size="small" icon={<KeyOutlined />} onClick={() => handlePassword(record)}>Senha</Button>
+                </Space>
               ),
             },
           ]}
         />
       </Card>
+
+      <Modal title="Alterar Senha" open={passwordModal} onOk={handlePasswordSave} onCancel={() => setPasswordModal(false)}>
+        <Form form={pwForm} layout="vertical">
+          <Form.Item name="new_password" label="Nova Senha" rules={[
+            { required: true, message: 'Informe a nova senha' },
+            { min: 6, message: 'Mínimo 6 caracteres' },
+          ]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item name="confirm" label="Confirmar Senha" dependencies={['new_password']} rules={[
+            { required: true, message: 'Confirme a senha' },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('new_password') === value) return Promise.resolve()
+                return Promise.reject(new Error('Senhas não conferem'))
+              },
+            }),
+          ]}>
+            <Input.Password />
+          </Form.Item>
+        </Form>
+      </Modal>
 
       <Modal title="Editar Usuário" open={editModal} onOk={handleSave} onCancel={() => setEditModal(false)}>
         <Form form={form} layout="vertical">

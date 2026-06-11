@@ -6,7 +6,7 @@ from app.services.admin_service import AdminService
 from app.services.monitor_service import monitor
 from app.services.audit_service import AuditService
 from app.schemas.admin import (
-    AdminUserUpdate, AdminUserResponse, AdminUserListResponse,
+    AdminUserUpdate, AdminUserResponse, AdminUserListResponse, AdminPasswordChange,
     RolePermissionCreate, RolePermissionResponse, RolePermissionListResponse,
     RoutePermissionCreate, RoutePermissionUpdate, RoutePermissionResponse, RoutePermissionListResponse,
     MonitoringOverview, SystemHealth, EndpointStats,
@@ -73,6 +73,20 @@ def update_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return AdminUserResponse.model_validate(user)
+
+
+@router.patch("/users/{user_uuid}/password", status_code=204)
+def admin_change_password(
+    user_uuid: str,
+    data: AdminPasswordChange,
+    db: Session = Depends(get_db),
+    _=Depends(require_permission(Permission.MANAGE_USERS)),
+):
+    from uuid import UUID
+    service = AdminService(db)
+    user = service.update_password(UUID(user_uuid), data.new_password)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
 
 
 @router.delete("/users/{user_uuid}", status_code=204)

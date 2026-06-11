@@ -23,6 +23,10 @@ class AdminUserResponse(BaseModel):
     updated_at: Optional[datetime] = None
 
 
+class AdminPasswordChange(BaseModel):
+    new_password: str = Field(..., min_length=6, max_length=128)
+
+
 class AdminUserListResponse(BaseModel):
     total: int
     users: List[AdminUserResponse]

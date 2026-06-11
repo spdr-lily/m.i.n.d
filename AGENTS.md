@@ -56,7 +56,6 @@
   - `spark/submit.py` adds `sys.path.insert(0, ...)` so `from spark.jobs import ...` resolves.
   - Spark jobs run with `--driver-class-path /opt/spark/work-dir/postgresql-42.7.1.jar` on `mind_mind-network` with `PG_HOST=mind-postgres`.
   - `population_metrics` job verified: connects via JDBC, reads all 6 tables, computes age distribution + disorder prevalence + scale statistics, exits cleanly (exit code 0).
-
 ### In Progress
 - *(none)*
 
