@@ -1,5 +1,3 @@
-import logo from '../assets/logo.png'
-
 interface MindLogoProps {
   size?: number
   collapsed?: boolean
@@ -10,7 +8,7 @@ export default function MindLogo({ size = 64, collapsed }: MindLogoProps) {
   const w = collapsed ? size : size
   return (
     <img
-      src={logo}
+      src="/logo.png"
       alt="MIND"
       width={w}
       height={h}

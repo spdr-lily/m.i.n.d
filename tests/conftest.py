@@ -1,3 +1,6 @@
+import os
+os.environ["RATE_LIMIT_MAX"] = "10000"
+
 from typing import Generator
 from uuid import uuid4
 from datetime import date
@@ -84,6 +87,31 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield test_client
     app.dependency_overrides.clear()
     db_mod.engine = original_engine
+
+
+@pytest.fixture
+def admin_token(client, db_session) -> str:
+    """Create an admin user and return a valid JWT token."""
+    from app.repositories.auth_repository import AuthRepository
+    from app.security.hashing import get_password_hash
+    import uuid
+    uname = f"admin_{uuid.uuid4().hex[:8]}"
+    repo = AuthRepository(db_session)
+    repo.create_user(
+        username=uname,
+        hashed_password=get_password_hash("testpass"),
+        full_name="Test Admin",
+        role="admin",
+    )
+    resp = client.post("/api/v1/auth/login", json={"username": uname, "password": "testpass"})
+    return resp.json()["access_token"]
+
+
+@pytest.fixture
+def auth_client(client, admin_token):
+    """Client with admin auth header pre-set."""
+    client.headers.update({"Authorization": f"Bearer {admin_token}"})
+    return client
 
 
 @pytest.fixture

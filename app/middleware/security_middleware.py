@@ -26,7 +26,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         # Content-Security-Policy
         csp = (
             "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
             "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
             "img-src 'self' data:; "
             "font-src 'self' data: https://cdn.jsdelivr.net; "
@@ -76,8 +76,8 @@ class SQLInjectionProtectionMiddleware(BaseHTTPMiddleware):
     """Blocks requests with SQL injection patterns in query params."""
 
     SQL_PATTERNS = re.compile(
-        r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|EXEC|EXECUTE|"
-        r"CREATE|TRUNCATE|GRANT|REVOKE)\b)|('')|(--)|(%27)|(%3B)",
+        r"((SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|EXEC|EXECUTE|"
+        r"CREATE|TRUNCATE|GRANT|REVOKE)\s+\w+)|(''|--)|(%27)|(%3B)",
         re.IGNORECASE,
     )
 

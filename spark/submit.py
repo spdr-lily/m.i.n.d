@@ -8,7 +8,9 @@ Usage:
     python spark/submit.py data_import --csv data/patients.csv
 """
 import sys
+import os
 import argparse
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from spark.jobs import batch_inference, population_metrics, data_import
 
 

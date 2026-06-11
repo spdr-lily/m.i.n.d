@@ -1,0 +1,4 @@
+mind.local {
+    tls /etc/certs/mind.local.pem /etc/certs/mind.local-key.pem
+    reverse_proxy api:8000
+}

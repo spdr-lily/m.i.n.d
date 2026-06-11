@@ -3,6 +3,7 @@ import { ConfigProvider, theme } from 'antd'
 import ptBR from 'antd/locale/pt_BR'
 import MainLayout from './components/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
+import ErrorBoundary from './components/ErrorBoundary'
 import LoginPage from './pages/auth/LoginPage'
 import DashboardPage from './pages/dashboard/DashboardPage'
 import PatientListPage from './pages/patients/PatientListPage'
@@ -40,6 +41,7 @@ export default function App() {
         },
       }}
     >
+      <ErrorBoundary>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -76,6 +78,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
+      </ErrorBoundary>
     </ConfigProvider>
   )
 }

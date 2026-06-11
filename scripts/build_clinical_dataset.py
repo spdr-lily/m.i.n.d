@@ -45,8 +45,24 @@ scale_pivot AS (
         sr.consultation_key,
         MAX(CASE WHEN sc.scale_name = 'PHQ-9' THEN sr.total_score END) AS phq9_score,
         MAX(CASE WHEN sc.scale_name = 'GAD-7' THEN sr.total_score END) AS gad7_score,
+        MAX(CASE WHEN sc.scale_name = 'MADRS' THEN sr.total_score END) AS madrs_score,
+        MAX(CASE WHEN sc.scale_name = 'MDQ' THEN sr.total_score END) AS mdq_score,
+        MAX(CASE WHEN sc.scale_name = 'PCL-5' THEN sr.total_score END) AS pcl5_score,
+        MAX(CASE WHEN sc.scale_name = 'Y-BOCS' THEN sr.total_score END) AS ybocs_score,
+        MAX(CASE WHEN sc.scale_name = 'AUDIT' THEN sr.total_score END) AS audit_score,
+        MAX(CASE WHEN sc.scale_name = 'ASRM' THEN sr.total_score END) AS asrm_score,
+        MAX(CASE WHEN sc.scale_name = 'ASRS' THEN sr.total_score END) AS asrs_score,
+        MAX(CASE WHEN sc.scale_name = 'AQ-10' THEN sr.total_score END) AS aq10_score,
         MAX(CASE WHEN sc.scale_name = 'PHQ-9' THEN sr.severity_level END) AS phq9_severity,
-        MAX(CASE WHEN sc.scale_name = 'GAD-7' THEN sr.severity_level END) AS gad7_severity
+        MAX(CASE WHEN sc.scale_name = 'GAD-7' THEN sr.severity_level END) AS gad7_severity,
+        MAX(CASE WHEN sc.scale_name = 'MADRS' THEN sr.severity_level END) AS madrs_severity,
+        MAX(CASE WHEN sc.scale_name = 'MDQ' THEN sr.severity_level END) AS mdq_severity,
+        MAX(CASE WHEN sc.scale_name = 'PCL-5' THEN sr.severity_level END) AS pcl5_severity,
+        MAX(CASE WHEN sc.scale_name = 'Y-BOCS' THEN sr.severity_level END) AS ybocs_severity,
+        MAX(CASE WHEN sc.scale_name = 'AUDIT' THEN sr.severity_level END) AS audit_severity,
+        MAX(CASE WHEN sc.scale_name = 'ASRM' THEN sr.severity_level END) AS asrm_severity,
+        MAX(CASE WHEN sc.scale_name = 'ASRS' THEN sr.severity_level END) AS asrs_severity,
+        MAX(CASE WHEN sc.scale_name = 'AQ-10' THEN sr.severity_level END) AS aq10_severity
     FROM dw.fact_scale_response sr
     JOIN dw.dim_scale sc ON sc.scale_key = sr.scale_key
     GROUP BY sr.consultation_key
@@ -87,8 +103,24 @@ SELECT
     cb.*,
     sp.phq9_score::float,
     sp.gad7_score::float,
+    sp.madrs_score::float,
+    sp.mdq_score::float,
+    sp.pcl5_score::float,
+    sp.ybocs_score::float,
+    sp.audit_score::float,
+    sp.asrm_score::float,
+    sp.asrs_score::float,
+    sp.aq10_score::float,
     sp.phq9_severity,
     sp.gad7_severity,
+    sp.madrs_severity,
+    sp.mdq_severity,
+    sp.pcl5_severity,
+    sp.ybocs_severity,
+    sp.audit_severity,
+    sp.asrm_severity,
+    sp.asrs_severity,
+    sp.aq10_severity,
     sa.symptom_names,
     sa.max_symptom_intensity::float,
     sa.present_symptom_count,
@@ -114,6 +146,8 @@ def build_clinical_dataset():
         rows = conn.execute(text(QUERY)).mappings().all()
 
     # Build evolution metrics per patient
+    scale_cols = ["phq9", "gad7", "madrs", "mdq", "pcl5", "ybocs", "audit", "asrm", "asrs", "aq10"]
+
     prev = {}
     enriched = []
     for r in rows:
@@ -124,15 +158,15 @@ def build_clinical_dataset():
         if p:
             r["prev_consultation_date"] = p["consultation_date"].isoformat()
             r["days_since_last_consult"] = (r["consultation_date"] - p["consultation_date"]).days
-            r["phq9_delta"] = round((r["phq9_score"] or 0) - (p["phq9_score"] or 0), 2)
-            r["gad7_delta"] = round((r["gad7_score"] or 0) - (p["gad7_score"] or 0), 2)
+            for sc in scale_cols:
+                r[f"{sc}_delta"] = round((r[f"{sc}_score"] or 0) - (p[f"{sc}_score"] or 0), 2)
             r["diagnosis_changed"] = (r["primary_diagnosis"] != p["primary_diagnosis"])
             r["consult_num"] = p.get("consult_num", 0) + 1
         else:
             r["prev_consultation_date"] = None
             r["days_since_last_consult"] = None
-            r["phq9_delta"] = None
-            r["gad7_delta"] = None
+            for sc in scale_cols:
+                r[f"{sc}_delta"] = None
             r["diagnosis_changed"] = None
             r["consult_num"] = 1
 
@@ -140,17 +174,20 @@ def build_clinical_dataset():
         enriched.append(r)
 
     # Output CSV
+    scale_score_fields = [f"{sc}_score" for sc in scale_cols]
+    scale_severity_fields = [f"{sc}_severity" for sc in scale_cols]
+    scale_delta_fields = [f"{sc}_delta" for sc in scale_cols]
     fieldnames = [
         "patient_uuid", "age_group", "sex", "education_level",
         "consultation_uuid", "consultation_date", "consult_num",
         "symptom_count", "present_symptom_count", "avg_intensity", "total_intensity",
         "max_symptom_intensity", "symptom_names",
-        "phq9_score", "phq9_severity", "gad7_score", "gad7_severity",
+        *scale_score_fields, *scale_severity_fields,
         "primary_diagnosis", "diagnosis_probability", "diagnosis_confidence", "all_diagnoses",
         "medication_names", "medication_classifications", "medication_count",
         "has_inference", "inference_count",
         "prev_consultation_date", "days_since_last_consult",
-        "phq9_delta", "gad7_delta", "diagnosis_changed",
+        *scale_delta_fields, "diagnosis_changed",
     ]
 
     os.makedirs("data/datasets", exist_ok=True)

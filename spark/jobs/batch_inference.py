@@ -46,7 +46,7 @@ def load_disorders(spark: SparkSession) -> DataFrame:
     return (
         spark.read.format("jdbc")
         .option("url", JDBC_URL)
-        .option("dbtable", "diagnostic.disorder")
+        .option("dbtable", "diagnostic.disorders")
         .option("user", DB_PROPERTIES["user"])
         .option("password", DB_PROPERTIES["password"])
         .option("driver", DB_PROPERTIES["driver"])
@@ -59,7 +59,7 @@ def write_inferences(df: DataFrame):
         df.write
         .format("jdbc")
         .option("url", JDBC_URL)
-        .option("dbtable", "clinical.diagnostic_inference")
+        .option("dbtable", "diagnostic.diagnostic_inference")
         .option("user", DB_PROPERTIES["user"])
         .option("password", DB_PROPERTIES["password"])
         .option("driver", DB_PROPERTIES["driver"])

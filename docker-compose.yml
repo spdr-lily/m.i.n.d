@@ -48,7 +48,7 @@ services:
       ACCESS_TOKEN_EXPIRE_MINUTES: 60
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       DEBUG: "false"
-      CORS_ORIGINS: http://localhost:3000,http://localhost:8000
+      CORS_ORIGINS: http://localhost:8000
       PORT: "8000"
     ports:
       - "8000:8000"
@@ -87,7 +87,7 @@ services:
     command: >
       bash -c "
         airflow db init &&
-        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@mind.local 2>/dev/null;
+        airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@mind.example.com 2>/dev/null;
         airflow scheduler & airflow webserver
       "
 
@@ -97,12 +97,7 @@ services:
       dockerfile: docker/spark/Dockerfile
     container_name: mind-spark
     environment:
-      SPARK_MODE: master
-      SPARK_MASTER_URL: spark://spark:7077
-      SPARK_RPC_AUTHENTICATION_ENABLED: "no"
-      SPARK_RPC_ENCRYPTION_ENABLED: "no"
-      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: "no"
-      SPARK_SSL_ENABLED: "no"
+      SPARK_NO_DAEMONIZE: "true"
     ports:
       - "9090:8080"
       - "7077:7077"
@@ -114,7 +109,7 @@ services:
     image: dpage/pgadmin4:latest
     container_name: mind-pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@mind.local
+      PGADMIN_DEFAULT_EMAIL: admin@mind.example.com
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "5050:80"
@@ -125,6 +120,21 @@ services:
     restart: unless-stopped
     profiles:
       - tools
+
+  caddy:
+    image: caddy:2
+    container_name: mind-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./certificates:/etc/certs
+    depends_on:
+      - api
+    networks:
+      - mind-network
+    restart: unless-stopped
 
 volumes:
   postgres_data:

@@ -177,7 +177,7 @@ function TimelineList({ events, navigate }: { events: TimelineEvent[]; navigate:
                 </Tag>
                 <Card size="small" style={{ background: '#fafafa', marginTop: 8 }}>
                   {e.episode_type && <Tag color="orange">{e.episode_type}</Tag>}
-                  {e.clinical_description && <Text block>{e.clinical_description}</Text>}
+                  {e.clinical_description && <Text style={{ display: 'block' }}>{e.clinical_description}</Text>}
                 </Card>
               </div>
             </div>

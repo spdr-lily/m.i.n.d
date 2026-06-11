@@ -1,7 +1,8 @@
 import os
 
-DB_URL = os.getenv("DATABASE_URL", "postgresql://postgres:137_Cmspelo@localhost:5432/mind")
-JDBC_URL = f"jdbc:postgresql://localhost:5432/mind"
+PG_HOST = os.getenv("PG_HOST", "mind-postgres")
+DB_URL = os.getenv("DATABASE_URL", f"postgresql://postgres:137_Cmspelo@{PG_HOST}:5432/mind")
+JDBC_URL = f"jdbc:postgresql://{PG_HOST}:5432/mind"
 DB_PROPERTIES = {
     "user": os.getenv("DB_USER", "postgres"),
     "password": os.getenv("DB_PASSWORD", "137_Cmspelo"),

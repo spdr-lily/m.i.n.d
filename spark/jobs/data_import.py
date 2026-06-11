@@ -49,7 +49,7 @@ def import_symptoms_from_csv(spark: SparkSession, csv_path: str) -> int:
     (
         df.write.format("jdbc")
         .option("url", JDBC_URL)
-        .option("dbtable", "clinical.symptom")
+        .option("dbtable", "diagnostic.symptoms")
         .option("user", DB_PROPERTIES["user"])
         .option("password", DB_PROPERTIES["password"])
         .option("driver", DB_PROPERTIES["driver"])
@@ -88,7 +88,7 @@ def import_patients_from_csv(spark: SparkSession, csv_path: str) -> dict:
     (
         identities.write.format("jdbc")
         .option("url", JDBC_URL)
-        .option("dbtable", "core.patient_identity")
+        .option("dbtable", "security.patient_identity")
         .option("user", DB_PROPERTIES["user"])
         .option("password", DB_PROPERTIES["password"])
         .option("driver", DB_PROPERTIES["driver"])
@@ -100,7 +100,7 @@ def import_patients_from_csv(spark: SparkSession, csv_path: str) -> dict:
     (
         profiles.write.format("jdbc")
         .option("url", JDBC_URL)
-        .option("dbtable", "core.patient_profile")
+        .option("dbtable", "clinical.patient_profile")
         .option("user", DB_PROPERTIES["user"])
         .option("password", DB_PROPERTIES["password"])
         .option("driver", DB_PROPERTIES["driver"])

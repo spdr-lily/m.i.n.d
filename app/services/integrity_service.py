@@ -51,7 +51,13 @@ class ClinicalIntegrityService:
     MAX_AGE_YEARS = 120
     MIN_AGE_FOR_CONSULTATION = 3
     MAX_INTENSITY = 10.0
-    MAX_SCALE_ITEM_SCORE = 4.0
+    MAX_SCALE_ITEM_SCORE = 6.0
+
+    SCALE_ITEM_MAXES: Dict[str, float] = {
+        "PHQ-9": 3.0, "GAD-7": 3.0, "MADRS": 6.0, "MDQ": 1.0,
+        "PCL-5": 4.0, "Y-BOCS": 4.0, "AUDIT": 4.0, "ASRM": 4.0,
+        "ASRS": 4.0, "AQ-10": 1.0,
+    }
 
     def __init__(self, db: Session):
         self.db = db
@@ -169,6 +175,14 @@ class ClinicalIntegrityService:
     # Scale validation
     # ========================================================================
 
+    def _get_scale_item_max(self, question: ScaleQuestion) -> float:
+        scale = self.db.query(AssessmentScale).filter_by(
+            scale_id=question.scale_id
+        ).first()
+        if scale and scale.scale_name in self.SCALE_ITEM_MAXES:
+            return self.SCALE_ITEM_MAXES[scale.scale_name]
+        return self.MAX_SCALE_ITEM_SCORE
+
     def validate_scale_response(
         self, response: ScaleResponse
     ) -> List[IntegrityViolation]:
@@ -184,12 +198,13 @@ class ClinicalIntegrityService:
                 ))
             elif response.response_value is not None:
                 val = float(response.response_value)
-                if val < 0 or val > self.MAX_SCALE_ITEM_SCORE:
+                max_allowed = self._get_scale_item_max(question)
+                if val < 0 or val > max_allowed:
                     violations.append(IntegrityViolation(
                         "response_value",
-                        f"response_value ({val}) outside valid range [0, {self.MAX_SCALE_ITEM_SCORE}]",
+                        f"response_value ({val}) outside valid range [0, {max_allowed}] for question {question.question_id}",
                         actual_value=val,
-                        expected=f"0-{self.MAX_SCALE_ITEM_SCORE}",
+                        expected=f"0-{max_allowed}",
                     ))
         return violations
 

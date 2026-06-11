@@ -21,8 +21,7 @@ xgboost>=2.0.3
 
 # MLOps
 mlflow>=2.10.0
-dvc>=3.48.0
-dvc-postgres>=3.2.0
+dvc[postgres]>=3.48.0
 
 # Bayesian Inference & Probabilistic Programming
 pymc>=5.10.0

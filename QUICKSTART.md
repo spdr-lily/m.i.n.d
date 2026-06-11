@@ -37,7 +37,7 @@ python scripts/seed_scales_groups.py
 python scripts/seed_diagnostic_data.py
 
 # 7. Servidor
-uvicorn app.main:app --reload --port 8008
+uvicorn app.main:app --reload --port 8000
 ```
 
 ### Frontend
@@ -45,7 +45,7 @@ uvicorn app.main:app --reload --port 8008
 ```powershell
 cd mind-ui
 npm install
-npm run dev    # http://localhost:3000
+npm run dev    # http://localhost:8000
 ```
 
 ```bash
@@ -65,12 +65,29 @@ python scripts/check_integrity.py    # Verificar qualidade dos dados
 
 | Serviço | URL | Auth |
 |---|---|---|
-| Frontend (Vite) | http://localhost:3000 | JWT |
-| API (FastAPI) | http://localhost:8008/docs | JWT |
+| Frontend (Vite) | http://localhost:8000 | JWT |
+| API (FastAPI) | http://localhost:8000/docs | JWT |
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 
 Usuários padrão: `admin` / `clinician` — senha definida via `.env`
+
+## Escalas
+
+Todas as 10 escalas estão traduzidas para português (itens, gravidade e interpretação):
+
+| Escala | Itens | Português |
+|---|---|---|
+| PHQ-9 | 9 (0-3) | Questionário de Saúde do Paciente-9 |
+| GAD-7 | 7 (0-3) | Transtorno de Ansiedade Generalizada-7 |
+| MADRS | 10 (0-6) | Escala de Depressão de Montgomery-Åsberg |
+| MDQ | 13 (0-1) | Questionário de Transtorno do Humor |
+| PCL-5 | 20 (0-4) | Lista de Verificação de TEPT para DSM-5 |
+| Y-BOCS | 10 (0-4) | Escala Obsessivo-Compulsiva de Yale-Brown |
+| AUDIT | 10 (0-4) | Teste de Identificação de Transtornos por Uso de Álcool |
+| ASRM | 5 (0-4) | Escala de Autoavaliação de Mania de Altman |
+| ASRS | 18 (0-4) | Escala de Autorrelato de TDAH em Adultos |
+| AQ-10 | 10 (0-1) | Quociente do Espectro Autista |
 
 ## Testes
 
@@ -119,9 +136,9 @@ alembic upgrade head                 # Aplicar migrations
 
 ## Documentação
 
-- `CLINICAL_MANUAL.md` — Manual clínico completo (19 transtornos, 10 escalas)
+- `CLINICAL_MANUAL.md` — Manual clínico completo (19 transtornos, 10 escalas em português)
 - `STRUCTURE.md` — Estrutura detalhada do projeto
 - `DESENVOLVIMENTO.md` — Documentação de desenvolvimento
 - `SECURITY.md` — Política de segurança
 
-**Status:** CDSS completo — 19 transtornos, 10 escalas, 12 modelos ML, 3 camadas de validação clínica.
+**Status:** CDSS completo — 19 transtornos, 10 escalas em português, 12 modelos ML, 3 camadas de validação clínica.

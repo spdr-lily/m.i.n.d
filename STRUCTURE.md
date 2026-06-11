@@ -286,6 +286,6 @@ m.i.n.d/
 |---|---|---|
 | postgres | 5432 | configurar via `.env` |
 | pgadmin | 5050 | `admin@mind.com` / `admin` |
-| app | 8001/8008 | — |
+| app | 8000 | — |
 | airflow-webserver | 8080 | `admin` / `admin` |
 | airflow-scheduler | — | — |

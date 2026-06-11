@@ -35,20 +35,20 @@ class TestAdminUserManagement:
             username=uname,
             hashed_password=get_password_hash(pw),
             full_name="Clinician",
-            role="clinician",
+            role="psychologist",
         )
         return uname, pw
 
     def _admin_token(self, client, db_session):
         u, p = self._make_admin(db_session)
-        resp = client.post("/api/auth/login", json={"username": u, "password": p})
+        resp = client.post("/api/v1/auth/login", json={"username": u, "password": p})
         return resp.json()["access_token"]
 
     def test_list_users(self, client, db_session):
         self._make_admin(db_session)
         self._make_clinician(db_session)
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/users", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/users", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         data = resp.json()
         assert data["total"] >= 2
@@ -59,13 +59,13 @@ class TestAdminUserManagement:
         repo = AuthRepository(db_session)
         admin = repo.get_by_username(u)
         token = self._admin_token(client, db_session)
-        resp = client.get(f"/api/admin/users/{admin.user_uuid}", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get(f"/api/v1/admin/users/{admin.user_uuid}", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         assert resp.json()["username"] == u
 
     def test_get_user_not_found(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get(f"/api/admin/users/{uuid4()}", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get(f"/api/v1/admin/users/{uuid4()}", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 404
 
     def test_update_user_role(self, client, db_session):
@@ -74,20 +74,20 @@ class TestAdminUserManagement:
         clin = repo.get_by_username(clin_u)
         token = self._admin_token(client, db_session)
         resp = client.patch(
-            f"/api/admin/users/{clin.user_uuid}",
-            json={"role": "viewer"},
+            f"/api/v1/admin/users/{clin.user_uuid}",
+            json={"role": "researcher"},
             headers={"Authorization": f"Bearer {token}"},
         )
         assert resp.status_code == 200
-        assert resp.json()["role"] == "viewer"
+        assert resp.json()["role"] == "researcher"
 
     def test_cannot_deactivate_self(self, client, db_session):
         adm_u, _ = self._make_admin(db_session)
         repo = AuthRepository(db_session)
         admin = repo.get_by_username(adm_u)
-        token = client.post("/api/auth/login", json={"username": adm_u, "password": "adminpass"}).json()["access_token"]
+        token = client.post("/api/v1/auth/login", json={"username": adm_u, "password": "adminpass"}).json()["access_token"]
         resp = client.patch(
-            f"/api/admin/users/{admin.user_uuid}",
+            f"/api/v1/admin/users/{admin.user_uuid}",
             json={"is_active": False},
             headers={"Authorization": f"Bearer {token}"},
         )
@@ -99,7 +99,7 @@ class TestAdminUserManagement:
         clin = repo.get_by_username(clin_u)
         token = self._admin_token(client, db_session)
         resp = client.delete(
-            f"/api/admin/users/{clin.user_uuid}",
+            f"/api/v1/admin/users/{clin.user_uuid}",
             headers={"Authorization": f"Bearer {token}"},
         )
         assert resp.status_code == 204
@@ -108,9 +108,9 @@ class TestAdminUserManagement:
 
     def test_clinician_cannot_list_users(self, client, db_session):
         clin_u, _ = self._make_clinician(db_session)
-        resp = client.post("/api/auth/login", json={"username": clin_u, "password": "clinpass"})
+        resp = client.post("/api/v1/auth/login", json={"username": clin_u, "password": "clinpass"})
         token = resp.json()["access_token"]
-        resp = client.get("/api/admin/users", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/users", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 403
 
 
@@ -119,14 +119,14 @@ class TestAdminPermissions:
         u = _unique_user("admperm")
         repo = AuthRepository(db_session)
         repo.create_user(username=u, hashed_password=get_password_hash("pass"), role="admin")
-        resp = client.post("/api/auth/login", json={"username": u, "password": "pass"})
+        resp = client.post("/api/v1/auth/login", json={"username": u, "password": "pass"})
         return resp.json()["access_token"]
 
     def test_add_role_permission(self, client, db_session):
         token = self._admin_token(client, db_session)
         resp = client.post(
-            "/api/admin/permissions",
-            json={"role": "clinician", "permission": "custom:perm"},
+            "/api/v1/admin/permissions",
+            json={"role": "psychiatrist", "permission": "custom:perm"},
             headers={"Authorization": f"Bearer {token}"},
         )
         assert resp.status_code == 201
@@ -135,23 +135,23 @@ class TestAdminPermissions:
     def test_list_role_permissions(self, client, db_session):
         token = self._admin_token(client, db_session)
         client.post(
-            "/api/admin/permissions",
+            "/api/v1/admin/permissions",
             json={"role": "admin", "permission": "test:perm"},
             headers={"Authorization": f"Bearer {token}"},
         )
-        resp = client.get("/api/admin/permissions", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/permissions", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         assert resp.json()["total"] >= 1
 
     def test_remove_role_permission(self, client, db_session):
         token = self._admin_token(client, db_session)
         create_resp = client.post(
-            "/api/admin/permissions",
-            json={"role": "viewer", "permission": "to:remove"},
+            "/api/v1/admin/permissions",
+            json={"role": "researcher", "permission": "to:remove"},
             headers={"Authorization": f"Bearer {token}"},
         )
         perm_id = create_resp.json()["id"]
-        resp = client.delete(f"/api/admin/permissions/{perm_id}", headers={"Authorization": f"Bearer {token}"})
+        resp = client.delete(f"/api/v1/admin/permissions/{perm_id}", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 204
 
 
@@ -160,13 +160,13 @@ class TestAdminRoutePermissions:
         u = _unique_user("admroute")
         repo = AuthRepository(db_session)
         repo.create_user(username=u, hashed_password=get_password_hash("pass"), role="admin")
-        resp = client.post("/api/auth/login", json={"username": u, "password": "pass"})
+        resp = client.post("/api/v1/auth/login", json={"username": u, "password": "pass"})
         return resp.json()["access_token"]
 
     def test_create_route_permission(self, client, db_session):
         token = self._admin_token(client, db_session)
         resp = client.post(
-            "/api/admin/route-permissions",
+            "/api/v1/admin/route-permissions",
             json={
                 "http_method": "GET",
                 "path_pattern": "/api/sensitive/%",
@@ -179,18 +179,18 @@ class TestAdminRoutePermissions:
 
     def test_list_route_permissions(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/route-permissions", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/route-permissions", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
 
     def test_update_route_permission(self, client, db_session):
         token = self._admin_token(client, db_session)
         create = client.post(
-            "/api/admin/route-permissions",
+            "/api/v1/admin/route-permissions",
             json={"http_method": "POST", "path_pattern": "/api/test/%", "permission_required": "write:test"},
             headers={"Authorization": f"Bearer {token}"},
         ).json()
         resp = client.patch(
-            f"/api/admin/route-permissions/{create['id']}",
+            f"/api/v1/admin/route-permissions/{create['id']}",
             json={"permission_required": "admin:test", "description": "Updated"},
             headers={"Authorization": f"Bearer {token}"},
         )
@@ -200,11 +200,11 @@ class TestAdminRoutePermissions:
     def test_delete_route_permission(self, client, db_session):
         token = self._admin_token(client, db_session)
         create = client.post(
-            "/api/admin/route-permissions",
+            "/api/v1/admin/route-permissions",
             json={"http_method": "DELETE", "path_pattern": "/api/temp/%", "permission_required": "delete:temp"},
             headers={"Authorization": f"Bearer {token}"},
         ).json()
-        resp = client.delete(f"/api/admin/route-permissions/{create['id']}", headers={"Authorization": f"Bearer {token}"})
+        resp = client.delete(f"/api/v1/admin/route-permissions/{create['id']}", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 204
 
 
@@ -213,12 +213,12 @@ class TestAdminMonitoring:
         u = _unique_user("admmon")
         repo = AuthRepository(db_session)
         repo.create_user(username=u, hashed_password=get_password_hash("pass"), role="admin")
-        resp = client.post("/api/auth/login", json={"username": u, "password": "pass"})
+        resp = client.post("/api/v1/auth/login", json={"username": u, "password": "pass"})
         return resp.json()["access_token"]
 
     def test_monitoring_stats(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/monitoring/stats", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/monitoring/stats", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         data = resp.json()
         assert "total_requests" in data
@@ -226,14 +226,14 @@ class TestAdminMonitoring:
 
     def test_monitoring_health(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/monitoring/health", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/monitoring/health", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         data = resp.json()
         assert data["status"] in ("healthy", "degraded")
 
     def test_recent_requests(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/monitoring/requests", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/monitoring/requests", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         data = resp.json()
         assert "requests" in data
@@ -244,12 +244,12 @@ class TestAdminAudit:
         u = _unique_user("admaudit")
         repo = AuthRepository(db_session)
         repo.create_user(username=u, hashed_password=get_password_hash("pass"), role="admin")
-        resp = client.post("/api/auth/login", json={"username": u, "password": "pass"})
+        resp = client.post("/api/v1/auth/login", json={"username": u, "password": "pass"})
         return resp.json()["access_token"]
 
     def test_admin_audit_logs(self, client, db_session):
         token = self._admin_token(client, db_session)
-        resp = client.get("/api/admin/audit/logs", headers={"Authorization": f"Bearer {token}"})
+        resp = client.get("/api/v1/admin/audit/logs", headers={"Authorization": f"Bearer {token}"})
         assert resp.status_code == 200
         data = resp.json()
         assert "logs" in data

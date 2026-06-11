@@ -130,7 +130,7 @@ Aplicação React + TypeScript + Vite em `mind-ui/`:
 ```bash
 cd mind-ui
 npm install
-npm run dev    # http://localhost:3000 (API em http://127.0.0.1:8008/api/v1)
+npm run dev    # http://localhost:8000 (API em http://127.0.0.1:8000/api/v1)
 ```
 
 ---
@@ -169,21 +169,21 @@ python scripts/seed_scales_groups.py
 python scripts/seed_diagnostic_data.py
 
 # 4. Servidor
-uvicorn app.main:app --host 0.0.0.0 --port 8008
+uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ### Frontend
 ```bash
 cd mind-ui
 npm install
-npm run dev    # http://localhost:3000
+npm run dev    # http://localhost:8000
 ```
 
 ### Acesso
 | Serviço | URL | Auth |
 |---|---|---|
-| Frontend (Vite dev) | http://localhost:3000 | JWT |
-| API (Swagger) | http://localhost:8008/docs | JWT |
+| Frontend (Vite dev) | http://localhost:8000 | JWT |
+| API (Swagger) | http://localhost:8000/docs | JWT |
 | pgAdmin | http://localhost:5050 | `admin@mind.com` / `admin` |
 | Airflow | http://localhost:8080 | `admin` / `admin` |
 

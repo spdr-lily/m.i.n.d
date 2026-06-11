@@ -61,26 +61,29 @@ export default function DashboardPage() {
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
 
-  const sexPieData = demographics ? Object.entries(demographics.sex_distribution).map(([k, v]) => ({
-    name: SEX_LABELS[k] || `Tipo ${k}`,
-    value: v,
-  })) : []
+  const sexPieData = demographics?.sex_distribution
+    ? Object.entries(demographics.sex_distribution).map(([k, v]) => ({
+        name: SEX_LABELS[k] || `Tipo ${k}`,
+        value: v,
+      })) : []
 
-  const genderPieData = demographics ? Object.entries(demographics.gender_identity_distribution).map(([k, v]) => ({
-    name: k,
-    value: v,
-  })) : []
+  const genderPieData = demographics?.gender_identity_distribution
+    ? Object.entries(demographics.gender_identity_distribution).map(([k, v]) => ({
+        name: k,
+        value: v,
+      })) : []
 
-  const ageBarData = demographics ? Object.entries(demographics.age_distribution).map(([k, v]) => ({
-    name: `${k} anos`,
-    value: v,
-  })) : []
+  const ageBarData = demographics?.age_distribution
+    ? Object.entries(demographics.age_distribution).map(([k, v]) => ({
+        name: `${k} anos`,
+        value: v,
+      })) : []
 
   const consultChartData = consultationData?.trend?.daily_counts
     ? Object.entries(consultationData.trend.daily_counts).map(([date, count]) => ({
         date: date.slice(5, 10),
         Consultas: count,
-        Média: consultationData.trend.moving_avg_7d[date] || null,
+        Média: consultationData.trend.moving_avg_7d?.[date] ?? null,
       }))
     : []
 

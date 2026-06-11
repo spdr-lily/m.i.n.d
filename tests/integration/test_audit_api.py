@@ -20,11 +20,11 @@ class TestAuditAPI:
             username="audit_clinician",
             hashed_password=get_password_hash("clin123"),
             full_name="Audit Clinician",
-            role="clinician",
+            role="psychologist",
         )
 
     def _login(self, client, username, password):
-        resp = client.post("/api/auth/login", json={"username": username, "password": password})
+        resp = client.post("/api/v1/auth/login", json={"username": username, "password": password})
         assert resp.status_code == 200
         return resp.json()["access_token"]
 
@@ -33,7 +33,7 @@ class TestAuditAPI:
         service = AuditService(db_session)
         service.record(entity_name="Test", operation_type="CREATE", performed_by="audit_admin")
         token = self._login(client, "audit_admin", "admin123")
-        response = client.get("/api/audit/logs", headers={"Authorization": f"Bearer {token}"})
+        response = client.get("/api/v1/audit/logs", headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == 200
         data = response.json()
         assert data["total"] >= 1
@@ -42,7 +42,7 @@ class TestAuditAPI:
     def test_clinician_cannot_read_audit_logs(self, client, db_session):
         self._create_clinician(db_session)
         token = self._login(client, "audit_clinician", "clin123")
-        response = client.get("/api/audit/logs", headers={"Authorization": f"Bearer {token}"})
+        response = client.get("/api/v1/audit/logs", headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == 403
 
     def test_audit_log_filters(self, client, db_session):
@@ -54,11 +54,11 @@ class TestAuditAPI:
         token = self._login(client, "audit_admin", "admin123")
         headers = {"Authorization": f"Bearer {token}"}
 
-        response = client.get("/api/audit/logs?operation_type=UPDATE", headers=headers)
+        response = client.get("/api/v1/audit/logs?operation_type=UPDATE", headers=headers)
         assert response.status_code == 200
         assert response.json()["total"] == 1
 
-        response = client.get("/api/audit/logs?entity_name=Consultation", headers=headers)
+        response = client.get("/api/v1/audit/logs?entity_name=Consultation", headers=headers)
         assert response.status_code == 200
         assert response.json()["total"] == 1
 
@@ -67,12 +67,12 @@ class TestAuditAPI:
         service = AuditService(db_session)
         log = service.record(entity_name="Test", operation_type="DELETE", performed_by="audit_admin")
         token = self._login(client, "audit_admin", "admin123")
-        response = client.get(f"/api/audit/logs/{log.audit_id}", headers={"Authorization": f"Bearer {token}"})
+        response = client.get(f"/api/v1/audit/logs/{log.audit_id}", headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == 200
         assert response.json()["operation_type"] == "DELETE"
 
     def test_get_audit_log_not_found(self, client, db_session):
         self._create_admin(db_session)
         token = self._login(client, "audit_admin", "admin123")
-        response = client.get("/api/audit/logs/99999", headers={"Authorization": f"Bearer {token}"})
+        response = client.get("/api/v1/audit/logs/99999", headers={"Authorization": f"Bearer {token}"})
         assert response.status_code == 404

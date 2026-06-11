@@ -1,0 +1,10 @@
+{
+  "patients": [],
+  "consultations": [],
+  "inference_sets": [],
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "info": 0
+  }
+}

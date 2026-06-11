@@ -113,3 +113,74 @@ class BIService:
             }
             for r in results
         ]
+
+    def get_prevalence_trends(self, months: int = 12) -> List[Dict[str, Any]]:
+        sql = text("""
+            SELECT
+                dd.disorder_name,
+                d.year || '-' || LPAD(d.month::text, 2, '0') AS year_month,
+                COUNT(*) AS diagnosis_count,
+                AVG(fd.probability)::float AS avg_probability
+            FROM dw.fact_diagnosis fd
+            JOIN dw.dim_disorder dd ON fd.disorder_key = dd.disorder_key
+            JOIN dw.dim_date d ON fd.date_key = d.date_key
+            WHERE d.full_date >= CURRENT_DATE - INTERVAL ':months months'
+            GROUP BY dd.disorder_name, d.year, d.month
+            ORDER BY dd.disorder_name, year_month
+        """)
+        df = pd.read_sql_query(sql, self.session.bind, params={"months": months})
+        if df.empty:
+            return []
+        result = []
+        for disorder_name, group in df.groupby("disorder_name"):
+            group = group.sort_values("year_month")
+            result.append({
+                "disorder_name": disorder_name,
+                "monthly_counts": [
+                    {"month": r.year_month, "count": int(r.diagnosis_count), "avg_probability": r.avg_probability}
+                    for r in group.itertuples()
+                ],
+                "total_count": int(group["diagnosis_count"].sum()),
+            })
+        return sorted(result, key=lambda x: x["total_count"], reverse=True)
+
+    def get_comorbidity_heatmap(self, top_n: int = 10) -> Dict[str, Any]:
+        sql = text("""
+            WITH consult_disorders AS (
+                SELECT fd.consultation_key, dd.disorder_name
+                FROM dw.fact_diagnosis fd
+                JOIN dw.dim_disorder dd ON fd.disorder_key = dd.disorder_key
+                GROUP BY fd.consultation_key, dd.disorder_name
+            ),
+            disorder_pairs AS (
+                SELECT a.disorder_name AS disorder_a,
+                       b.disorder_name AS disorder_b,
+                       COUNT(*) AS co_occurrence_count
+                FROM consult_disorders a
+                JOIN consult_disorders b ON a.consultation_key = b.consultation_key
+                    AND a.disorder_name < b.disorder_name
+                GROUP BY a.disorder_name, b.disorder_name
+            )
+            SELECT disorder_a, disorder_b, co_occurrence_count
+            FROM disorder_pairs
+            ORDER BY co_occurrence_count DESC
+            LIMIT :limit
+        """)
+        df = pd.read_sql_query(sql, self.session.bind, params={"limit": top_n ** 2})
+        if df.empty:
+            return {"disorders": [], "pairs": []}
+
+        disorders = sorted(set(df["disorder_a"].tolist() + df["disorder_b"].tolist()))
+        matrix = pd.DataFrame(0, index=disorders, columns=disorders)
+        for _, row in df.iterrows():
+            matrix.loc[row.disorder_a, row.disorder_b] = row.co_occurrence_count
+            matrix.loc[row.disorder_b, row.disorder_a] = row.co_occurrence_count
+
+        return {
+            "disorders": disorders,
+            "pairs": [
+                {"disorder_a": r.disorder_a, "disorder_b": r.disorder_b, "count": int(r.co_occurrence_count)}
+                for r in df.itertuples()
+            ],
+            "matrix": matrix.to_dict(),
+        }

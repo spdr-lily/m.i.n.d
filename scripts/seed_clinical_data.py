@@ -422,6 +422,158 @@ SCALE_DEFS = {
         "max_score": 21.0,
         "severity": [(0, "none"), (5, "mild"), (10, "moderate"), (15, "severe")],
     },
+    "MADRS": {
+        "description": "Escala de Depressão de Montgomery-Åsberg — 10 itens para gravidade da depressão",
+        "questions": [
+            "Tristeza aparente — desânimo, melancolia e desespero",
+            "Tristeza relatada — relatos de humor deprimido",
+            "Tensão interna — sentimentos de desconforto vago, irritabilidade",
+            "Sono reduzido — redução da duração ou profundidade do sono",
+            "Apetite reduzido — sensação de perda de apetite",
+            "Dificuldade de concentração — dificuldade em organizar os pensamentos",
+            "Lassidão — dificuldade em iniciar atividades diárias",
+            "Incapacidade de sentir — interesse reduzido pelo ambiente",
+            "Pensamentos pessimistas — culpa, inferioridade, ruína",
+            "Pensamentos suicidas — desejo de morrer",
+        ],
+        "max_score": 60.0,
+        "severity": [(0, "absent"), (7, "mild"), (20, "moderate"), (35, "severe")],
+    },
+    "MDQ": {
+        "description": "Questionário de Transtorno do Humor — 13 itens para triagem de espectro bipolar",
+        "questions": [
+            "Sentiu-se tão bem ou eufórico que outros acharam que você não estava normal?",
+            "Sentiu-se tão irritado que gritou com pessoas ou começou brigas?",
+            "Sentiu-se muito mais autoconfiante que o habitual?",
+            "Dormiu muito menos que o habitual e não se sentiu cansado?",
+            "Falou muito mais ou mais rápido que o habitual?",
+            "Teve pensamentos acelerados na cabeça?",
+            "Distraiu-se facilmente com coisas sem importância?",
+            "Teve muito mais energia que o habitual?",
+            "Esteve muito mais ativo ou fez muitas coisas ao mesmo tempo?",
+            "Esteve muito mais sociável ou extrovertido que o habitual?",
+            "Teve muito mais interesse por sexo que o habitual?",
+            "Fez coisas que poderiam ter causado problemas (gastos, sexo, investimentos)?",
+            "Gastou dinheiro que causou problemas financeiros?",
+        ],
+        "max_score": 13.0,
+        "severity": [(0, "negative"), (7, "positive")],
+    },
+    "PCL-5": {
+        "description": "Lista de Verificação de TEPT para DSM-5 — 20 itens",
+        "questions": [
+            "Memórias repetitivas e angustiantes do evento estressante?",
+            "Sonhos repetitivos e angustiantes sobre o evento?",
+            "Sentir ou agir como se o evento estivesse acontecendo novamente?",
+            "Ficar muito perturbado quando algo lembrava o evento?",
+            "Ter fortes reações físicas quando lembrado do evento?",
+            "Evitar memórias, pensamentos ou sentimentos sobre o evento?",
+            "Evitar lembranças externas do evento?",
+            "Dificuldade em lembrar partes importantes do evento?",
+            "Ter crenças negativas fortes sobre si mesmo ou o mundo?",
+            "Culpar a si mesmo ou outros pelo evento?",
+            "Ter sentimentos negativos fortes (medo, culpa, vergonha)?",
+            "Perda de interesse em atividades que antes gostava?",
+            "Sentir-se distante ou afastado dos outros?",
+            "Dificuldade em experimentar sentimentos positivos?",
+            "Comportamento irritado ou agressivo?",
+            "Comportamento imprudente ou autodestrutivo?",
+            "Estar excessivamente alerta ou vigilante?",
+            "Assustar-se facilmente?",
+            "Dificuldade de concentração?",
+            "Dificuldade para pegar no sono ou permanecer dormindo?",
+        ],
+        "max_score": 80.0,
+        "severity": [(0, "none"), (31, "mild"), (45, "moderate"), (56, "severe")],
+    },
+    "Y-BOCS": {
+        "description": "Escala Obsessivo-Compulsiva de Yale-Brown — 10 itens para gravidade do TOC",
+        "questions": [
+            "Tempo gasto com pensamentos obsessivos?",
+            "Interferência dos pensamentos obsessivos?",
+            "Sofrimento causado pelos pensamentos obsessivos?",
+            "Resistência aos pensamentos obsessivos?",
+            "Controle sobre os pensamentos obsessivos?",
+            "Tempo gasto com comportamentos compulsivos?",
+            "Interferência dos comportamentos compulsivos?",
+            "Sofrimento ao ser impedido de realizar compulsões?",
+            "Resistência às compulsões?",
+            "Controle sobre as compulsões?",
+        ],
+        "max_score": 40.0,
+        "severity": [(0, "none"), (8, "mild"), (16, "moderate"), (24, "severe"), (32, "extreme")],
+    },
+    "AUDIT": {
+        "description": "Teste de Identificação de Transtornos por Uso de Álcool — 10 itens",
+        "questions": [
+            "Com que frequência você consome bebidas alcoólicas?",
+            "Quantas doses você consome em um dia típico?",
+            "Com que frequência consome seis ou mais doses em uma ocasião?",
+            "Com que frequência não conseguia parar de beber depois de começar?",
+            "Com que frequência deixou de fazer o esperado por causa da bebida?",
+            "Com que frequência precisou de uma bebida pela manhã?",
+            "Com que frequência sentiu culpa ou remorso após beber?",
+            "Com que frequência não conseguiu se lembrar da noite anterior?",
+            "Alguém já se feriu por causa do seu consumo de álcool?",
+            "Algum parente, amigo ou médico já sugeriu reduzir a bebida?",
+        ],
+        "max_score": 40.0,
+        "severity": [(0, "low_risk"), (8, "hazardous"), (16, "harmful"), (20, "dependence")],
+    },
+    "ASRM": {
+        "description": "Escala de Autoavaliação de Mania de Altman — 5 itens para triagem de mania",
+        "questions": [
+            "Mais feliz ou animado que o habitual?",
+            "Mais autoconfiante que o habitual?",
+            "Dormiu menos que o habitual sem se sentir cansado?",
+            "Falou mais que o habitual?",
+            "Esteve tão ativo que outras pessoas acharam incomum?",
+        ],
+        "max_score": 20.0,
+        "severity": [(0, "none"), (6, "possible_hypomania"), (10, "probable_mania")],
+    },
+    "ASRS": {
+        "description": "Escala de Autorrelato de TDAH em Adultos v1.1 — 18 itens",
+        "questions": [
+            "Dificuldade para finalizar os últimos detalhes de um projeto?",
+            "Dificuldade para organizar tarefas?",
+            "Problemas para lembrar compromissos ou obrigações?",
+            "Evita ou adia iniciar tarefas que exigem concentração?",
+            "Mexe as mãos ou os pés quando precisa ficar sentado?",
+            "Sente-se excessivamente ativo e compelido a fazer coisas?",
+            "Comete erros por descuido em projetos chatos ou difíceis?",
+            "Dificuldade de manter a atenção em trabalhos repetitivos?",
+            "Dificuldade de se concentrar no que as pessoas dizem?",
+            "Perde ou tem dificuldade de encontrar objetos?",
+            "Se distrai com atividades ou barulho ao redor?",
+            "Se levanta em reuniões quando deveria ficar sentado?",
+            "Se sente inquieto ou agitado?",
+            "Dificuldade para relaxar quando tem tempo livre?",
+            "Fala demais em situações sociais?",
+            "Completa as frases das pessoas durante conversa?",
+            "Dificuldade para esperar sua vez?",
+            "Interrompe os outros quando estão ocupados?",
+        ],
+        "max_score": 72.0,
+        "severity": [(0, "low"), (17, "moderate"), (24, "high")],
+    },
+    "AQ-10": {
+        "description": "Quociente do Espectro Autista — 10 itens de triagem para autismo em adultos",
+        "questions": [
+            "Costumo notar sons pequenos quando outros não percebem",
+            "Concentro-me mais no quadro geral do que nos pequenos detalhes",
+            "Acho fácil fazer mais de uma coisa ao mesmo tempo",
+            "Consigo voltar rapidamente ao que estava fazendo após interrupção",
+            "Acho fácil 'ler nas entrelinhas' quando alguém fala comigo",
+            "Sei identificar se alguém está entediado ao me ouvir",
+            "Tenho dificuldade em entender as intenções dos personagens ao ler",
+            "Gosto de colecionar informações sobre categorias de coisas",
+            "Acho fácil perceber o que alguém está pensando pelo rosto",
+            "Tenho dificuldade em entender as intenções das pessoas",
+        ],
+        "max_score": 10.0,
+        "severity": [(0, "negative"), (6, "positive")],
+    },
 }
 
 
@@ -450,6 +602,7 @@ def seed():
     session.execute(text("DELETE FROM clinical.prescription_items CASCADE"))
     session.execute(text("DELETE FROM clinical.prescriptions CASCADE"))
     session.execute(text("DELETE FROM clinical.medications CASCADE"))
+    session.execute(text("DELETE FROM clinical.clinical_alerts CASCADE"))
     session.execute(text("DELETE FROM clinical.clinical_consultation CASCADE"))
     session.execute(text("DELETE FROM clinical.clinical_episode CASCADE"))
     session.execute(text("DELETE FROM clinical.healthcare_professionals CASCADE"))
@@ -764,20 +917,41 @@ def seed():
             # Add scale responses
             for sname, sinfo in scale_map.items():
                 scale_def = sinfo["def"]
-                base_severity = 0
-                dep_disorders = [d for d in disorders if "Depressiv" in d]
-                anx_disorders = [d for d in disorders if "Ansiedade" in d]
-                if dep_disorders and sname == "PHQ-9":
-                    base_severity = random.randint(10, 22)
-                elif anx_disorders and sname == "GAD-7":
-                    base_severity = random.randint(8, 18)
+                max_q_score = 3
+                if sname in ("MADRS",):
+                    max_q_score = 6
+                elif sname in ("MDQ", "AQ-10"):
+                    max_q_score = 1
+                elif sname in ("PCL-5", "Y-BOCS", "AUDIT", "ASRM", "ASRS"):
+                    max_q_score = 4
+
+                # Map scales to relevant disorder keywords for base severity
+                scale_disorder_map = {
+                    "PHQ-9": ["Depressiv"],
+                    "GAD-7": ["Ansiedade"],
+                    "MADRS": ["Depressiv"],
+                    "MDQ": ["Bipolar"],
+                    "PCL-5": ["Estresse Pós-Traumático"],
+                    "Y-BOCS": ["Obsessivo-Compulsivo"],
+                    "AUDIT": ["Substâncias"],
+                    "ASRM": ["Bipolar"],
+                    "ASRS": ["Déficit de Atenção/Hiperatividade", "TDAH"],
+                    "AQ-10": ["Espectro Autista", "Autista"],
+                }
+                matched = [d for d in disorders if any(k in d for k in scale_disorder_map.get(sname, []))]
+                if matched:
+                    base_severity = random.randint(
+                        int(len(scale_def["questions"]) * max_q_score * 0.4),
+                        int(len(scale_def["questions"]) * max_q_score * 0.8),
+                    )
                 else:
-                    base_severity = random.randint(0, 8)
+                    base_severity = random.randint(0, int(len(scale_def["questions"]) * max_q_score * 0.25))
 
                 # Generate per-question scores
                 total = 0
+                num_q = len(sinfo["questions"])
                 for q in sinfo["questions"]:
-                    score = min(3, max(0, int(base_severity / len(sinfo["questions"]) + random.gauss(0, 0.5))))
+                    score = min(max_q_score, max(0, int(base_severity / num_q + random.gauss(0, 0.5))))
                     sr = ScaleResponse(
                         consultation_uuid=consult.consultation_uuid,
                         question_id=q.question_id,

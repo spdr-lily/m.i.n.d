@@ -174,7 +174,12 @@ class CriteriaEvaluator:
         observations: List[SymptomObservation],
     ) -> List[DisorderEvaluation]:
         results = []
-        for disorder_id, disorder_name, criteria_list, groups in disorders_with_criteria:
+        for item in disorders_with_criteria:
+            if len(item) == 4:
+                disorder_id, disorder_name, criteria_list, groups = item
+            else:
+                disorder_id, disorder_name, criteria_list = item
+                groups = None
             eval_result = self.evaluate_disorder(
                 disorder_id, disorder_name, criteria_list, observations, groups,
             )

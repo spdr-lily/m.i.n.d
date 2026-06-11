@@ -18,7 +18,7 @@ class StatisticsService:
     def get_patient_demographics(self) -> Dict[str, Any]:
         total = self.session.query(PatientIdentity).count()
         if total == 0:
-            return {"total_patients": 0, "sex_distribution": {}, "age_distribution": {}}
+            return {"total_patients": 0, "sex_distribution": {}, "gender_identity_distribution": {}, "age_distribution": {}}
 
         sex_query = (
             self.session.query(

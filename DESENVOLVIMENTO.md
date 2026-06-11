@@ -235,7 +235,7 @@ mind-ui/src/
 ```bash
 cd mind-ui
 npm install
-npm run dev       # Dev server (porta 3000)
+npm run dev       # Dev server (porta 8000)
 npm run build     # Produção (dist/)
 npx tsc --noEmit  # Type check
 ```
@@ -360,7 +360,7 @@ pip install -e .
 pip install -r requirements.txt
 alembic upgrade head
 python db/seed.py
-uvicorn app.main:app --reload --port 8008
+uvicorn app.main:app --reload --port 8000
 pytest tests/ -v
 black app/ tests/
 flake8 app/ tests/

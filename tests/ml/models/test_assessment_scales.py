@@ -17,25 +17,25 @@ class TestPHQ9:
         total = PHQ9.score([0, 0, 0, 0, 0, 0, 0, 0, 0])
         severity, interpretation = PHQ9.interpret(total)
         assert total == 0
-        assert severity == "None-minimal"
+        assert severity == "Mínimo"
 
     def test_score_phq9_mild(self):
         total = PHQ9.score([1, 1, 0, 1, 0, 1, 0, 1, 0])
         severity, interpretation = PHQ9.interpret(total)
         assert total == 5
-        assert severity == "Mild"
+        assert severity == "Leve"
 
     def test_score_phq9_moderate(self):
         total = PHQ9.score([2, 2, 1, 2, 1, 1, 0, 1, 0])
         severity, interpretation = PHQ9.interpret(total)
         assert total == 10
-        assert severity == "Moderate"
+        assert severity == "Moderado"
 
     def test_score_phq9_severe(self):
         total = PHQ9.score([3, 3, 3, 3, 2, 3, 2, 3, 3])
         severity, interpretation = PHQ9.interpret(total)
         assert total == 25
-        assert severity == "Severe"
+        assert severity == "Grave"
 
     def test_score_phq9_empty(self):
         assert PHQ9.score([]) == 0
@@ -44,7 +44,7 @@ class TestPHQ9:
         total = PHQ9.score([2, 3, 1])
         severity, interpretation = PHQ9.interpret(total)
         assert total == 6
-        assert severity == "Mild"
+        assert severity == "Leve"
 
     def test_score_phq9_clamps_negative(self):
         total = PHQ9.score([-5, 5, 0, 0, 0, 0, 0, 0, 0])
@@ -60,19 +60,19 @@ class TestGAD7:
         total = GAD7.score([0] * 7)
         severity, interpretation = GAD7.interpret(total)
         assert total == 0
-        assert severity == "None-minimal"
+        assert severity == "Mínimo"
 
     def test_score_gad7_moderate(self):
         total = GAD7.score([2, 2, 1, 2, 1, 1, 1])
         severity, interpretation = GAD7.interpret(total)
         assert total == 10
-        assert severity == "Moderate"
+        assert severity == "Moderado"
 
     def test_score_gad7_severe(self):
         total = GAD7.score([3, 3, 2, 3, 2, 3, 2])
         severity, interpretation = GAD7.interpret(total)
         assert total == 18
-        assert severity == "Severe"
+        assert severity == "Grave"
 
 
 class TestMADRS:
@@ -80,19 +80,19 @@ class TestMADRS:
         total = MADRS.score([0] * 10)
         severity, interpretation = MADRS.interpret(total)
         assert total == 0
-        assert severity == "Absent"
+        assert severity == "Ausente"
 
     def test_score_madrs_moderate(self):
         total = MADRS.score([3, 2, 3, 3, 2, 3, 2, 1, 1, 0])
         severity, interpretation = MADRS.interpret(total)
         assert total == 20
-        assert severity == "Moderate"
+        assert severity == "Moderado"
 
     def test_score_madrs_severe(self):
         total = MADRS.score([5, 4, 4, 5, 4, 4, 3, 3, 3, 4])
         severity, interpretation = MADRS.interpret(total)
         assert total == 39
-        assert severity == "Severe"
+        assert severity == "Grave"
 
 
 class TestScaleRegistry:
@@ -125,7 +125,7 @@ class TestAssessmentService:
         result = score_assessment(request)
         assert result.scale_name == "PHQ-9"
         assert result.total_score == 9
-        assert result.severity == "Mild"
+        assert result.severity == "Leve"
         assert result.interpretation != ""
 
     def test_score_assessment_gad7_severe(self):
@@ -140,7 +140,7 @@ class TestAssessmentService:
         result = score_assessment(request)
         assert result.scale_name == "GAD-7"
         assert result.total_score == 21
-        assert result.severity == "Severe"
+        assert result.severity == "Grave"
 
     def test_score_assessment_unknown_scale(self):
         import pytest
@@ -161,4 +161,4 @@ class TestAssessmentService:
         )
         result = score_assessment(request)
         assert result.total_score == 0
-        assert result.severity == "None-minimal"
+        assert result.severity == "Mínimo"

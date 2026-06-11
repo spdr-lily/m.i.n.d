@@ -44,25 +44,25 @@ class TestRBAC:
         assert has_permission(Role.ADMIN, Permission.READ_AUDIT)
 
     def test_clinician_has_read_write_no_delete(self):
-        assert has_permission(Role.CLINICIAN, Permission.READ_PATIENT)
-        assert has_permission(Role.CLINICIAN, Permission.WRITE_PATIENT)
-        assert has_permission(Role.CLINICIAN, Permission.READ_CONSULTATION)
-        assert has_permission(Role.CLINICIAN, Permission.WRITE_CONSULTATION)
-        assert has_permission(Role.CLINICIAN, Permission.READ_DIAGNOSIS)
-        assert has_permission(Role.CLINICIAN, Permission.WRITE_DIAGNOSIS)
+        assert has_permission(Role.PSYCHIATRIST, Permission.READ_PATIENT)
+        assert has_permission(Role.PSYCHIATRIST, Permission.WRITE_PATIENT)
+        assert has_permission(Role.PSYCHIATRIST, Permission.READ_CONSULTATION)
+        assert has_permission(Role.PSYCHIATRIST, Permission.WRITE_CONSULTATION)
+        assert has_permission(Role.PSYCHIATRIST, Permission.READ_DIAGNOSIS)
+        assert has_permission(Role.PSYCHIATRIST, Permission.WRITE_DIAGNOSIS)
 
     def test_clinician_cannot_delete_or_manage_users(self):
-        assert not has_permission(Role.CLINICIAN, Permission.DELETE_PATIENT)
-        assert not has_permission(Role.CLINICIAN, Permission.MANAGE_USERS)
-        assert not has_permission(Role.CLINICIAN, Permission.READ_AUDIT)
+        assert not has_permission(Role.PSYCHIATRIST, Permission.DELETE_PATIENT)
+        assert not has_permission(Role.PSYCHIATRIST, Permission.MANAGE_USERS)
+        assert has_permission(Role.PSYCHIATRIST, Permission.READ_AUDIT)
 
     def test_viewer_read_only(self):
-        assert has_permission(Role.VIEWER, Permission.READ_PATIENT)
-        assert has_permission(Role.VIEWER, Permission.READ_CONSULTATION)
-        assert has_permission(Role.VIEWER, Permission.READ_DIAGNOSIS)
-        assert not has_permission(Role.VIEWER, Permission.WRITE_PATIENT)
-        assert not has_permission(Role.VIEWER, Permission.DELETE_PATIENT)
-        assert not has_permission(Role.VIEWER, Permission.MANAGE_USERS)
+        assert has_permission(Role.RESEARCHER, Permission.READ_PATIENT)
+        assert has_permission(Role.RESEARCHER, Permission.READ_CONSULTATION)
+        assert has_permission(Role.RESEARCHER, Permission.READ_DIAGNOSIS)
+        assert not has_permission(Role.RESEARCHER, Permission.WRITE_PATIENT)
+        assert not has_permission(Role.RESEARCHER, Permission.DELETE_PATIENT)
+        assert not has_permission(Role.RESEARCHER, Permission.MANAGE_USERS)
 
     def test_unknown_role_has_no_permissions(self):
         assert not has_permission("unknown_role", Permission.READ_PATIENT)

@@ -72,7 +72,7 @@ export default function MedicationsPage() {
       fetchData()
     } catch (err: unknown) {
       console.error('Medication save error:', err)
-      const anyErr = err as Record<string, unknown>
+      const anyErr = err as { response?: { data?: { detail?: string } }; message?: string }
       const detail = anyErr?.response?.data?.detail || anyErr?.message
       if (detail) message.error(`Erro: ${detail}`)
       throw err
@@ -91,7 +91,7 @@ export default function MedicationsPage() {
     }
   }
 
-  const classifications = [...new Set(medications.map((m) => m.classification).filter(Boolean))]
+  const classifications: string[] = [...new Set(medications.map((m) => m.classification).filter((c): c is string => !!c))]
 
   const columns = [
     { title: 'ID', dataIndex: 'medication_id', width: 60, sorter: (a: Medication, b: Medication) => a.medication_id - b.medication_id },
@@ -103,8 +103,8 @@ export default function MedicationsPage() {
     { title: 'Princípio Ativo', dataIndex: 'active_ingredient', width: 180 },
     {
       title: 'Classificação', dataIndex: 'classification', width: 220,
-      filters: classifications.map((c) => ({ text: c, value: c })),
-      onFilter: (value, record) => record.classification === value,
+      filters: classifications.map((c) => ({ text: c as string, value: c as string })),
+      onFilter: (value: unknown, record: Medication) => record.classification === value,
       render: (v: string) => v || '-',
     },
     { title: 'Descrição', dataIndex: 'description', ellipsis: true },

@@ -48,7 +48,7 @@ app.add_middleware(
 
 # Security middleware stack
 app.add_middleware(SQLInjectionProtectionMiddleware)
-app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
+app.add_middleware(RateLimitMiddleware, max_requests=int(os.getenv("RATE_LIMIT_MAX", "100")), window_seconds=60)
 app.add_middleware(SecurityHeadersMiddleware)
 
 # Audit middleware
@@ -64,6 +64,9 @@ if os.path.isdir(frontend_dir):
         async def dispatch(self, request, call_next):
             response = await call_next(request)
             if response.status_code == 404 and not request.url.path.startswith("/api/"):
+                file_path = os.path.join(frontend_dir, request.url.path.lstrip("/"))
+                if os.path.isfile(file_path):
+                    return FileResponse(file_path)
                 return FileResponse(os.path.join(frontend_dir, "index.html"))
             return response
 

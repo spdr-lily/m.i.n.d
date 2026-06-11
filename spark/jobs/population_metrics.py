@@ -78,12 +78,12 @@ def scale_statistics(scale_responses: DataFrame, questions: DataFrame, scales: D
 def run_population_metrics() -> dict:
     spark = create_session()
     try:
-        profiles = load_table(spark, "core.patient_profile")
-        inferences = load_table(spark, "clinical.diagnostic_inference")
-        disorders = load_table(spark, "diagnostic.disorder")
-        scale_responses = load_table(spark, "clinical.scale_response")
-        questions = load_table(spark, "clinical.scale_question")
-        scales = load_table(spark, "clinical.assessment_scale")
+        profiles = load_table(spark, "clinical.patient_profile")
+        inferences = load_table(spark, "diagnostic.diagnostic_inference")
+        disorders = load_table(spark, "diagnostic.disorders")
+        scale_responses = load_table(spark, "clinical.scale_responses")
+        questions = load_table(spark, "diagnostic.scale_questions")
+        scales = load_table(spark, "diagnostic.assessment_scales")
 
         age_dist = age_distribution(profiles)
         prev = disorder_prevalence(inferences, disorders)
