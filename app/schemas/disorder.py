@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel, ConfigDict
+from typing import Optional, List, Any
+from pydantic import BaseModel, ConfigDict, model_validator
 
 
 class SymptomBase(BaseModel):
@@ -33,16 +33,41 @@ class ClassificationAuthorityResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+CORE_NAMES = {
+    "Transtorno Depressivo Maior",
+    "Transtorno de Ansiedade Generalizada",
+    "Transtorno do Pânico",
+    "Transtorno de Estresse Pós-Traumático",
+    "Transtorno Depressivo Persistente (Distimia)",
+    "Transtorno de Ansiedade Social",
+    "Transtorno Bipolar Tipo I",
+    "Transtorno Bipolar Tipo II",
+    "Transtorno Obsessivo-Compulsivo",
+    "Agorafobia",
+    "Transtorno por Uso de Substâncias",
+    "Anorexia Nervosa",
+    "Bulimia Nervosa",
+    "Transtorno de Compulsão Alimentar",
+    "Transtorno de Insônia",
+    "Esquizofrenia / Transtorno Psicótico",
+    "Transtorno de Sintomas Somáticos",
+    "Transtorno do Espectro Autista",
+    "Transtorno de Déficit de Atenção/Hiperatividade",
+}
+
+
 class DisorderBase(BaseModel):
     cid_code: Optional[str] = None
     dsm_code: Optional[str] = None
     disorder_name: str
     disorder_description: Optional[str] = None
+    dsm_chapter: Optional[str] = None
     dsm_criteria: Optional[str] = None
     dsm_exclusions: Optional[str] = None
     dsm_differentials: Optional[str] = None
     icd11_exclusions: Optional[str] = None
     icd11_differentials: Optional[str] = None
+    is_core: bool = False
 
 
 class DisorderCreate(DisorderBase):
@@ -54,6 +79,7 @@ class DisorderUpdate(BaseModel):
     dsm_code: Optional[str] = None
     disorder_name: Optional[str] = None
     disorder_description: Optional[str] = None
+    dsm_chapter: Optional[str] = None
     dsm_criteria: Optional[str] = None
     dsm_exclusions: Optional[str] = None
     dsm_differentials: Optional[str] = None
@@ -67,6 +93,20 @@ class DisorderResponse(DisorderBase):
     icd11_codes: Optional[List["ICD11CodeResponse"]] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def set_core_flag(cls, data: Any) -> Any:
+        name = data if isinstance(data, str) else getattr(data, "disorder_name", None) or data.get("disorder_name")
+        if name and name in CORE_NAMES:
+            if isinstance(data, dict):
+                data["is_core"] = True
+            else:
+                try:
+                    data.is_core = True
+                except AttributeError:
+                    pass
+        return data
 
 
 class ICD11ExclusionResponse(BaseModel):

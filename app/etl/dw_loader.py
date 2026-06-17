@@ -68,58 +68,43 @@ def load_dim_patient(session: Session):
 def load_dim_disorder(session: Session):
     session.execute(text("DELETE FROM dw.dim_disorder"))
     rows = session.execute(text("""
-        SELECT disorder_id, disorder_name, cid_code, dsm_code
+        SELECT disorder_id, disorder_name, cid_code, dsm_code, dsm_chapter
         FROM diagnostic.disorders ORDER BY disorder_id
     """)).fetchall()
 
-    categories = {
-        "Depressive Disorders", "Anxiety Disorders", "Bipolar Disorders",
-        "Trauma Disorders", "OCD-Related Disorders",
-    }
-
-    def guess_category(name: str) -> str:
-        name_l = name.lower()
-        if name in ("MDD",):
-            return "Depressive Disorders"
-        if name in ("GAD", "PANIC", "AGORAPHOBIA"):
-            return "Anxiety Disorders"
-        if name in ("BIPOLAR",):
-            return "Bipolar Disorders"
-        if name in ("PTSD",):
-            return "Trauma Disorders"
-        if name in ("OCD",):
-            return "OCD-Related Disorders"
-        if name in ("SUD",):
-            return "Substance-Related Disorders"
-        if name in ("ANOREXIA", "BULIMIA", "BED"):
-            return "Eating Disorders"
-        if name in ("INSOMNIA",):
-            return "Sleep-Wake Disorders"
-        if name in ("PSYCHOTIC",):
-            return "Psychotic Disorders"
-        if name in ("SOMATIC",):
-            return "Somatic Disorders"
-        if name in ("ASD",):
-            return "Neurodevelopmental Disorders"
-        if name in ("ADHD",):
-            return "Neurodevelopmental Disorders"
-        if "depressive" in name_l or "dysthymia" in name_l or "depress" in name_l:
-            return "Depressive Disorders"
-        if "anxiety" in name_l or "panic" in name_l or "social" in name_l or "gad" in name_l:
-            return "Anxiety Disorders"
-        if "bipolar" in name_l:
-            return "Bipolar Disorders"
-        if "trauma" in name_l or "ptsd" in name_l or "stress" in name_l:
-            return "Trauma Disorders"
-        if "ocd" in name_l or "obsessive" in name_l or "compulsive" in name_l:
-            return "OCD-Related Disorders"
-        return "Other"
+    def category_from_chapter(chapter: str | None) -> str:
+        if not chapter:
+            return "Other"
+        m = {
+            "Transtornos do Neurodesenvolvimento": "Neurodevelopmental Disorders",
+            "Espectro da Esquizofrenia e Outros Transtornos Psicóticos": "Psychotic Disorders",
+            "Transtornos Bipolares e Relacionados": "Bipolar Disorders",
+            "Transtornos Depressivos": "Depressive Disorders",
+            "Transtornos de Ansiedade": "Anxiety Disorders",
+            "Transtornos Obsessivo-Compulsivos e Relacionados": "OCD-Related Disorders",
+            "Transtornos Relacionados a Trauma e Estressores": "Trauma Disorders",
+            "Transtornos Dissociativos": "Dissociative Disorders",
+            "Transtornos de Sintomas Somáticos e Relacionados": "Somatic Disorders",
+            "Transtornos Alimentares e da Alimentação": "Eating Disorders",
+            "Transtornos da Eliminação": "Elimination Disorders",
+            "Transtornos do Sono-Vigília": "Sleep-Wake Disorders",
+            "Disfunções Sexuais": "Sexual Dysfunctions",
+            "Disforia de Gênero": "Gender Dysphoria",
+            "Transtornos Disruptivos, do Controle de Impulsos e da Conduta": "Disruptive Disorders",
+            "Transtornos Relacionados a Substâncias e Aditivos": "Substance-Related Disorders",
+            "Transtornos Neurocognitivos": "Neurocognitive Disorders",
+            "Transtornos da Personalidade": "Personality Disorders",
+            "Transtornos Parafílicos": "Paraphilic Disorders",
+            "Outros Transtornos Mentais": "Other Mental Disorders",
+        }
+        return m.get(chapter, "Other")
 
     for i, row in enumerate(rows, 1):
         dd = DimDisorder(
             disorder_key=i, disorder_id=row.disorder_id,
             disorder_name=row.disorder_name, cid_code=row.cid_code,
-            dsm_code=row.dsm_code, disorder_category=guess_category(row.disorder_name),
+            dsm_code=row.dsm_code,
+            disorder_category=category_from_chapter(row.dsm_chapter),
         )
         session.add(dd)
     session.commit()
@@ -137,6 +122,12 @@ def load_dim_scale(session: Session):
         "PHQ-9": 27.0, "GAD-7": 21.0, "MADRS": 60.0, "MDQ": 13.0,
         "PCL-5": 80.0, "Y-BOCS": 40.0, "AUDIT": 40.0, "ASRM": 20.0,
         "ASRS": 72.0, "AQ-10": 10.0,
+        "BFP": 100.0, "DT-12 (Tríade Sombria)": 72.0,
+        "HEXACO-60": 300.0, "BIS-11": 120.0, "TAS-20": 100.0, "RSES": 40.0,
+        "MEMÓRIA": 16.0, "QI - RASTREIO": 30.0,
+        "RECONHECIMENTO DE ROSTOS": 12.0, "FLUÊNCIA VERBAL": 16.0,
+        "TESTE DO RELÓGIO": 18.0, "TRILHAS": 18.0, "STROOP": 16.0,
+        "CANCELAMENTO": 12.0, "FIGURA COMPLEXA DE REY": 24.0,
     }
     for i, row in enumerate(rows, 1):
         ds = DimScale(
@@ -308,7 +299,8 @@ def load_fact_scale_response(session: Session):
     max_scores = {
         "PHQ-9": 27.0, "GAD-7": 21.0, "MADRS": 60.0, "MDQ": 13.0,
         "PCL-5": 80.0, "Y-BOCS": 40.0, "AUDIT": 40.0, "ASRM": 20.0,
-        "ASRS": 72.0, "AQ-10": 10.0,
+        "ASRS": 72.0, "AQ-10": 10.0, "BFP": 100.0, "DT-12 (Tríade Sombria)": 72.0,
+        "HEXACO-60": 300.0, "BIS-11": 120.0, "TAS-20": 100.0, "RSES": 40.0,
     }
     severity_map = {
         "PHQ-9": [(0, "none"), (5, "mild"), (10, "moderate"), (15, "moderately severe"), (20, "severe")],

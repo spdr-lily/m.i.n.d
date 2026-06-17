@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Form, Input, Select, Button, Typography, Breadcrumb, message, Space, Row, Col, Spin } from 'antd'
 import dayjs from 'dayjs'
+import customParseFormat from 'dayjs/plugin/customParseFormat'
 import { patientsApi } from '../../api/patients'
 import { referenceApi } from '../../api/reference'
 import type { SexType, GenderIdentity, EducationLevel, Ethnicity } from '../../types'
+
+dayjs.extend(customParseFormat)
 
 const { Title } = Typography
 
@@ -57,9 +60,9 @@ export default function PatientEditPage() {
     try {
       const v = values as Record<string, unknown>
       const bd = v.birth_date as string
-      const parsed = dayjs(bd, 'DD/MM/YYYY')
+      const parsed = dayjs(bd, 'DD/MM/YYYY', true)
       await patientsApi.update(uuid, {
-        birth_date: parsed.isValid() ? parsed.format('YYYY-MM-DD') : bd,
+        birth_date: parsed.isValid() ? parsed.format('YYYY-MM-DD') : undefined,
         sex_type_id: v.sex_type_id as number,
         gender_identity_id: v.gender_identity_id as number,
         education_level_id: v.education_level_id as number,
@@ -70,8 +73,9 @@ export default function PatientEditPage() {
       })
       message.success('Paciente atualizado com sucesso')
       navigate(`/patients/${uuid}`)
-    } catch {
-      message.error('Erro ao atualizar paciente')
+    } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      message.error(detail || 'Erro ao atualizar paciente')
     } finally {
       setSaving(false)
     }

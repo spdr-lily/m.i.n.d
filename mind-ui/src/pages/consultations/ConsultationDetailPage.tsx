@@ -2,17 +2,20 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import {
   Card, Descriptions, Table, Tag, Spin, Typography, Breadcrumb, Progress, Space, Divider,
-  Button, Row, Col, Collapse, Alert, Tooltip,
+  Button, Row, Col, Collapse, Alert, Tooltip, Modal, Statistic,
 } from 'antd'
 import {
   ThunderboltOutlined, BulbOutlined, ReloadOutlined, InfoCircleOutlined, FileTextOutlined,
+  MedicineBoxOutlined,
 } from '@ant-design/icons'
 import { consultationsApi } from '../../api/consultations'
 import { inferencesApi } from '../../api/inferences'
 import { medicationsApi } from '../../api/medications'
-import type { ConsultationResponse, InferenceResponse, ScaleResponseResponse, ConsultationCompleteness, Prescription } from '../../types'
+import { treatmentsApi } from '../../api/treatments'
+import type { ConsultationResponse, InferenceResponse, ScaleResponseResponse, ConsultationCompleteness, Prescription, TreatmentPrediction } from '../../types'
 import { scalesApi } from '../../api/scales'
-import type { AssessmentScale } from '../../types'
+import { disordersApi } from '../../api/disorders'
+import type { AssessmentScale, Disorder } from '../../types'
 
 const { Title, Text } = Typography
 
@@ -59,6 +62,11 @@ export default function ConsultationDetailPage() {
   const [scaleScores, setScaleScores] = useState<Record<string, { total: number; severity: string }>>({})
   const [completeness, setCompleteness] = useState<ConsultationCompleteness | null>(null)
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([])
+  const [disorderIdMap, setDisorderIdMap] = useState<Record<string, number>>({})
+  const [predModalOpen, setPredModalOpen] = useState(false)
+  const [predDisorderId, setPredDisorderId] = useState<number>()
+  const [predPredictions, setPredPredictions] = useState<TreatmentPrediction[]>([])
+  const [predLoading, setPredLoading] = useState(false)
   const navigate = useNavigate()
 
   const fetchConsultation = useCallback(() => {
@@ -69,12 +77,18 @@ export default function ConsultationDetailPage() {
       scalesApi.list(0, 100),
       consultationsApi.getCompleteness(uuid),
       medicationsApi.listPrescriptions(uuid),
-    ]).then(([c, sc, comp, rx]) => {
+      disordersApi.listDisorders(),
+    ]).then(([c, sc, comp, rx, allDisorders]) => {
       setConsultation(c)
       setScales(sc.scales)
       computeScaleScores(c.scale_responses || [], sc.scales)
       setCompleteness(comp)
       setPrescriptions(rx)
+      const map: Record<string, number> = {}
+      for (const d of allDisorders) {
+        map[d.disorder_name] = d.disorder_id
+      }
+      setDisorderIdMap(map)
     }).finally(() => setLoading(false))
   }, [uuid])
 
@@ -90,6 +104,17 @@ export default function ConsultationDetailPage() {
     'ASRM': 'Mania',
     'ASRS': 'TDAH',
     'AQ-10': 'Espectro Autista',
+    'BFP': 'Perfil de Personalidade (Big Five)',
+    'DT-12 (Tríade Sombria)': 'Tríade Sombria (DT-12)',
+    'MEMÓRIA': 'Avaliação Mnêmica',
+    'QI - RASTREIO': 'Rastreio Cognitivo',
+    'RECONHECIMENTO DE ROSTOS': 'Processamento Perceptual',
+    'FLUÊNCIA VERBAL': 'Fluência Verbal',
+    'TESTE DO RELÓGIO': 'Função Visuoconstrutiva',
+    'TRILHAS': 'Função Executiva (Trilhas)',
+    'STROOP': 'Controle Inibitório (Stroop)',
+    'CANCELAMENTO': 'Atenção Seletiva',
+    'FIGURA COMPLEXA DE REY': 'Memória Visuoespacial (Rey)',
   }
 
   const computeScaleScores = (responses: ScaleResponseResponse[], allScales: AssessmentScale[]) => {
@@ -148,6 +173,17 @@ export default function ConsultationDetailPage() {
         else severity = 'Baixa'
       } else if (name === 'AQ-10') {
         severity = total >= 6 ? 'Positivo' : 'Negativo'
+      } else if (name === 'BFP') {
+        if (total >= 80) severity = 'Alto em todas as facetas'
+        else if (total >= 60) severity = 'Moderadamente alto'
+        else if (total >= 40) severity = 'Médio'
+        else if (total >= 20) severity = 'Moderadamente baixo'
+        else severity = 'Baixo em todas as facetas'
+      } else if (name === 'DT-12 (Tríade Sombria)') {
+        if (total >= 54) severity = 'Traços sombrios proeminentes'
+        else if (total >= 36) severity = 'Traços sombrios moderados'
+        else if (total >= 18) severity = 'Traços sombrios leves'
+        else severity = 'Traços sombrios mínimos'
       }
       scores[name] = { total, severity, disorder: SCALE_DISORDER_MAP[name] || name }
     }
@@ -179,6 +215,34 @@ export default function ConsultationDetailPage() {
       setRunningBayesian(false)
     }
   }
+
+  const handlePredictEfficacy = async () => {
+    const allInf: any[] = criteriaResult?.inferences || bayesianResult?.inferences || inferences
+    const topInference = allInf.sort(
+      (a: any, b: any) => (b.inference_probability || 0) - (a.inference_probability || 0)
+    )[0]
+    if (!topInference) return
+    const disorderName = topInference.disorder_name || topInference.disorder?.disorder_name
+    const disorderId = disorderName ? disorderIdMap[disorderName] : undefined
+    if (!disorderId) return
+    setPredDisorderId(disorderId)
+    setPredModalOpen(true)
+    setPredLoading(true)
+    try {
+      const medIds = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53]
+      const result = await treatmentsApi.predict(consultation!.patient_uuid!, disorderId, medIds)
+      setPredPredictions(result.predictions.sort((a, b) => b.success_probability - a.success_probability))
+    } catch {
+      setPredPredictions([])
+    } finally {
+      setPredLoading(false)
+    }
+  }
+
+  const probColor = (val: number): string =>
+    val >= 0.7 ? '#52c41a' : val >= 0.4 ? '#faad14' : '#f5222d'
+  const probStatus = (val: number): 'success' | 'active' | 'exception' =>
+    val >= 0.7 ? 'success' : val >= 0.4 ? 'active' : 'exception'
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
   if (!consultation) return <Typography.Text type="danger">Consulta nao encontrada</Typography.Text>
@@ -224,6 +288,12 @@ export default function ConsultationDetailPage() {
           </Col>
         </Row>
         <Descriptions bordered column={2} size="small" style={{ marginTop: 12 }}>
+          <Descriptions.Item label="Paciente" span={2}>
+            <Text strong style={{ fontSize: 16 }}>{consultation.patient_name || '---'}</Text>
+            <Text type="secondary" style={{ display: 'block', fontSize: 11, fontFamily: 'monospace' }}>
+              {consultation.patient_uuid || consultation.profile_uuid}
+            </Text>
+          </Descriptions.Item>
           <Descriptions.Item label="UUID">{consultation.consultation_uuid}</Descriptions.Item>
           <Descriptions.Item label="Data">{consultation.consultation_date}</Descriptions.Item>
           {professional && (
@@ -511,6 +581,18 @@ export default function ConsultationDetailPage() {
         </Card>
       )}
 
+      {(criteriaResult || bayesianResult || inferences.length > 0) && (
+        <Card size="small" style={{ marginTop: 16 }}>
+          <Button type="primary" icon={<MedicineBoxOutlined />} onClick={handlePredictEfficacy}
+            loading={predLoading}>
+            Predizer Eficácia Medicamentosa (ML)
+          </Button>
+          <Text type="secondary" style={{ marginLeft: 12 }}>
+            Calcula probabilidade de sucesso de cada medicamento com base no diagnóstico principal
+          </Text>
+        </Card>
+      )}
+
       {scaleResp.length > 0 && (
         <Collapse
           items={[{
@@ -533,6 +615,51 @@ export default function ConsultationDetailPage() {
           style={{ marginTop: 16 }}
         />
       )}
+
+      <Modal
+        title="Predição de Eficácia Medicamentosa"
+        open={predModalOpen}
+        onCancel={() => setPredModalOpen(false)}
+        footer={null}
+        width={800}
+      >
+        {predLoading ? (
+          <Spin tip="Calculando predições..." style={{ display: 'block', textAlign: 'center', padding: 40 }} />
+        ) : (
+          <>
+            <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
+              Probabilidades de sucesso para <Text strong>{consultation?.patient_name || '---'}</Text>
+              {predPredictions.length > 0 ? ` — todos os medicamentos ranqueados por eficácia predita` : ''}
+            </Text>
+            <Row gutter={[16, 16]}>
+              {predPredictions.slice(0, 20).map(p => {
+                const colorMap: Record<string, string> = { A: 'green', B: 'blue', C: 'orange', D: 'red' }
+                return (
+                  <Col xs={24} sm={12} md={8} key={p.medication_id}>
+                    <Card size="small" title={<Text strong>{p.medication_name}</Text>}
+                      style={{ borderLeft: `4px solid ${probColor(p.success_probability)}` }}
+                      extra={p.recommendation_strength
+                        ? <Tag color={colorMap[p.recommendation_strength] || 'default'}>{p.recommendation_strength}</Tag>
+                        : undefined}
+                    >
+                      <Statistic title="Sucesso" value={p.success_probability * 100} suffix="%" precision={1}
+                        valueStyle={{ color: probColor(p.success_probability) }} />
+                      <Progress percent={Math.round(p.success_probability * 100)}
+                        status={probStatus(p.success_probability)} size="small" style={{ marginTop: 8 }} />
+                      {p.expected_response_weeks && (
+                        <Text type="secondary" style={{ display: 'block', marginTop: 8, fontSize: 12 }}>
+                          Resposta: ~{p.expected_response_weeks.toFixed(0)} sem
+                        </Text>
+                      )}
+                    </Card>
+                  </Col>
+                )
+              })}
+            </Row>
+            {predPredictions.length === 0 && <Text type="secondary">Nenhuma predição disponível.</Text>}
+          </>
+        )}
+      </Modal>
 
       {prescriptions.length > 0 && (
         <Card title="Prescrições" size="small" style={{ marginTop: 16 }}>

@@ -4,11 +4,16 @@ import pandas as pd
 import numpy as np
 
 KNOWN_DISORDERS = [
-    "Major Depressive Disorder", "Generalized Anxiety Disorder",
-    "Panic Disorder", "Post-Traumatic Stress Disorder",
-    "Bipolar I Disorder", "Bipolar II Disorder",
-    "Obsessive-Compulsive Disorder", "Persistent Depressive Disorder",
-    "Social Anxiety Disorder",
+    "Transtorno Depressivo Maior", "Transtorno de Ansiedade Generalizada",
+    "Transtorno do Pânico", "Transtorno de Estresse Pós-Traumático",
+    "Transtorno Bipolar Tipo I", "Transtorno Bipolar Tipo II",
+    "Transtorno Obsessivo-Compulsivo", "Transtorno Depressivo Persistente (Distimia)",
+    "Transtorno de Ansiedade Social", "Agorafobia",
+    "Transtorno por Uso de Substâncias", "Anorexia Nervosa",
+    "Bulimia Nervosa", "Transtorno de Compulsão Alimentar",
+    "Transtorno de Insônia", "Esquizofrenia / Transtorno Psicótico",
+    "Transtorno de Sintomas Somáticos", "Transtorno do Espectro Autista",
+    "Transtorno de Déficit de Atenção/Hiperatividade",
 ]
 
 

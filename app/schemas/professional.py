@@ -15,6 +15,7 @@ class PatientAssignmentResponse(BaseModel):
 
 class HealthcareProfessionalBase(BaseModel):
     full_name: str
+    user_uuid: Optional[UUID] = None
     professional_license: Optional[str] = None
     profession: Optional[str] = None
     specialty: Optional[str] = None
@@ -27,6 +28,7 @@ class HealthcareProfessionalCreate(HealthcareProfessionalBase):
 
 class HealthcareProfessionalUpdate(BaseModel):
     full_name: Optional[str] = None
+    user_uuid: Optional[UUID] = None
     professional_license: Optional[str] = None
     profession: Optional[str] = None
     specialty: Optional[str] = None

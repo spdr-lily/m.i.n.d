@@ -21,13 +21,17 @@ class BIService:
 
         since = datetime.now(timezone.utc) - timedelta(days=days)
         sql = text("""
-            SELECT c.consultation_date, sum(sr.response_value) as total_score
-            FROM clinical.scale_responses sr
-            JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
-            JOIN clinical.clinical_consultation c ON sr.consultation_uuid = c.consultation_uuid
-            WHERE sq.scale_id = :scale_id AND c.consultation_date >= :since
-            GROUP BY c.consultation_uuid, c.consultation_date
-            ORDER BY c.consultation_date
+            SELECT consultation_date::date, ROUND(AVG(total), 2) as avg_score
+            FROM (
+                SELECT c2.consultation_date, sum(sr.response_value) as total
+                FROM clinical.scale_responses sr
+                JOIN diagnostic.scale_questions sq ON sr.question_id = sq.question_id
+                JOIN clinical.clinical_consultation c2 ON sr.consultation_uuid = c2.consultation_uuid
+                WHERE sq.scale_id = :scale_id AND c2.consultation_date >= :since
+                GROUP BY c2.consultation_uuid, c2.consultation_date
+            ) sub
+            GROUP BY consultation_date::date
+            ORDER BY consultation_date::date
         """)
         df = pd.read_sql_query(sql, self.session.bind, params={
             "scale_id": scale.scale_id, "since": since,
@@ -35,17 +39,17 @@ class BIService:
         if df.empty:
             return {"scale_name": scale_name, "total_records": 0, "trend": {}}
 
-        df["consultation_date"] = pd.to_datetime(df["consultation_date"])
-        stats = df["total_score"].describe().to_dict()
+        stats = df["avg_score"].describe().to_dict()
         df = df.set_index("consultation_date")
-        df["ma3"] = df["total_score"].rolling(3, min_periods=1).mean().round(2)
+        df = df.sort_index()
+        df["ma3"] = df["avg_score"].rolling(3, min_periods=1).mean().round(2)
 
         return {
             "scale_name": scale_name,
             "total_records": len(df),
             "statistics": {k: round(v, 2) for k, v in stats.items()},
             "trend": {
-                "scores": df["total_score"].to_dict(),
+                "scores": df["avg_score"].to_dict(),
                 "moving_avg_3": df["ma3"].dropna().to_dict(),
             },
         }
@@ -115,7 +119,7 @@ class BIService:
         ]
 
     def get_prevalence_trends(self, months: int = 12) -> List[Dict[str, Any]]:
-        sql = text("""
+        sql = text(f"""
             SELECT
                 dd.disorder_name,
                 d.year || '-' || LPAD(d.month::text, 2, '0') AS year_month,
@@ -124,11 +128,11 @@ class BIService:
             FROM dw.fact_diagnosis fd
             JOIN dw.dim_disorder dd ON fd.disorder_key = dd.disorder_key
             JOIN dw.dim_date d ON fd.date_key = d.date_key
-            WHERE d.full_date >= CURRENT_DATE - INTERVAL ':months months'
+            WHERE d.full_date >= CURRENT_DATE - INTERVAL '{months} months'
             GROUP BY dd.disorder_name, d.year, d.month
             ORDER BY dd.disorder_name, year_month
         """)
-        df = pd.read_sql_query(sql, self.session.bind, params={"months": months})
+        df = pd.read_sql_query(sql, self.session.bind)
         if df.empty:
             return []
         result = []

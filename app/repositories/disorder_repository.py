@@ -18,7 +18,7 @@ class DisorderRepository:
     def get_symptom(self, symptom_id: int) -> Optional[Symptom]:
         return self.session.query(Symptom).filter(Symptom.symptom_id == symptom_id).first()
 
-    def list_symptoms(self, skip: int = 0, limit: int = 100) -> List[Symptom]:
+    def list_symptoms(self, skip: int = 0, limit: int = 600) -> List[Symptom]:
         return self.session.query(Symptom).offset(skip).limit(limit).all()
 
     def update_symptom(self, symptom_id: int, **updates) -> Optional[Symptom]:
@@ -61,7 +61,7 @@ class DisorderRepository:
     def get_disorder(self, disorder_id: int) -> Optional[Disorder]:
         return self.session.query(Disorder).filter(Disorder.disorder_id == disorder_id).first()
 
-    def list_disorders(self, skip: int = 0, limit: int = 100) -> List[Disorder]:
+    def list_disorders(self, skip: int = 0, limit: int = 300) -> List[Disorder]:
         return self.session.query(Disorder).offset(skip).limit(limit).all()
 
     def update_disorder(self, disorder_id: int, **updates) -> Optional[Disorder]:

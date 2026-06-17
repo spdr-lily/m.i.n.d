@@ -167,7 +167,9 @@ POST /api/v1/inferences/bayesian
 
 ## 4. Escalas de Avaliação
 
-### 4.1 As 10 Escalas Implementadas
+### 4.1 As 20 Escalas Implementadas
+
+#### Escalas Clínicas (10)
 
 | Escala | Endpoint | Itens | Pontuação | Interpretação |
 |---|---|---|---|---|
@@ -181,6 +183,21 @@ POST /api/v1/inferences/bayesian
 | ASRM | `POST /api/v1/assessments/score` | 5 (0-4) | 0-20 | ≥6 = possível episódio maníaco/hipomaníaco |
 | ASRS | `POST /api/v1/assessments/score` | 18 (0-4) | 0-72 | Parte A ≥4 = screening positivo para TDAH |
 | AQ-10 | `POST /api/v1/assessments/score` | 10 (1-4) | 10-40 | ≥6 = screening positivo para TEA |
+
+#### Escalas Neuropsicológicas (10)
+
+| Escala | Endpoint | Itens | Pontuação | Interpretação |
+|---|---|---|---|---|
+| BFP | `POST /api/v1/assessments/score` | 6 (0-4) | 0-24 | 0-9: baixo, 10-15: médio, 16-19: alto, 20+: muito alto |
+| MEMÓRIA | `POST /api/v1/assessments/score` | 8 (0-2) | 0-16 | 0-4: déficit grave, 5-8: moderado, 9-12: leve, 13-15: normal, 16: normal superior |
+| QI - RASTREIO | `POST /api/v1/assessments/score` | 10 (0-3) | 0-30 | 0-7: muito abaixo, 8-14: abaixo, 15-19: médio-inf, 20-24: média, 25-27: médio-sup, 28+: superior |
+| RECONHECIMENTO DE ROSTOS | `POST /api/v1/assessments/score` | 6 (0-2) | 0-12 | 0-3: déficit grave, 4-6: moderado, 7-9: leve, 10+: normal |
+| FLUÊNCIA VERBAL | `POST /api/v1/assessments/score` | 8 (0-2) | 0-16 | 0-4: déficit grave, 5-8: moderado, 9-12: leve, 13+: normal |
+| TESTE DO RELÓGIO | `POST /api/v1/assessments/score` | 6 (0-3) | 0-18 | 0-5: déficit grave, 6-9: moderado, 10-13: leve, 14+: normal |
+| TRILHAS | `POST /api/v1/assessments/score` | 6 (0-3) | 0-18 | 0-5: déficit grave, 6-9: moderado, 10-13: leve, 14+: normal |
+| STROOP | `POST /api/v1/assessments/score` | 8 (0-2) | 0-16 | 0-4: déficit grave, 5-8: moderado, 9-12: leve, 13+: normal |
+| CANCELAMENTO | `POST /api/v1/assessments/score` | 6 (0-2) | 0-12 | 0-2: déficit grave, 3-5: moderado, 6-8: leve, 9+: normal |
+| FIGURA COMPLEXA DE REY | `POST /api/v1/assessments/score` | 8 (0-3) | 0-24 | 0-7: déficit grave, 8-13: moderado, 14-18: leve, 19+: normal |
 
 ### 4.2 Exemplo
 
@@ -237,7 +254,7 @@ Quatro categorias de alerta:
 
 | Alerta | Descrição | Trigger |
 |---|---|---|
-| Scale Threshold | Pontuação acima do limiar clínico | PHQ-9 ≥ 15, GAD-7 ≥ 10, MADRS ≥ 20 |
+| Scale Threshold | Pontuação acima do limiar clínico | PHQ-9 ≥ 15, GAD-7 ≥ 10, MADRS ≥ 20, PCL-5 ≥ 31, Y-BOCS ≥ 16, AUDIT ≥ 16, MDQ ≥ 7 |
 | Suicidal Ideation | Ideação suicida em avaliações | Item 9 do PHQ-9 > 0 |
 | Missed Follow-up | Paciente sem consulta há ≥30 dias | Última consulta > 30 dias |
 | High Confidence Deterioration | Piora com alta confiança diagnóstica | Probabilidade bayesiana ≥ 0.8 |

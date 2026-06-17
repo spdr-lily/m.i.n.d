@@ -21,12 +21,16 @@ import AlertsPage from './pages/alerts/AlertsPage'
 import UsersPage from './pages/admin/UsersPage'
 import PermissionsPage from './pages/admin/PermissionsPage'
 import MonitoringPage from './pages/admin/MonitoringPage'
-import AuditLogPage from './pages/audit/AuditLogPage'
+import AnalyticsPage from './pages/analytics/AnalyticsPage'
 import ScalesPage from './pages/admin/ScalesPage'
 import DisordersPage from './pages/admin/DisordersPage'
 import SymptomsPage from './pages/admin/SymptomsPage'
 import MedicationsPage from './pages/admin/MedicationsPage'
+import TreatmentEfficacyPage from './pages/treatments/TreatmentEfficacyPage'
 import ProfessionalsPage from './pages/professionals/ProfessionalsPage'
+import PersonalityPage from './pages/personality/PersonalityPage'
+import MiaPage from './pages/chatbot/MiaPage'
+import AuditLogPage from './pages/audit/AuditLogPage'
 
 export default function App() {
   return (
@@ -71,9 +75,13 @@ export default function App() {
             <Route path="/admin/scales" element={<ScalesPage />} />
             <Route path="/admin/symptoms" element={<SymptomsPage />} />
             <Route path="/admin/medications" element={<MedicationsPage />} />
+            <Route path="/treatment/efficacy" element={<TreatmentEfficacyPage />} />
             <Route path="/admin/disorders" element={<DisordersPage />} />
             <Route path="/professionals" element={<ProfessionalsPage />} />
+            <Route path="/personality" element={<PersonalityPage />} />
+            <Route path="/mia" element={<MiaPage />} />
             <Route path="/audit" element={<AuditLogPage />} />
+            <Route path="/analytics" element={<AnalyticsPage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

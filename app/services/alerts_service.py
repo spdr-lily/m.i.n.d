@@ -115,7 +115,7 @@ class AlertsService:
             alert = self._ensure_alert(
                 alert_type="scale_threshold",
                 severity=severity,
-                message=f"{scale_name} score {float(r.total_score):.1f} exceeds threshold {threshold_score}",
+                message=f"{scale_name} pontuação {float(r.total_score):.1f} excede o limite {threshold_score}",
                 profile_uuid=r.profile_uuid,
                 consultation_uuid=r.consultation_uuid,
                 scale_name=scale_name,
@@ -158,9 +158,9 @@ class AlertsService:
             if profile_key not in seen:
                 seen.add(profile_key)
                 alert = self._ensure_alert(
-                    alert_type="suicidal_ideation",
+                    alert_type="ideacao_suicida",
                     severity="critical",
-                    message="Suicidal ideation detected with moderate-high intensity — immediate review required",
+                    message="Ideação suicida detectada com intensidade moderada a alta — revisão clínica imediata necessária",
                     profile_uuid=obs.clinical_consultation.profile_uuid,
                     consultation_uuid=obs.consultation_uuid,
                     intensity=float(obs.intensity) if obs.intensity else None,
@@ -195,7 +195,7 @@ class AlertsService:
             alert = self._ensure_alert(
                 alert_type="missed_follow_up",
                 severity="medium",
-                message=f"No consultation in {days_overdue} days",
+                message=f"Sem consulta há {days_overdue} dias",
                 profile_uuid=row.profile_uuid,
             )
             created.append(alert)
@@ -227,9 +227,9 @@ class AlertsService:
         created = []
         for r in results:
             alert = self._ensure_alert(
-                alert_type="high_confidence_diagnosis",
+                alert_type="diagnostico_alta_confianca",
                 severity="high",
-                message=f"High confidence diagnosis: {r.disorder_name} ({float(r.inference_probability):.0%})",
+                message=f"Diagnóstico de alta confiança: {r.disorder_name} ({float(r.inference_probability):.0%})",
                 profile_uuid=r.profile_uuid,
                 consultation_uuid=r.consultation_uuid,
                 disorder_name=r.disorder_name,
@@ -270,10 +270,10 @@ class AlertsService:
                 "low": sum(1 for a in unresolved if a.severity == "low"),
             },
             "by_type": {
-                "scale_threshold": sum(1 for a in unresolved if a.alert_type == "scale_threshold"),
-                "suicidal_ideation": sum(1 for a in unresolved if a.alert_type == "suicidal_ideation"),
-                "missed_follow_up": sum(1 for a in unresolved if a.alert_type == "missed_follow_up"),
-                "high_confidence_diagnosis": sum(1 for a in unresolved if a.alert_type == "high_confidence_diagnosis"),
+                "limiar_escala": sum(1 for a in unresolved if a.alert_type == "scale_threshold"),
+                "ideacao_suicida": sum(1 for a in unresolved if a.alert_type == "ideacao_suicida"),
+                "sem_retorno": sum(1 for a in unresolved if a.alert_type == "missed_follow_up"),
+                "diagnostico_alta_confianca": sum(1 for a in unresolved if a.alert_type == "diagnostico_alta_confianca"),
             },
             "alerts": [self._to_dict(a) for a in unresolved],
         }

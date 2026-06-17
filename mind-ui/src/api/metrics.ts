@@ -1,12 +1,13 @@
 import apiClient from './client'
 import type {
   MetricsOverview,
-  ScaleTrend,
+  ScaleTrendItem,
   CorrelationData,
   DemographicsResponse,
   ConsultationMetricsResponse,
   DisorderPrevalenceItem,
   ScaleDistributionResponse,
+  MLDashboardResponse,
 } from '../types'
 
 export const metricsApi = {
@@ -26,8 +27,17 @@ export const metricsApi = {
     apiClient.get<ScaleDistributionResponse>(`/metrics/scales/${scaleName}`).then((r) => r.data),
 
   scaleTrends: (scaleName: string, days = 90) =>
-    apiClient.get<ScaleTrend[]>(`/metrics/scales/${scaleName}/trends`, { params: { days } }).then((r) => r.data),
+    apiClient.get<ScaleTrendItem>(`/metrics/scales/${scaleName}/trends`, { params: { days } }).then((r) => r.data),
 
   correlations: () =>
     apiClient.get<CorrelationData[]>('/metrics/correlations').then((r) => r.data),
+
+  prevalenceTrends: (months = 12) =>
+    apiClient.get<any[]>('/metrics/prevalence-trends', { params: { months } }).then((r) => r.data),
+
+  comorbidity: (topN = 10) =>
+    apiClient.get<any>('/metrics/comorbidity', { params: { top_n: topN } }).then((r) => r.data),
+
+  mlDashboard: () =>
+    apiClient.get<MLDashboardResponse>('/metrics/ml/dashboard').then((r) => r.data),
 }

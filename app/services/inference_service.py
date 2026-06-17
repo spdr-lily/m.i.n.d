@@ -1,7 +1,7 @@
 from uuid import UUID
-from typing import Optional, List
+from typing import Dict, Optional, List
 from sqlalchemy.orm import Session
-from app.models.base import DiagnosticInference
+from app.models.base import DiagnosticInference, ScaleResponse, ScaleQuestion, AssessmentScale
 from app.repositories.inference_repository import InferenceRepository
 from app.repositories.consultation_repository import ConsultationRepository
 from app.repositories.disorder_repository import DisorderRepository
@@ -31,6 +31,26 @@ class InferenceService:
         if not observations:
             raise ValueError("No symptom observations found for this consultation")
 
+        scale_scores: Dict[str, float] = {}
+        scale_responses = (
+            self.session.query(ScaleResponse)
+            .join(ScaleQuestion, ScaleResponse.question_id == ScaleQuestion.question_id)
+            .join(AssessmentScale, ScaleQuestion.scale_id == AssessmentScale.scale_id)
+            .filter(ScaleResponse.consultation_uuid == consultation_uuid)
+            .all()
+        )
+        if scale_responses:
+            from collections import defaultdict
+            by_scale: Dict[str, List[float]] = defaultdict(list)
+            for sr in scale_responses:
+                q = self.session.query(ScaleQuestion).filter(ScaleQuestion.question_id == sr.question_id).first()
+                if q:
+                    scale = self.session.query(AssessmentScale).filter(AssessmentScale.scale_id == q.scale_id).first()
+                    if scale:
+                        by_scale[scale.scale_name].append(float(sr.response_value))
+            for scale_name, values in by_scale.items():
+                scale_scores[scale_name] = sum(values)
+
         disorders = disorder_repo.list_disorders()
         if not disorders:
             raise ValueError("No disorders registered in the system")
@@ -50,7 +70,8 @@ class InferenceService:
         results = self.engine.calculate(
             disorders_with_criteria=disorders_with_criteria,
             observations=observations,
-            relationships=relationships
+            relationships=relationships,
+            scale_scores=scale_scores if scale_scores else None,
         )
 
         inferences = []
@@ -83,9 +104,30 @@ class InferenceService:
         inferences = self.repository.list_inferences_by_consultation(consultation_uuid)
         observations = consultation.symptom_observations
 
+        scale_scores: Dict[str, float] = {}
+        scale_responses = (
+            self.session.query(ScaleResponse)
+            .join(ScaleQuestion, ScaleResponse.question_id == ScaleQuestion.question_id)
+            .join(AssessmentScale, ScaleQuestion.scale_id == AssessmentScale.scale_id)
+            .filter(ScaleResponse.consultation_uuid == consultation_uuid)
+            .all()
+        )
+        if scale_responses:
+            from collections import defaultdict
+            by_scale: Dict[str, List[float]] = defaultdict(list)
+            for sr in scale_responses:
+                q = self.session.query(ScaleQuestion).filter(ScaleQuestion.question_id == sr.question_id).first()
+                if q:
+                    scale = self.session.query(AssessmentScale).filter(AssessmentScale.scale_id == q.scale_id).first()
+                    if scale:
+                        by_scale[scale.scale_name].append(float(sr.response_value))
+            for scale_name, values in by_scale.items():
+                scale_scores[scale_name] = sum(values)
+
         explanation = {
             "consultation_uuid": str(consultation_uuid),
             "total_symptoms_observed": len(observations),
+            "scale_scores": scale_scores,
             "symptoms": [
                 {
                     "symptom_id": o.symptom_id,

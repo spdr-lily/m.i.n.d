@@ -6,14 +6,13 @@ from app.services.admin_service import AdminService
 from app.services.monitor_service import monitor
 from app.services.audit_service import AuditService
 from app.schemas.admin import (
-    AdminUserUpdate, AdminUserResponse, AdminUserListResponse, AdminPasswordChange,
+    AdminUserCreate, AdminUserUpdate, AdminUserResponse, AdminUserListResponse, AdminPasswordChange,
     RolePermissionCreate, RolePermissionResponse, RolePermissionListResponse,
     RoutePermissionCreate, RoutePermissionUpdate, RoutePermissionResponse, RoutePermissionListResponse,
     MonitoringOverview, SystemHealth, EndpointStats,
 )
 from app.schemas.audit import AuditLogResponse, AuditLogListResponse
 from app.api.v1.auth.auth import get_current_user, require_permission
-from app.security.hashing import get_password_hash
 from app.security.permissions import Permission, Role
 from sqlalchemy import text
 
@@ -37,6 +36,27 @@ def list_users(
         skip=skip,
         limit=limit,
     )
+
+
+@router.post("/users", response_model=AdminUserResponse, status_code=201)
+def create_user(
+    data: AdminUserCreate,
+    db: Session = Depends(get_db),
+    _=Depends(require_permission(Permission.MANAGE_USERS)),
+):
+    service = AdminService(db)
+    from app.repositories.auth_repository import AuthRepository
+    existing = AuthRepository(db).get_by_username(data.username)
+    if existing:
+        raise HTTPException(status_code=409, detail="Username already exists")
+    user = service.create_user(
+        username=data.username,
+        password=data.password,
+        full_name=data.full_name,
+        role=data.role,
+    )
+    db.commit()
+    return AdminUserResponse.model_validate(user)
 
 
 @router.get("/users/{user_uuid}", response_model=AdminUserResponse)
@@ -80,7 +100,7 @@ def admin_change_password(
     user_uuid: str,
     data: AdminPasswordChange,
     db: Session = Depends(get_db),
-    _=Depends(require_permission(Permission.MANAGE_USERS)),
+    _=Depends(require_permission(Permission.ADMIN_CHANGE_PASSWORD)),
 ):
     from uuid import UUID
     service = AdminService(db)

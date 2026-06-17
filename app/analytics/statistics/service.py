@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func, text
 from app.models.base import (
     PatientIdentity, PatientProfile, AssessmentScale, GenderIdentity,
+    EducationLevel, Ethnicity,
 )
 
 AGE_BINS = [0, 18, 35, 50, 65, 200]
@@ -53,11 +54,41 @@ class StatisticsService:
             bins = pd.cut(df["age"], bins=AGE_BINS, labels=AGE_LABELS, right=True)
             age_dist = bins.value_counts().reindex(AGE_LABELS, fill_value=0).to_dict()
 
+        edu_query = (
+            self.session.query(
+                func.coalesce(PatientProfile.education_level_id, 0).label("edu_id"),
+                func.count().label("count"),
+            )
+            .select_from(PatientProfile)
+            .group_by(PatientProfile.education_level_id)
+            .all()
+        )
+        edu_labels = {0: "Não informado"}
+        for r in self.session.query(EducationLevel).all():
+            edu_labels[r.education_level_id] = r.description
+        edu_dist = {edu_labels.get(row.edu_id, f"ID {row.edu_id}"): row.count for row in edu_query}
+
+        eth_query = (
+            self.session.query(
+                func.coalesce(PatientProfile.ethnicity_id, 0).label("eth_id"),
+                func.count().label("count"),
+            )
+            .select_from(PatientProfile)
+            .group_by(PatientProfile.ethnicity_id)
+            .all()
+        )
+        eth_labels = {0: "Não informado"}
+        for r in self.session.query(Ethnicity).all():
+            eth_labels[r.ethnicity_id] = r.description
+        eth_dist = {eth_labels.get(row.eth_id, f"ID {row.eth_id}"): row.count for row in eth_query}
+
         return {
             "total_patients": total,
             "sex_distribution": sex_dist,
             "gender_identity_distribution": gender_dist,
             "age_distribution": age_dist,
+            "education_level_distribution": edu_dist,
+            "ethnicity_distribution": eth_dist,
         }
 
     def get_scale_score_distribution(self, scale_name: str) -> Dict[str, Any]:

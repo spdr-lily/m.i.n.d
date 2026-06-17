@@ -13,6 +13,16 @@ class AdminService:
 
     # === User Management ===
 
+    def create_user(self, username: str, password: str, full_name: str | None = None, role: str = "clinician") -> User:
+        from app.security.hashing import get_password_hash
+        hashed = get_password_hash(password)
+        return self.auth_repo.create_user(
+            username=username,
+            hashed_password=hashed,
+            full_name=full_name,
+            role=role,
+        )
+
     def list_users(self, skip: int = 0, limit: int = 100) -> tuple[List[User], int]:
         query = self.session.query(User).order_by(User.created_at.desc())
         total = query.count()

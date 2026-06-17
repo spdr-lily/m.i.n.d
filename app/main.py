@@ -9,11 +9,12 @@ from app.models import base as models
 from app.api import health
 from app.api.v1.clinical import (
     patients, consultations, reference, professionals, episodes,
-    scales, assessments, metrics, alerts, medications
+    scales, assessments, metrics, alerts, medications, chatbot, analytics, treatments
 )
 from app.api.v1.diagnostic import disorders, inferences
 from app.api.v1.auth import auth, admin, audit, consent
 from app.api.v1.ml import training as ml_training
+from app.api.v1.ml import scale_predictions as ml_scale_predictions
 from app.middleware.audit_middleware import AuditMiddleware
 from app.middleware.security_middleware import (
     SecurityHeadersMiddleware, RateLimitMiddleware,
@@ -103,6 +104,10 @@ app.include_router(admin.router)
 app.include_router(medications.router)
 app.include_router(consent.router)
 app.include_router(ml_training.router)
+app.include_router(ml_scale_predictions.router)
+app.include_router(chatbot.router)
+app.include_router(treatments.router)
+app.include_router(analytics.router)
 
 
 # Root endpoint — serve frontend SPA if built, otherwise API info

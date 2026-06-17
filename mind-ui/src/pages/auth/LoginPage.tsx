@@ -83,7 +83,7 @@ export default function LoginPage() {
         <Form
           layout="vertical"
           onFinish={handleSubmit}
-          autoComplete="off"
+          autoComplete="on"
           initialValues={{ remember: true }}
           size="large"
         >
@@ -96,6 +96,7 @@ export default function LoginPage() {
               prefix={<UserOutlined style={{ color: '#bfbfbf' }} />}
               placeholder="Usuário"
               autoFocus
+              autoComplete="username"
             />
           </Form.Item>
 
@@ -107,6 +108,7 @@ export default function LoginPage() {
             <Input.Password
               prefix={<LockOutlined style={{ color: '#bfbfbf' }} />}
               placeholder="Senha"
+              autoComplete="current-password"
             />
           </Form.Item>
 

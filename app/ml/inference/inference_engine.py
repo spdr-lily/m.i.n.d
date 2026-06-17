@@ -1,8 +1,10 @@
-from typing import List, Optional
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
 from app.ml.evaluation.criteria_evaluator import CriteriaEvaluator, DisorderEvaluation
 from app.ml.models.dsm_icd_mapper import DSMICDMapper
+from app.ml.models.assessment_scales import SCALE_DISORDER_MAP
 from app.ml.inference.confidence_calculator import calculate_criteria_confidence
+from app.ml.predictors.scale_predictor import predict_disorder_risk_from_scales
 from app.models.base import SymptomObservation, DiagnosisRelationship, CriteriaGroup
 
 
@@ -34,6 +36,7 @@ class InferenceEngine:
         disorders_with_criteria: List[tuple],
         observations: List[SymptomObservation],
         relationships: Optional[List[DiagnosisRelationship]] = None,
+        scale_scores: Optional[Dict[str, float]] = None,
     ) -> List[InferenceResult]:
         evaluations = self.criteria_evaluator.evaluate_all(
             disorders_with_criteria, observations
@@ -43,6 +46,10 @@ class InferenceEngine:
         for eval_result in evaluations:
             result = self._build_result(eval_result)
             results.append(result)
+
+        if scale_scores:
+            results = self._apply_scale_adjustments(results, scale_scores)
+            results = self._apply_ml_scale_prediction(results, scale_scores)
 
         if relationships:
             results = self._apply_exclusion_rules(results, relationships)
@@ -80,6 +87,49 @@ class InferenceEngine:
             criteria_met=eval_result.met_criteria,
             criteria_total=eval_result.total_criteria,
         )
+
+    def _apply_scale_adjustments(
+        self,
+        results: List[InferenceResult],
+        scale_scores: Dict[str, float],
+    ) -> List[InferenceResult]:
+        for scale_name, total_score in scale_scores.items():
+            thresholds = SCALE_DISORDER_MAP.get(scale_name, [])
+            for threshold, disorder_keywords in thresholds:
+                if total_score >= threshold:
+                    for result in results:
+                        if result.disorder_name and any(
+                            kw.lower() in result.disorder_name.lower()
+                            for kw in disorder_keywords
+                        ):
+                            boost = 0.08 + (total_score - threshold) / 100.0
+                            result.probability = min(round(result.probability + boost, 4), 0.98)
+        return results
+
+    def _apply_ml_scale_prediction(
+        self,
+        results: List[InferenceResult],
+        scale_scores: Dict[str, float],
+    ) -> List[InferenceResult]:
+        """Apply ML/heuristic scale-based disorder risk as a complementary signal.
+
+        Predicts disorder probabilities from scale scores using the heuristic
+        scale risk predictor, then blends with existing probabilities.
+        Blending weight: 0.15 (ML signal accounts for 15% of final probability).
+        """
+        ml_risks = predict_disorder_risk_from_scales(scale_scores)
+        if not ml_risks:
+            return results
+
+        ml_weight = 0.15
+        for result in results:
+            if result.excluded:
+                continue
+            ml_prob = ml_risks.get(result.disorder_name, 0.0)
+            if ml_prob > 0.01:
+                blended = (1.0 - ml_weight) * result.probability + ml_weight * ml_prob
+                result.probability = min(round(blended, 4), 0.98)
+        return results
 
     def _apply_exclusion_rules(
         self,

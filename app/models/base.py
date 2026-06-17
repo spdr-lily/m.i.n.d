@@ -103,6 +103,7 @@ class HealthcareProfessional(Base):
     __table_args__ = {"schema": "clinical"}
 
     professional_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    user_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("security.users.user_uuid"), nullable=True)
     full_name = Column(String(255), nullable=False)
     professional_license = Column(String(100))
     profession = Column(String(100))
@@ -112,6 +113,7 @@ class HealthcareProfessional(Base):
 
     consultations = relationship("ClinicalConsultation", back_populates="healthcare_professional")
     patient_assignments = relationship("ProfessionalPatientAssignment", back_populates="professional", cascade="all, delete-orphan")
+    user = relationship("User", backref="healthcare_professional", uselist=False)
 
 
 class ProfessionalPatientAssignment(Base):
@@ -255,6 +257,7 @@ class Disorder(Base):
     dsm_code = Column(String(20))
     disorder_name = Column(String(255), unique=True, nullable=False)
     disorder_description = Column(Text)
+    dsm_chapter = Column(String(100))
     dsm_criteria = Column(Text)
     dsm_exclusions = Column(Text)
     dsm_differentials = Column(Text)
@@ -351,7 +354,7 @@ class ICD11Code(Base):
     code_id = Column(Integer, primary_key=True)
     disorder_id = Column(Integer, ForeignKey("diagnostic.disorders.disorder_id"), nullable=False)
     authority_id = Column(Integer, ForeignKey("diagnostic.classification_authorities.authority_id"))
-    icd11_code = Column(String(20), nullable=False, unique=True)
+    icd11_code = Column(String(20), nullable=False)
     icd11_title = Column(String(500))
     chapter = Column(String(100))
     chapter_code = Column(String(20))
@@ -514,6 +517,50 @@ class PrescriptionItem(Base):
     medication = relationship("Medication", back_populates="prescription_items")
 
 
+class DisorderMedication(Base):
+    """Maps medications to disorders with literature-based efficacy/success rates."""
+    __tablename__ = "disorder_medications"
+    __table_args__ = {"schema": "clinical"}
+
+    dm_id = Column(Integer, primary_key=True)
+    medication_id = Column(Integer, ForeignKey("clinical.medications.medication_id"), nullable=False)
+    disorder_id = Column(Integer, ForeignKey("diagnostic.disorders.disorder_id"), nullable=False)
+    success_rate = Column(Numeric(5, 4))
+    failure_rate = Column(Numeric(5, 4))
+    avg_response_weeks = Column(Numeric(5, 2))
+    line_of_treatment = Column(Integer)
+    recommendation_strength = Column(String(5))
+    notes = Column(Text)
+    created_at = Column(DateTime, server_default=func.now())
+
+    medication = relationship("Medication", backref="disorder_associations")
+    disorder = relationship("Disorder", backref="medication_associations")
+
+
+class TreatmentOutcome(Base):
+    """Tracks actual patient treatment outcomes for ML training."""
+    __tablename__ = "treatment_outcomes"
+    __table_args__ = {"schema": "clinical"}
+
+    outcome_uuid = Column(PostgresUUID(as_uuid=True), primary_key=True, server_default=func.gen_random_uuid())
+    patient_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.patient_profile.profile_uuid"), nullable=False)
+    medication_id = Column(Integer, ForeignKey("clinical.medications.medication_id"), nullable=False)
+    disorder_id = Column(Integer, ForeignKey("diagnostic.disorders.disorder_id"), nullable=False)
+    prescription_item_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("clinical.prescription_items.item_uuid"), nullable=True)
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date)
+    outcome = Column(String(30), nullable=False)
+    response_weeks = Column(Numeric(5, 2))
+    side_effects = Column(Text)
+    discontinued_reason = Column(Text)
+    adherence = Column(String(20))
+    created_at = Column(DateTime, server_default=func.now())
+
+    patient = relationship("PatientProfile", backref="treatment_outcomes")
+    medication = relationship("Medication", backref="treatment_outcomes")
+    disorder = relationship("Disorder", backref="treatment_outcomes")
+
+
 # ============================================================================
 # ============================================================================
 # SECURITY SCHEMA - Users and authentication
@@ -670,3 +717,59 @@ class ClinicalAlert(Base):
     resolved = Column(Boolean, default=False, nullable=False, server_default="false")
     resolved_at = Column(DateTime)
     created_at = Column(DateTime, server_default=func.now())
+
+
+# ============================================================================
+# CHAT SCHEMA — MIA chatbot persistence + ML self-improvement
+# ============================================================================
+
+class ChatMessage(Base):
+    """Persistent chat message between user and MIA chatbot."""
+    __tablename__ = "chat_messages"
+    __table_args__ = {"schema": "chat"}
+
+    message_id = Column(Integer, primary_key=True)
+    session_id = Column(PostgresUUID(as_uuid=True), nullable=False, index=True)
+    user_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("security.users.user_uuid"), nullable=True, index=True)
+    role = Column(String(10), nullable=False)  # "user" or "bot"
+    content = Column(Text, nullable=False)
+    metadata_json = Column(Text)  # JSON: disorders found, sentiment, etc.
+    created_at = Column(DateTime, server_default=func.now())
+
+    feedback = relationship("ChatFeedback", back_populates="message", cascade="all, delete-orphan")
+
+
+class ChatFeedback(Base):
+    """User feedback on MIA chatbot responses — used for ML self-improvement."""
+    __tablename__ = "chat_feedback"
+    __table_args__ = {"schema": "chat"}
+
+    feedback_id = Column(Integer, primary_key=True)
+    message_id = Column(Integer, ForeignKey("chat.chat_messages.message_id"), nullable=False, index=True)
+    user_uuid = Column(PostgresUUID(as_uuid=True), ForeignKey("security.users.user_uuid"), nullable=True)
+    rating = Column(String(20), nullable=False)  # "positive", "negative", "neutral"
+    corrected_text = Column(Text)  # user's suggested correction
+    created_at = Column(DateTime, server_default=func.now())
+
+    message = relationship("ChatMessage", back_populates="feedback")
+
+
+class MIAKnowledge(Base):
+    """Self-learned knowledge base for MIA — enriched via feedback."""
+    __tablename__ = "mia_knowledge"
+    __table_args__ = {"schema": "chat"}
+
+    knowledge_id = Column(Integer, primary_key=True)
+    trigger_terms = Column(Text, nullable=False)  # JSON array of trigger terms
+    response_template = Column(Text, nullable=False)
+    disorder_id = Column(Integer, ForeignKey("diagnostic.disorders.disorder_id"), nullable=True, index=True)
+    scale_name = Column(String(255))
+    confidence = Column(Numeric(5, 4), server_default="0.5000")
+    source = Column(String(50), server_default="seed")  # "seed", "learned", "manual"
+    times_used = Column(Integer, server_default="0")
+    positive_feedback = Column(Integer, server_default="0")
+    negative_feedback = Column(Integer, server_default="0")
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    disorder = relationship("Disorder", backref="mia_knowledge")

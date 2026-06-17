@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Card, Form, Select, Button, Typography, Breadcrumb, message, Space, Row, Col, Tag, Result, Spin, Divider, Table, Empty, Progress } from 'antd'
-import { ExperimentOutlined, HistoryOutlined } from '@ant-design/icons'
+import { ExperimentOutlined, HistoryOutlined, SaveOutlined } from '@ant-design/icons'
 import { scalesApi } from '../../api/scales'
 import { patientsApi } from '../../api/patients'
 import type { AssessmentScale, ScaleScoreResponse, PatientListItem } from '../../types'
@@ -22,9 +22,10 @@ export default function AssessmentPage() {
   const [selectedPatient, setSelectedPatient] = useState<string>('')
   const [selectedScale, setSelectedScale] = useState<AssessmentScale | null>(null)
   const [responses, setResponses] = useState<Record<number, number>>({})
-  const [result, setResult] = useState<ScaleScoreResponse | null>(null)
+  const [result, setResult] = useState<ScaleScoreResponse & { consultation_uuid?: string } | null>(null)
   const [history, setHistory] = useState<PatientAssessment[]>([])
   const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
   const [historyLoading, setHistoryLoading] = useState(false)
   const [initLoading, setInitLoading] = useState(true)
 
@@ -63,27 +64,52 @@ export default function AssessmentPage() {
     setResult(null)
   }
 
+  const getSortedResponses = useCallback(() => {
+    if (!selectedScale) return { questionIds: [] as number[], values: [] as number[] }
+    const questionIds = [...selectedScale.questions].sort((a, b) => a.question_order - b.question_order).map((q) => q.question_id)
+    const missing = questionIds.filter((id) => responses[id] === undefined)
+    if (missing.length > 0) return { questionIds: [], values: [] }
+    return { questionIds, values: questionIds.map((id) => responses[id]) }
+  }, [selectedScale, responses])
+
   const handleScore = async () => {
     if (!selectedScale) return
-    const questionIds = selectedScale.questions.sort((a, b) => a.question_order - b.question_order).map((q) => q.question_id)
-    const missing = questionIds.filter((id) => responses[id] === undefined)
-    if (missing.length > 0) {
+    const { questionIds, values } = getSortedResponses()
+    if (questionIds.length === 0) {
       message.warning('Responda todas as questões antes de pontuar')
       return
     }
     setLoading(true)
     try {
-      const sortedResponses = questionIds.map((id) => responses[id])
       const res = await scalesApi.score({
         scale_name: selectedScale.scale_name,
-        responses: sortedResponses,
+        responses: values,
       })
       setResult(res)
-      if (selectedPatient) loadHistory(selectedPatient)
     } catch {
       message.error('Erro ao calcular pontuação')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleSaveScore = async () => {
+    if (!selectedScale || !selectedPatient) return
+    const { questionIds, values } = getSortedResponses()
+    if (questionIds.length === 0) {
+      message.warning('Responda todas as questões antes de salvar')
+      return
+    }
+    setSaving(true)
+    try {
+      const res = await scalesApi.apply(selectedPatient, selectedScale.scale_name, values)
+      setResult(res)
+      message.success(`Avaliação salva na consulta ${res.consultation_uuid.slice(0, 8)}...`)
+      if (selectedPatient) loadHistory(selectedPatient)
+    } catch {
+      message.error('Erro ao salvar avaliação')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -147,23 +173,41 @@ export default function AssessmentPage() {
                       </div>
                     )
                   })}
-                <Button
-                  type="primary"
-                  icon={<ExperimentOutlined />}
-                  onClick={handleScore}
-                  loading={loading}
-                  style={{ marginTop: 12 }}
-                  block
-                  size="large"
-                >
-                  Calcular Pontuação
-                </Button>
+                <Space style={{ marginTop: 12, width: '100%' }} direction="vertical">
+                  <Button
+                    type="primary"
+                    icon={<ExperimentOutlined />}
+                    onClick={handleScore}
+                    loading={loading}
+                    block
+                    size="large"
+                    disabled={!selectedPatient}
+                  >
+                    Calcular Pontuação
+                  </Button>
+                  <Button
+                    type="default"
+                    icon={<SaveOutlined />}
+                    onClick={handleSaveScore}
+                    loading={saving}
+                    block
+                    size="large"
+                    disabled={!selectedPatient}
+                  >
+                    Salvar e Pontuar
+                  </Button>
+                </Space>
               </div>
             )}
           </Card>
 
           {result && (
             <Card title="Resultado" size="small" style={{ marginTop: 12 }}>
+              {result.consultation_uuid && (
+                <Text type="secondary" style={{ fontSize: 12, display: 'block', marginBottom: 8 }}>
+                  Consulta: {result.consultation_uuid}
+                </Text>
+              )}
               <Result
                 status={result.severity === 'severe' || result.severity === 'moderate' ? 'warning' : 'success'}
                 title={`${result.total_score} pontos`}
@@ -207,10 +251,7 @@ export default function AssessmentPage() {
                   },
                   {
                     title: 'Pontuação', dataIndex: 'total_score', width: 80,
-                    render: (v: number, r: PatientAssessment) => {
-                      const color = v >= 15 ? '#f5222d' : v >= 10 ? '#fa8c16' : v >= 5 ? '#faad14' : '#52c41a'
-                      return <Text strong style={{ color }}>{v}</Text>
-                    },
+                    render: (v: number) => <Text strong>{v}</Text>,
                   },
                 ]}
               />

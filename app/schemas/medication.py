@@ -65,3 +65,95 @@ class PrescriptionResponse(PrescriptionBase):
     items: List[PrescriptionItemResponse] = []
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class DisorderMedicationBase(BaseModel):
+    medication_id: int
+    disorder_id: int
+    success_rate: Optional[float] = None
+    failure_rate: Optional[float] = None
+    avg_response_weeks: Optional[float] = None
+    line_of_treatment: Optional[int] = None
+    recommendation_strength: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class DisorderMedicationCreate(DisorderMedicationBase):
+    pass
+
+
+class DisorderMedicationUpdate(BaseModel):
+    success_rate: Optional[float] = None
+    failure_rate: Optional[float] = None
+    avg_response_weeks: Optional[float] = None
+    line_of_treatment: Optional[int] = None
+    recommendation_strength: Optional[str] = None
+    notes: Optional[str] = None
+
+
+class DisorderMedicationResponse(DisorderMedicationBase):
+    dm_id: int
+    created_at: Optional[datetime] = None
+    medication: Optional[MedicationResponse] = None
+    disorder_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TreatmentOutcomeBase(BaseModel):
+    patient_uuid: UUID
+    medication_id: int
+    disorder_id: int
+    prescription_item_uuid: Optional[UUID] = None
+    start_date: str  # YYYY-MM-DD
+    end_date: Optional[str] = None
+    outcome: str  # improved, no_change, worsened, discontinued, remission
+    response_weeks: Optional[float] = None
+    side_effects: Optional[str] = None
+    discontinued_reason: Optional[str] = None
+    adherence: Optional[str] = None
+
+
+class TreatmentOutcomeCreate(TreatmentOutcomeBase):
+    pass
+
+
+class TreatmentOutcomeResponse(TreatmentOutcomeBase):
+    outcome_uuid: UUID
+    created_at: Optional[datetime] = None
+    medication: Optional[MedicationResponse] = None
+    disorder_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TreatmentEfficacyRequest(BaseModel):
+    patient_uuid: UUID
+    disorder_id: int
+    medication_ids: List[int]
+
+
+class TreatmentEfficacyPrediction(BaseModel):
+    medication_id: int
+    medication_name: str
+    success_probability: float
+    expected_response_weeks: Optional[float] = None
+    recommendation_strength: Optional[str] = None
+
+
+class TreatmentEfficacyResponse(BaseModel):
+    disorder_id: int
+    disorder_name: str
+    predictions: List[TreatmentEfficacyPrediction]
+
+
+class TreatmentOutcomeStats(BaseModel):
+    total_cases: int
+    improved_count: int
+    remission_count: int
+    no_change_count: int
+    worsened_count: int
+    discontinued_count: int
+    success_rate: float
+    failure_rate: float
+    avg_response_weeks: Optional[float] = None

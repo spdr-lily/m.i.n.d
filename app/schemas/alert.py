@@ -28,4 +28,4 @@ class AlertResolveResponse(BaseModel):
     alert_id: int
     resolved: bool
     resolved_at: datetime
-    message: str = "Alert resolved successfully"
+    message: str = "Alerta resolvido com sucesso"

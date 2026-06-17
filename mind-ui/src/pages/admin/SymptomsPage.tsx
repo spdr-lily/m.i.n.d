@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Card, Table, Button, Modal, Form, Input, Space, Typography, Breadcrumb, message, Popconfirm } from 'antd'
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
 import { disordersApi } from '../../api/disorders'
 import type { Symptom } from '../../types'
 
@@ -13,6 +13,7 @@ export default function SymptomsPage() {
   const [editing, setEditing] = useState<Symptom | null>(null)
   const [saving, setSaving] = useState(false)
   const [form] = Form.useForm()
+  const [searchText, setSearchText] = useState('')
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -71,6 +72,16 @@ export default function SymptomsPage() {
     }
   }
 
+  const filtered = useMemo(() => {
+    if (!searchText) return symptoms
+    const q = searchText.toLowerCase()
+    return symptoms.filter(
+      (s) =>
+        s.symptom_name.toLowerCase().includes(q) ||
+        (s.symptom_description || '').toLowerCase().includes(q)
+    )
+  }, [symptoms, searchText])
+
   const columns = [
     { title: 'ID', dataIndex: 'symptom_id', width: 60 },
     { title: 'Nome', dataIndex: 'symptom_name', width: 250, render: (v: string) => <strong>{v}</strong> },
@@ -97,10 +108,19 @@ export default function SymptomsPage() {
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
           <Title level={4} style={{ margin: 0 }}>Sintomas (DSM-5-TR)</Title>
-          <Button icon={<PlusOutlined />} type="primary" onClick={openCreate}>Novo Sintoma</Button>
+          <Space>
+            <Input.Search
+              placeholder="Pesquisar sintomas..."
+              prefix={<SearchOutlined />}
+              allowClear
+              onChange={(e) => setSearchText(e.target.value)}
+              style={{ width: 280 }}
+            />
+            <Button icon={<PlusOutlined />} type="primary" onClick={openCreate}>Novo Sintoma</Button>
+          </Space>
         </div>
         <Table
-          dataSource={symptoms}
+          dataSource={filtered}
           columns={columns}
           rowKey="symptom_id"
           loading={loading}

@@ -68,7 +68,7 @@ m.i.n.d/
 │   │   └── scale_repository.py
 │   │
 │   ├── ml/                       # Machine Learning & Inferência
-│   │   ├── assessment_scales.py   # 10 escalas psicométricas
+│   │   ├── assessment_scales.py   # 20 escalas psicométricas (10 clínicas + 10 neuro)
 │   │   ├── bayesian_inference_service.py
 │   │   ├── bayesian_network.py    # Naive Bayes classifier
 │   │   ├── criteria_evaluator.py  # Regras DSM-5-TR

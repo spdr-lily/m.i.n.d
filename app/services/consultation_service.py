@@ -9,6 +9,7 @@ from app.schemas.consultation import (
     ClinicalConsultationCreate, SymptomObservationCreate,
     ScaleResponseCreate, ConsultationWithDataCreate, ClinicalNoteCreate
 )
+from app.security.lgpd import decrypt_pii
 
 
 class ConsultationService:
@@ -223,7 +224,11 @@ class ConsultationService:
             patient_name = None
             pat_uuid = None
             if c.patient_profile and c.patient_profile.patient_identity:
-                patient_name = c.patient_profile.patient_identity.full_name
+                encrypted = c.patient_profile.patient_identity.full_name
+                try:
+                    patient_name = decrypt_pii(encrypted) if encrypted else None
+                except Exception:
+                    patient_name = encrypted
                 pat_uuid = str(c.patient_profile.patient_uuid)
             items.append({
                 "consultation_uuid": c.consultation_uuid,

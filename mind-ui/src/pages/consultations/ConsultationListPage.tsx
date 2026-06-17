@@ -5,7 +5,7 @@ import { PlusOutlined } from '@ant-design/icons'
 import { consultationsApi } from '../../api/consultations'
 import type { ConsultationListItem } from '../../types'
 
-const { Title } = Typography
+const { Title, Text } = Typography
 
 export default function ConsultationListPage() {
   const [consultations, setConsultations] = useState<ConsultationListItem[]>([])
@@ -22,6 +22,11 @@ export default function ConsultationListPage() {
       setTotal(data.total)
     }).finally(() => setLoading(false))
   }, [page])
+
+  const shortHash = (u: string | undefined) => {
+    if (!u) return ''
+    return u.substring(0, 8)
+  }
 
   return (
     <>
@@ -41,7 +46,17 @@ export default function ConsultationListPage() {
           onRow={(record) => ({ onClick: () => navigate(`/consultations/${record.consultation_uuid}`), style: { cursor: 'pointer' } })}
           columns={[
             { title: 'Data', dataIndex: 'consultation_date', width: 160 },
-            { title: 'Paciente', dataIndex: 'patient_name', ellipsis: true },
+            {
+              title: 'Paciente',
+              dataIndex: 'patient_name',
+              ellipsis: true,
+              render: (name: string, record: ConsultationListItem) => (
+                <div style={{ lineHeight: 1.4 }}>
+                  <div>{name}</div>
+                  <Text type="secondary" style={{ fontSize: 11, fontFamily: 'monospace' }}>{record.patient_uuid}</Text>
+                </div>
+              ),
+            },
             { title: 'Profissional', dataIndex: 'professional_name', ellipsis: true },
             { title: 'Observações', dataIndex: 'consultation_notes', ellipsis: true },
           ]}

@@ -3,7 +3,7 @@ import { Card, Table, Tag, Button, Typography, Breadcrumb, Spin, Space, Badge } 
 import { CheckCircleOutlined, BellOutlined } from '@ant-design/icons'
 import { alertsApi } from '../../api/alerts'
 import type { Alert } from '../../types'
-import { SEVERITY_COLORS } from '../../utils/constants'
+import { SEVERITY_COLORS, SEVERITY_LABELS, ALERT_TYPE_LABELS } from '../../utils/constants'
 
 const { Title } = Typography
 
@@ -44,9 +44,14 @@ export default function AlertsPage() {
               title: 'Severidade',
               dataIndex: 'severity',
               width: 110,
-              render: (v: string) => <Tag color={SEVERITY_COLORS[v]}>{v.toUpperCase()}</Tag>,
+              render: (v: string) => <Tag color={SEVERITY_COLORS[v]}>{SEVERITY_LABELS[v] || v}</Tag>,
             },
-            { title: 'Tipo', dataIndex: 'alert_type', width: 160 },
+            {
+              title: 'Tipo',
+              dataIndex: 'alert_type',
+              width: 160,
+              render: (v: string) => <span>{ALERT_TYPE_LABELS[v] || v}</span>,
+            },
             { title: 'Mensagem', dataIndex: 'message', ellipsis: true },
             { title: 'Data', dataIndex: 'created_at', width: 160 },
             {

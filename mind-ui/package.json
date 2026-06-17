@@ -6,13 +6,13 @@
   "description": "M.I.N.D CDSS - Clinical Decision Support System UI",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
-    "@ant-design/icons": "^5.3.0",
-    "antd": "^5.15.0",
+    "@ant-design/icons": "^5.6.1",
+    "antd": "^5.27.4",
     "axios": "^1.6.7",
     "dayjs": "^1.11.10",
     "react": "^18.2.0",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
+    "@types/recharts": "^1.8.29",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",

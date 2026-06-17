@@ -10,9 +10,10 @@ class ProfessionalService:
         self.session = session
         self.repository = ProfessionalRepository(session)
 
-    def create_professional(self, full_name: str, professional_license: Optional[str] = None, profession: Optional[str] = None, specialty: Optional[str] = None, start_date: Optional[str] = None) -> HealthcareProfessional:
+    def create_professional(self, full_name: str, user_uuid: Optional[UUID] = None, professional_license: Optional[str] = None, profession: Optional[str] = None, specialty: Optional[str] = None, start_date: Optional[str] = None) -> HealthcareProfessional:
         return self.repository.create(
             full_name=full_name,
+            user_uuid=user_uuid,
             professional_license=professional_license,
             profession=profession,
             specialty=specialty,

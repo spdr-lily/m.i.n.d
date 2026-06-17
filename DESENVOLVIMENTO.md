@@ -34,7 +34,7 @@
 - **Rede Bayesiana (Naive Bayes)** — `app/ml/bayesian_network.py`
 - **CriteriaEvaluator** — Lógica DSM-5-TR (contagem mínima, duração, exclusão, comorbidade)
 - **DSM-ICD Mapper** — Mapeamento bidirecional DSM-5-TR ↔ CID-11
-- **10 escalas psicométricas** — PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10
+- **20 escalas psicométricas** — 10 clínicas (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10) + 10 neuropsicológicas (BFP, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY)
 - **ML Pipeline** — 12 modelos (4 objetivos × 3 algoritmos: Logistic Regression, Random Forest, XGBoost)
 - **MLflow** — Experiment tracking e model registry
 - **DVC** — Versionamento de datasets
@@ -272,7 +272,7 @@ Uso: `python spark/submit.py <job_name> [--csv path]`
 ```
 tests/
 ├── unit/
-│   ├── test_assessment_scales.py   — Scoring das 10 escalas
+│   ├── test_assessment_scales.py   — Scoring das 20 escalas
 │   ├── test_auth.py                — JWT, RBAC
 │   ├── test_bayesian_network.py    — Naive Bayes
 │   ├── test_criteria_evaluator.py  — Regras DSM-5-TR

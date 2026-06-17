@@ -7,6 +7,8 @@ from app.analytics.bi.service import BIService
 from app.analytics.dashboards.service import DashboardService
 from app.analytics.statistics.service import StatisticsService
 
+from app.analytics.ml_dashboard.service import MLDashboardService
+
 router = APIRouter(prefix="/api/v1/metrics", tags=["metrics"])
 
 
@@ -81,3 +83,27 @@ def get_patient_longitudinal(
 ):
     service = DashboardService(db)
     return service.get_patient_longitudinal(patient_uuid, days=days)
+
+
+@router.get("/prevalence-trends")
+def get_prevalence_trends(
+    months: int = Query(12, ge=1, le=60),
+    db: Session = Depends(get_db),
+):
+    service = BIService(db)
+    return service.get_prevalence_trends(months=months)
+
+
+@router.get("/comorbidity")
+def get_comorbidity_heatmap(
+    top_n: int = Query(10, ge=2, le=25),
+    db: Session = Depends(get_db),
+):
+    service = BIService(db)
+    return service.get_comorbidity_heatmap(top_n=top_n)
+
+
+@router.get("/ml/dashboard")
+def get_ml_dashboard(db: Session = Depends(get_db)):
+    service = MLDashboardService(db)
+    return service.get_ml_dashboard()

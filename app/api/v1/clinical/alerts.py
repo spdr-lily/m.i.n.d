@@ -84,7 +84,7 @@ def resolve_alert(
     service = AlertsService(db)
     alert = service.resolve_alert(alert_id)
     if not alert:
-        raise HTTPException(status_code=404, detail="Alert not found")
+        raise HTTPException(status_code=404, detail="Alerta não encontrado")
     return AlertResolveResponse(
         alert_id=alert.alert_id,
         resolved=alert.resolved,

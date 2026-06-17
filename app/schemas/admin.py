@@ -6,7 +6,15 @@ from pydantic import BaseModel, ConfigDict, Field
 
 # === Admin User Management ===
 
+class AdminUserCreate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    password: str = Field(..., min_length=6, max_length=128)
+    full_name: Optional[str] = None
+    role: str = "clinician"
+
+
 class AdminUserUpdate(BaseModel):
+    username: Optional[str] = Field(None, min_length=3, max_length=50)
     full_name: Optional[str] = None
     role: Optional[str] = None
     is_active: Optional[bool] = None

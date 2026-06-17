@@ -58,6 +58,7 @@ async def create_professional(
     try:
         professional = service.create_professional(
             full_name=data.full_name,
+            user_uuid=data.user_uuid,
             professional_license=data.professional_license,
             profession=data.profession,
             specialty=data.specialty,

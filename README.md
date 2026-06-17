@@ -14,7 +14,7 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 | API | FastAPI + Pydantic v2 + SQLAlchemy 2.0 |
 | Banco | PostgreSQL 16 + Alembic (12 revisões) |
 | Inferência | Rede Bayesiana (Naive Bayes) + Critérios DSM-5-TR |
-| Escalas | PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10 |
+| Escalas | 20 escalas: PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY |
 | ML Pipeline | Logistic Regression, Random Forest, XGBoost (4 objetivos × 3 algoritmos = 12 modelos) |
 | MLOps | MLflow + DVC |
 | DW | Star schema (dim_fato), ETL via `dw_loader.py` |

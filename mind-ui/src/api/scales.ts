@@ -3,7 +3,25 @@ import type {
   AssessmentScale, ScaleScoreRequest, ScaleScoreResponse, ScaleHistoryItem,
   ScaleCreateRequest, ScaleUpdateRequest, ScaleQuestionCreateRequest,
   ScaleQuestionUpdateRequest, PaginatedScales, PaginatedQuestions, ScaleQuestion,
+  PersonalityFactorsResponse, DisorderRiskRequest, DisorderRiskResponse,
 } from '../types'
+
+export const mlApi = {
+  predictPersonality: (scaleScores: Record<string, number>) =>
+    apiClient.post<{ bfp: Record<string, { score: number; max_possible: number }>; bfp_total: number; dt12: Record<string, { score: number; max_possible: number }>; dt12_total: number; ml_source: string }>('/ml/scales/predict-personality', { scale_scores: scaleScores }).then((r) => r.data),
+
+  predictDisorderRisk: (data: DisorderRiskRequest) =>
+    apiClient.post<DisorderRiskResponse>('/ml/scales/predict-disorder-risk', data).then((r) => r.data),
+
+  predictPersonalityFromPatient: (patientUuid: string) =>
+    apiClient.get<PersonalityFactorsResponse>(`/ml/scales/predict-personality-from-patient/${patientUuid}`).then((r) => r.data),
+
+  listAvailableScales: () =>
+    apiClient.get<{ clinical_scales: string[]; neuro_scales: string[]; total: number }>('/ml/scales/available-scales').then((r) => r.data),
+
+  personalityFactors: (patientUuid: string) =>
+    apiClient.get<PersonalityFactorsResponse>(`/assessments/patient/${patientUuid}/personality-factors`).then((r) => r.data),
+}
 
 export const scalesApi = {
   list: (skip = 0, limit = 100) =>
@@ -40,9 +58,15 @@ export const scalesApi = {
   score: (data: ScaleScoreRequest) =>
     apiClient.post<ScaleScoreResponse>('/assessments/score', data).then((r) => r.data),
 
+  apply: (patientUuid: string, scaleName: string, responses: number[]) =>
+    apiClient.post<ScaleScoreResponse & { consultation_uuid: string }>('/assessments/apply', { patient_uuid: patientUuid, scale_name: scaleName, responses }).then((r) => r.data),
+
+  getDetail: (scaleName: string) =>
+    apiClient.get<{ question_id: number; question_text: string; response_value: number }[]>(`/assessments/detail/${scaleName}`).then((r) => r.data),
+
   history: (patientUuid: string, scaleName: string) =>
     apiClient
-      .get<ScaleHistoryItem[]>('/assessments/history', { params: { patient_uuid: patientUuid, scale_name: scaleName } })
+      .get<ScaleHistoryItem[]>(`/assessments/patient/${patientUuid}/scale/${scaleName}`)
       .then((r) => r.data),
 
   patientHistory: (patientUuid: string) =>

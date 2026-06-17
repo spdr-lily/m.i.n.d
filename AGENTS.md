@@ -1,83 +1,96 @@
 ## Goal
-- Transform MVP into a hardened CDSS with formal diagnostic engine, probabilistic Bayesian inference, clinical DW, RBAC, LGPD compliance, full ML pipeline (4 objectives × 3 algorithms), fully populated clinical reference data (DSM-5-TR, ICD-11, APA/WHO authorities, criteria/exclusions/differentials, scales, medications), professional CRM/CRP management with patient assignments, and multi-layer clinical data integrity validation.
+- Transform MVP into a hardened CDSS with formal diagnostic engine, probabilistic Bayesian inference, clinical DW, RBAC, LGPD compliance, full ML pipeline (4 objectives × 3 algorithms), fully populated clinical reference data (DSM-5-TR, ICD-11, APA/WHO authorities, criteria/exclusions/differentials, scales, medications), professional CRM/CRP management with patient assignments, multi-layer clinical data integrity validation, and AI-powered diagnostic assistant (MIA).
 
 ## Constraints & Preferences
 - LGPD compliance for mental health data (consent, pseudonymization, encryption, audit, retention).
 - DSM-5-TR and ICD-11 as formal clinical criteria sources; APA and WHO as first-class classification authorities.
-- Portuguese (BR) as project language — all 19 disorder names unified to Portuguese, API field `profissional_license` for CRM/CRP.
+- Portuguese (BR) as project language — all ~192 disorder names unified to Portuguese, API field `profissional_license` for CRM/CRP.
 - Diagnostic engine: rule-based + probabilistic dual pipeline.
 - DW star schema, separate from transactional DB.
 - ML: Logistic Regression, Random Forest, XGBoost — no deep learning.
 - MLOps: MLflow + DVC for registry, tracking, versioning.
 - Clinical validation enforced at 3 layers: Pydantic schema → service business rules → DB CHECK constraints.
+- Single-container deployment: FastAPI serves both API and frontend static files; no separate frontend server.
 
 ## Progress
 ### Done
-- **Disorder naming unified to Portuguese (BR, 19 disorders)** — `scripts/seed_clinical_data.py` updated: `DISORDER_DEFS` uses Portuguese names, `BN_TO_PT` mapping bridges Bayesian network English → DB Portuguese, scale severity checks check for "Depressiv"/"Ansiedade", inference lookup uses `BN_TO_PT.get()`. 9 English-named disorders renamed in-place, 10 added. `db/seed.py` updated: disorder list and `criteria_map` keys changed to Portuguese names. **Transtorno Depressivo Maior** added as 19th disorder (F32.9, 296.22).
-- **Clinical dataset rebuilt**: `data/datasets/clinical_dataset.csv` (187 rows, 31 columns) with Portuguese disorder names.
-- **DW ETL reloaded**: 19 Portuguese disorders in `dim_disorder`, 930 diagnoses, 885 symptoms, 50 patients, 187 consultations, 2 scales (PHQ-9, GAD-7 with 374 responses).
-- **SSD (Secure Software Development) certification implemented**: security middlewares (CSP, HSTS, rate-limit 100 req/min, SQL injection blocking), Bandit-Safety-CI pipeline, `.pre-commit-config.yaml`, `SECURITY.md`, Bandit zeroed.
-- **Login fixed**: `VITE_API_URL=/api/v1` (path match), frontend rebuilt, login + `/auth/me` verified.
-- **Base reference data seeded**: sex types, gender identities, education levels, ethnicities, 113 symptoms, 19 disorders, diagnostic criteria, relationships, 1 professional, 5 users, 20 medications.
-- **CID-11 codes, criteria groups, scales seeded**: 19 ICD-11 codes, 29 criteria groups/29 rules/30 thresholds, 10 assessment scales (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10).
+- **Disorder naming unified to Portuguese (BR, 19 disorders)**: `scripts/seed_clinical_data.py` with `DISORDER_DEFS` (Portuguese names), `BN_TO_PT` mapping. 9 English-named disorders renamed in-place, 10 added. Transtorno Depressivo Maior added as 19th (F32.9, 296.22). All seeds idempotent.
+- **Classification authorities**: `ClassificationAuthority` model (WHO authority_id=1, APA=2) with name, short_name, website_url. `authority_id` FK on `ICD11Code` linking codes to WHO. Migration `d4e5f6a7b8c9`.
+- **DSM-5-TR criteria data mined and seeded**: `scripts/seed_diagnostic_data.py` — full DSM-5-TR criteria, ICD-11/DSM-5 exclusions and differentials for all 19 disorders. Columns on `Disorder`: `dsm_criteria`, `dsm_exclusions`, `dsm_differentials`, `icd11_exclusions`, `icd11_differentials`.
+- **ICD-11 codes, criteria groups, scales**: 19 ICD-11 codes, 29 criteria groups/29 rules/30 thresholds, 21 assessment scales (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, DT-12, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY).
 - **ML pipeline**: 12 models (4 objectives × 3 algorithms) trained, registered in MLflow, promoted to Production.
-- **Clinical integrity system complete**:
-  - `ClinicalIntegrityService`: validates patients (birth date, age ≤ 120), consultations (date not future, min age 3), symptoms (intensity 0–10, duration ≥ 1, valid frequencies), scale responses (value 0–10), inferences (probability/confidence 0–1, sum ≤ 1.0), plus `full_report()` for bulk integrity reporting.
-  - Pydantic validators added to `patient_profile.py` (birth_date future reject) and `consultation.py` (consultation_date future reject, intensity 0–10, frequency enum, duration_days ≥ 1, response_value 0–10).
-  - Alembic migration `c1d2e3f4a5b6`: 7 DB CHECK constraints (birth_date ≤ today, intensity 0–10, duration_days ≥ 1, valid frequencies, response_value 0–10, probability/confidence 0–1).
-  - `scripts/check_integrity.py`: CLI data quality reporter, outputs JSON report.
-- **Classification authorities implemented**:
-  - `ClassificationAuthority` model: WHO (authority_id=1) and APA (authority_id=2) with name, short_name, website_url.
-  - `authority_id` FK added to `ICD11Code` linking ICD-11 codes to WHO.
-  - Migration `d4e5f6a7b8c9`: creates table + FK + 5 new `Disorder` columns.
-- **DSM-5-TR criteria data mined and seeded**:
-  - `scripts/seed_diagnostic_data.py`: full DSM-5-TR diagnostic criteria, ICD-11 exclusions, ICD-11 differentials, DSM-5-TR exclusions, DSM-5-TR differentials for all 19 disorders.
-  - Columns added to `Disorder`: `dsm_criteria`, `dsm_exclusions`, `dsm_differentials`, `icd11_exclusions`, `icd11_differentials`.
-  - ICD-11 exclusion and differential records populated from parsed data.
-  - `seed_icd11.py` fixed: uses `SHORT_TO_PT` mapping for Portuguese disorder names.
-- **Professional management with patient assignments**:
-  - `ProfessionalPatientAssignment` model (professional_uuid × patient_uuid, unique constraint, active flag).
-  - Migration `e5f6a7b8c9d0`: creates `professional_patient_assignments` table in `clinical` schema.
-  - `app/api/v1/clinical/professionals.py` updated: `_sync_assignments()` manages caseload on create/update, `_enrich_assignments()` adds patient name to response.
-  - Schemas updated: `HealthcareProfessionalCreate/Update` accept `assigned_patient_uuids`, `HealthcareProfessionalResponse` includes `patient_assignments` with patient name.
-  - The existing fields `professional_license` (CRM/CRP), `profession`, `specialty`, `start_date` were already in the model and schema — now fully functional via API routes.
-- **Professional form UI completed**: `ProfessionalsPage.tsx` now has multi-select "Pacientes Associados" with search, and "Pacientes" column in table showing count badge.
-- **Disorders admin page enhanced**: `DisordersPage.tsx` now shows DSM-5-TR criteria, exclusions, differentials (DSM-5 and ICD-11) as collapsible panels in the expanded row.
-- **Inference page overhauled**: `InferencePage.tsx` now groups 113 symptoms into 14 clinical categories (Depressão, Ansiedade, Pânico, Bipolar, TOC, PTSD, Substâncias, Alimentar, Sono, Psicótico, Somático, Agorafobia, TEA, TDAH) with color-coded collapsible sections and per-group counters. Added patient inference history panel loading on patient select. Tooltip on probability column.
-- **Assessment page enhanced**: `AssessmentPage.tsx` now includes patient selector and "Histórico do Paciente" panel showing all past scale scores with date, scale name, and color-coded score. Auto-refreshes history after scoring.
-- **Patient-scale history API**: `GET /api/v1/assessments/patient/{patient_uuid}/history` — aggregates scale scores per consultation for a patient. Backend: `assessment_service.get_patient_assessment_history()`.
-- **Frontend API additions**: `inferencesApi.listByConsultation()`, `consultationsApi.listByProfile()`, `scalesApi.patientHistory()`.
-- **All seeds idempotent**: `db/seed.py` skips sections if data already exists. Migration `b3c4d5e6f7a8` (`add_clinical_notes_table`) made idempotent with inspector check. All disorder name mismatches fixed in criteria_map keys and relationships (accents, hyphens).
-- **Spark container operational**:
-  - `docker/spark/Dockerfile` uses `apache/spark:3.5.0` (Python 3.8-compatible) with `requirements-spark.txt` (no scipy/numpy/pandas which are incompatible with CPython 3.8).
-  - `spark/config.py` uses `PG_HOST` env var (defaults to `mind-postgres`) instead of hardcoded `localhost`.
-  - `postgresql-42.7.1.jar` (1 MB) downloaded for PostgreSQL JDBC connectivity; mounted at `/opt/spark/work-dir/postgresql-42.7.1.jar`.
-  - All Spark job schema/table references fixed to match actual DB: `clinical.patient_profile`, `diagnostic.diagnostic_inference`, `diagnostic.disorders`, `clinical.scale_responses`, `diagnostic.scale_questions`, `diagnostic.assessment_scales`; also `security.patient_identity` and `diagnostic.symptoms` in `data_import.py`.
-  - `spark/submit.py` adds `sys.path.insert(0, ...)` so `from spark.jobs import ...` resolves.
-  - Spark jobs run with `--driver-class-path /opt/spark/work-dir/postgresql-42.7.1.jar` on `mind_mind-network` with `PG_HOST=mind-postgres`.
-  - `population_metrics` job verified: connects via JDBC, reads all 6 tables, computes age distribution + disorder prevalence + scale statistics, exits cleanly (exit code 0).
+- **Clinical integrity system**: `ClinicalIntegrityService` (15+ methods), Pydantic validators, DB CHECK constraints (migration `c1d2e3f4a5b6`), `scripts/check_integrity.py` CLI reporter.
+- **Professional management with patient assignments**: `ProfessionalPatientAssignment` model, migration `e5f6a7b8c9d0`, CRUD routes with `_sync_assignments()` and `_enrich_assignments()`.
+- **SSD certification**: security middlewares (CSP, HSTS, rate-limit 100 req/min, SQL injection blocking), Bandit zeroed, `.pre-commit-config.yaml`, `SECURITY.md`.
+- **Spark container**: `docker/spark/Dockerfile` using `apache/spark:3.5.0`, PostgreSQL JDBC driver mounted at `/opt/spark/work-dir/postgresql-42.7.1.jar`, `population_metrics` job verified.
+- **Full DSM-5-TR catalog**: All ~192 disorders across 22 chapters populated in DB via `scripts/dsm5tr_data.py`. `dsm_chapter` column on `Disorder` model for chapter-level categorization. Migration `f7b8c9d0e1f2`. Frontend `DisordersPage.tsx` updated with chapter grouping, core/reference distinction (`is_core` tag).
+- **Schema `dsm_chapter`**: Added to `DisorderBase`/`DisorderResponse`/`DisorderUpdate` Pydantic schemas. `is_core` flag computed via `model_validator` on `DisorderResponse` based on `CORE_NAMES` set.
+- **DW ETL**: Full DSM-5-TR catalog in `dim_disorder` — uses `dsm_chapter` field directly instead of `guess_category()`. All 22 chapter categories mapped.
+- **DW ETL**: 19 Portuguese disorders in `dim_disorder`, 930 diagnoses, 885 symptoms, 50 patients, 187 consultations, 21 scales (34,776 responses across all scales including 10 neuropsychological).
+- **Reference data seeded**: sex types, gender identities, education levels, ethnicities, 113 symptoms, ~192 disorders, diagnostic criteria, relationships, 1 professional, 5 users, 20 medications.
+- **SCALE_DISORDER_MAP**: maps 17 scales → disorder keywords with thresholds for inference probability boost.
+- **MIA chatbot**: `POST /api/v1/chatbot/ask` with rule-based sentiment analysis (Portuguese word lists) + DB search across all 19 disorders (name + description + DSM criteria/exclusions + ICD-11 exclusions/differentials). Name matches prioritized over text matches. Response includes sentiment label/score, structured disorder results, and detailed criteria per symptom. Frontend: `MiaPage.tsx` — chat UI with message bubbles, sentiment tags, collapsible disorder cards. Route `/mia` with nav item in sidebar. FloatButton on all pages.
+- **Dashboard enhanced**: demographics card with 5 tabs (Sexo, Identidade de Gênero, Idade, Escolaridade com Barras, Etnia com Barras). `get_patient_demographics()` returns `education_level_distribution` and `ethnicity_distribution`.
+- **Frontend enhancements**: consultation list shows patient name + UUID, consultation detail shows patient name, username field in UsersPage, BFT renamed to BFP in UI.
+- **Bug fixes**: Inference engine missing `calculate_criteria_confidence` import (`inference_engine.py`); explanation endpoint undefined `scale_scores` (`inference_service.py`).
+- **All 21 scales populated in clinical dataset**: Added 10 neuropsychological scales (BFP, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY) to `SCALE_DEFS` in `scripts/seed_clinical_data.py`. Refactored `seed()` with `_generate_scale_responses()` helper to support re-seed (regenerates only scale_responses + inferences without deleting patients). Total: 34,776 scale responses and 945 inferences across 189 consultations.
+- **DW ETL scale coverage**: Added max_scores for all 10 neuro scales in `app/etl/dw_loader.py:load_dim_scale()`.
+- **Disorder chart color scale reduced**: Changed from groups of 3 bars per color to 1 bar per color in `DashboardPage.tsx`.
+- **Full catalog activation for reference disorders**: `scripts/seed_full_catalog.py` now has `seed()` function that seeds ~80 reference disorders with DSM-5-TR criteria text, 94 diagnosis relationships between reference disorders, and ICD-11 exclusion/differential data (where available). Total: 99 disorders with criteria text (up from 19), 114 diagnosis relationships. 31 disorders remain as `None` entries (Personality Disorders chapter 18, Paraphilic chapter 19, Neurocognitive 17 subtypes, etc.) awaiting criteria text data.
+- **Roles expanded**: Added `clinician` (8 permissions: read/write patient & consultation, read diagnosis, read reference, read/run inference) and `viewer` (5 read-only permissions) roles to backend `Role` enum and permission matrix.
+- **User ↔ Professional linkage**: Added `user_uuid` FK column to `HealthcareProfessional` model (migration `031c8a8ec7b8`). Seed now links all 5 professionals to role-based users (clinician, psychiatrist, psychologist, researcher, clinical_supervisor). 6 users created (admin + 5 role-based). Frontend `UsersPage.tsx` role dropdown expanded to all 7 backend roles with per-role tag colors.
+- **Professional-patient assignments**: `scripts/seed_clinical_data.py` now creates `ProfessionalPatientAssignment` records distributing 50 patients across 5 professionals (round-robin, ~10 per primary prof). 20% of patients have a secondary shared assignment. Consultations weighted toward primary professional (70% primary, 30% random).
+- **Menu reorganization**: Sidebar menu in `MainLayout.tsx` reorganized into 3 logical submenus — Clínico (pacientes, consultas, escalas, inferência, profissionais, alertas), Administração (usuários, transtornos, gerenciar escalas, sintomas, medicamentos, permissões, monitoramento), and Ferramentas (MIA, auditoria). Root-level Dashboard remains standalone. Role-based filtering preserved per item within submenus.
+- **Personality metrics enhanced**: BFP (Big Five) expanded from 6 to 25 questions (5 per factor: Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo) with updated thresholds. Dark Triad (DT-12 / Tríade Sombria) added via SD-12 scale (12 itens, Likert 0-6) covering Maquiavelismo, Narcisismo, Psicopatia. Both added to `SCALES_REGISTRY`, `SCALE_DISORDER_MAP`, `MAX_Q_SCORE`, DW ETL `max_scores`, seed data, and frontend `SCALE_OPTIONS`.
+
 ### In Progress
 - *(none)*
+
+### Done (New — This Session)
+- **DSM-5-TR criteria for all 111 disorders completed**: Replaced all 31 placeholder entries (`None`/`"|"`) in `scripts/seed_full_catalog.py:DSM5TR_ALL` with full DSM-5-TR criteria tuples. Now all 111 disorders in the catalog have `dsm_criteria`, `dsm_exclusions`, `dsm_differentials`, `icd11_exclusions`, and `icd11_differentials` text. Includes 8 substance disorders (TUS criteria with substance-specific withdrawal), 3 neurocognitive (Delirium, Maior, Leve), 10 personality disorders (Clusters A/B/C with full lettered criteria), 8 paraphilic disorders, and 2 other specified/unspecified disorders.
+- **Frontend SCALE_DISORDER_MAP expanded**: Added BFP, DT-12 (Tríade Sombria), and all 9 neuropsychological scales (MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY) with severity thresholds. All scale names now resolve to readable Portuguese disorder labels.
+- **Example patient reports seeded**: `_seed_reports()` function in `scripts/seed_clinical_data.py` generates ~3 reports per ~1/3 of patients (Resumo Clínico, Avaliação, Encaminhamento) with realistic Brazilian Portuguese content including diagnosis, scale scores, symptoms, stressors, and treatment recommendations. `MedicalReport` model imported. Reports counted in `_print_summary()`.
+- **REFERENCE_SYMPTOM_MAP + Phase 4 (DiagnosticCriteria for reference disorders)**: Created `scripts/reference_symptom_data.py` with `REFERENCE_SYMPTOM_MAP` dict (426 symptom keys across 109 disorders, each with required-flag and min_duration). Added Phase 4 to `scripts/seed_full_catalog.py:seed()` that creates `DiagnosticCriteria` records linking reference disorders to their DSM-5-TR symptoms (skips 19 core disorders via `CORE_DISORDER_NAMES`). Runs idempotently inside Docker container.
+- **EN_TO_PT_SYMPTOM expanded to 519 entries**: Added ~406 new English→Portuguese symptom name mappings to `scripts/seed_clinical_data.py`, organized by DSM-5-TR chapter. Covers all 426 keys used by `REFERENCE_SYMPTOM_MAP` plus existing core-disorder entries.
+- **Symptom DB records expanded to 523**: Added 410 new `(snake_case_name, description)` tuples to `db/seed.py:symptoms_data` list. Descriptions extracted from the first occurrence in `REFERENCE_SYMPTOM_MAP` (truncated to 100 chars, `≥`/`≤` replaced with `>=`/`<=` for cp1252 safety).
+- **DisordersPage frontend updated**: Shows "Carregar sintomas" button for reference disorders on expand, loads `DiagnosticCriteria` for ALL disorders (not just core). Criteria table renders symptom name, required flag, min duration, and clinical notes for all 111 disorders.
+- **Personality page added**: `mind-ui/src/pages/personality/PersonalityPage.tsx` with route `/personality`. Shows BFP (Big Five) and DT-12 (Tríade Sombria) patient history side-by-side. Patient selector, per-factor Progress bars (5 BFP factors + 3 DT-12 subscales), total score with severity tag, historical table. Menu item "Personalidade" added to Clínico submenu with `ProfileOutlined` icon.
+- **REFERENCE_SYMPTOM_MAP + Phase 4 (DiagnosticCriteria for reference disorders)**: Created `scripts/reference_symptom_data.py` with `REFERENCE_SYMPTOM_MAP` dict (426 symptom keys across 109 disorders, each with required-flag and min_duration). Added Phase 4 to `scripts/seed_full_catalog.py:seed()` that creates `DiagnosticCriteria` records linking reference disorders to their DSM-5-TR symptoms (skips 19 core disorders via `CORE_DISORDER_NAMES`). Runs idempotently inside Docker container.
+- **EN_TO_PT_SYMPTOM expanded to 519 entries**: Added ~406 new English→Portuguese symptom name mappings to `scripts/seed_clinical_data.py`, organized by DSM-5-TR chapter. Covers all 426 keys used by `REFERENCE_SYMPTOM_MAP` plus existing core-disorder entries.
+- **Symptom DB records expanded to 523**: Added 410 new `(snake_case_name, description)` tuples to `db/seed.py:symptoms_data` list. Descriptions extracted from the first occurrence in `REFERENCE_SYMPTOM_MAP` (truncated to 100 chars, `≥`/`≤` replaced with `>=`/`<=` for cp1252 safety).
+- **Seeded and verified in PostgreSQL (via Docker)**: `db/seed.py` produces 523 Symptom records; `scripts/seed_full_catalog.py` Phase 4 produces 459 reference DiagnosticCriteria records (plus 110 core = 569 total). 125 of 191 disorders now have DiagnosticCriteria. Core disorders in Top 10 by criteria count (TDAH 14, Pânico 13, PTSD 10). Two missing symptom DB records (`abstinencia_alcool`, `sonhos_disforicos_extensos`) detected and resolved during verification.
+- **ML nas escalas e escalas de personalidade**: Complete ML pipeline for scale-based personality inference and disorder risk prediction:
+  - **Per-factor personality extraction**: `app/ml/predictors/personality_factors.py` — question-level parsing of BFP 5 factors (Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo) and DT-12 3 subscales (Maquiavelismo, Narcisismo, Psicopatia). Extracts real per-factor scores from question text prefixes (`"Abertura - ..."`, `"Maquiavelismo - ..."`), fallback to raw response aggregation.
+  - **Personality prediction ML**: `app/ml/predictors/scale_predictor.py` — heuristic rules mapping clinical scale scores (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10) to expected BFP factor scores and DT-12 subscale scores. Supports pluggable model-based prediction via `MultiOutputRegressor` (RF/XGBoost) when trained models exist.
+  - **Scale-based disorder risk**: `predict_disorder_risk_from_scales()` — heuristic mapping of scale scores to 10 core disorder probabilities, blended into inference engine with 0.15 weight via `_apply_ml_scale_prediction()`.
+  - **Training script**: `app/ml/training/train_personality_models.py` — SQL extracts per-factor scores from question-level DB data, trains multi-output regression models, registers in MLflow + ModelRegistry, auto-promotes to Production.
+  - **API endpoints**: `POST /api/v1/ml/scales/predict-personality`, `POST /api/v1/ml/scales/predict-disorder-risk`, `POST /api/v1/ml/scales/predict-personality-from-patient/{uuid}`, `GET /api/v1/assessments/patient/{patient_uuid}/personality-factors` (real data with ML fallback).
+  - **Frontend enhancement**: `PersonalityPage.tsx` — now renders real per-factor progress bars from DB question-level data (instead of naive total/5 division), includes Recharts radar chart for BFP factors, data source badge (real data / ML-predicted / unavailable), feature scales card when ML-predicted.
 
 ### Blocked
 - *(none)*
 
 ## Key Decisions
-- Disorder unification done via `scripts/seed_clinical_data.py` as single source of truth for all 19 Portuguese disorders — `scripts/unify_disorders_pt.py` was a one-time migration script (since deleted).
-- BN disorder names remain English internally; `BN_TO_PT` mapping in seed script bridges to DB Portuguese names.
-- Security scanning integrated into CI pipeline, not just local — ensures blocking on PRs.
-- Rate limiting is in-memory (not Redis) — sufficient for single-container deployment; upgrade to Redis if horizontally scaled.
+- Disorder unification via `scripts/seed_clinical_data.py` as single source of truth; `BN_TO_PT` mapping bridges BN English → DB Portuguese.
+- Security scanning integrated into CI pipeline, not just local.
+- Rate limiting is in-memory (not Redis) — sufficient for single-container deployment.
 - Clinical validation uses 3 defense layers: Pydantic (input) → IntegrityService (business) → DB CHECK constraints (storage).
-- APA and WHO stored as `ClassificationAuthority` records — all future classification systems (e.g., future ICD-12) can reuse the same structure.
-- Patient–professional assignments use explicit `professional_patient_assignments` table (not inferred from consultation history) to support caseload management independent of clinical activity.
-- Symptom categorization on InferencePage uses a static `SYMPTOM_GROUPS` map keyed by symptom name — keeps grouping logic in the UI without backend changes.
+- APA and WHO stored as `ClassificationAuthority` records.
+- Patient–professional assignments use explicit table (not inferred from consultation history).
+- Symptom categorization on InferencePage uses static `SYMPTOM_GROUPS` map keyed by symptom name.
+- MIA chatbot uses rule-based sentiment analysis (no ML) to keep it lightweight and deterministic.
+- Dashboard demographics endpoint uses `StatisticsService` (`app/analytics/statistics/service.py`), not `MetricsService` (`app/services/metrics_service.py`).
+- Personality factor scores extracted from DB question-level data via prefix matching (`"Abertura - ..."`), not by naive total/5 division.
+- ML personality prediction uses heuristic rules as fallback when no trained models exist; `MultiOutputRegressor` with RF/XGBoost provides model-based prediction when trained.
+- Scale-based disorder risk blending weight set at 0.15 (minority signal vs symptom-driven inference).
 
 ## Next Steps
-- Add remaining 8 scale scores (MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10) to clinical dataset (currently only PHQ-9/GAD-7).
 - Create analytics views/queries on DW (prevalence trends, comorbidity heatmaps, score distributions).
-- Add API tests for professionals routes (assignment CRUD, assignment sync edge cases).
-- Run clinical data seeds in `mind` database so Spark jobs have non-zero data to analyze.
-- Run Alembic migrations + seed scripts in correct order: `alembic upgrade head` → `python db/seed.py` → `python scripts/seed_icd11.py` → `python scripts/seed_diagnostic_data.py`.
+- Add API tests for professionals routes (assignment CRUD, sync edge cases).
+- Add API tests for MIA chatbot endpoint.
+- Add neuropsychological scale trends to dashboard (dashboard scale trends component currently shows only clinical scales).
+- Expand ICD-11 codes for all reference disorders (currently only 16 codes for 19 core disorders).
+- Expand SCALE_DISORDER_MAP to reference disorders beyond the 19 core.
 
 ## Quickstart
 
@@ -133,50 +146,90 @@ docker run --rm --network mind_mind-network `
   --entrypoint /opt/spark/bin/spark-submit mind-spark `
   --driver-class-path /opt/spark/work-dir/postgresql-42.7.1.jar `
   /app/spark/submit.py population_metrics
+```
 
 ## Critical Context
 - **Python 3.14.5** is the active runtime; install security tools via `python -m pip install bandit safety`.
 - **Bandit scan command**: `python -m bandit -c .bandit -r app/ scripts/ db/` — zero issues after fixes.
-- **19 Portuguese disorder names** complete: Transtorno Depressivo Maior, T. Ansiedade Generalizada, T. Pânico, T. Estresse Pós-Traumático, T. Depressivo Persistente (Distimia), T. Ansiedade Social, T. Bipolar Tipo I/II, T. Obsessivo-Compulsivo, Agorafobia, T. Uso Substâncias, Anorexia Nervosa, Bulimia Nervosa, T. Compulsão Alimentar, T. Insônia, Esquizofrenia/T. Psicótico, T. Sintomas Somáticos, TEA, TDAH.
-- **DW ETL** truncates all tables in FK-safe order at start. Run with `python -c "from app.etl.dw_loader import run_full_etl; run_full_etl()"`.
-- **Alembic chain**: `05ecbb7b2bc1` (initial) → … → `c1d2e3f4a5b6` (CHECK constraints) → `d4e5f6a7b8c9` (authorities + DSM columns) → `e5f6a7b8c9d0` (professional assignments). Head is `e5f6a7b8c9d0`.
-- **Seed order**: `db/seed.py` (authorities + base data) → `scripts/seed_icd11.py` → `scripts/seed_scales_groups.py` → `scripts/seed_diagnostic_data.py` (criteria/exclusions/differentials). All seeds now idempotent.
-- **Spark jobs**: run via `docker run --rm --network mind_mind-network ... --entrypoint /opt/spark/bin/spark-submit mind-spark /app/spark/submit.py <job_name>`
+- **19 Portuguese disorder names** (core): Transtorno Depressivo Maior, T. Ansiedade Generalizada, T. Pânico, T. Estresse Pós-Traumático, T. Depressivo Persistente (Distimia), T. Ansiedade Social, T. Bipolar Tipo I/II, T. Obsessivo-Compulsivo, Agorafobia, T. Uso Substâncias, Anorexia Nervosa, Bulimia Nervosa, T. Compulsão Alimentar, T. Insônia, Esquizofrenia/T. Psicótico, T. Sintomas Somáticos, TEA, TDAH. Plus ~173 reference disorders across 22 chapters.
+- **DW ETL** uses `dsm_chapter` field directly for category mapping (no more `guess_category()` name-based guessing).
+- **Full DSM-5-TR catalog source**: `scripts/dsm5tr_data.py` — single source of truth for all ~192 disorders with Portuguese names, CID-10 codes, DSM-5 codes, chapter, description, and core flag.
+- **Alembic chain**: `05ecbb7b2bc1` (initial) → … → `c1d2e3f4a5b6` (CHECK constraints) → `d4e5f6a7b8c9` (authorities + DSM columns) → `e5f6a7b8c9d0` (professional assignments) → `1c223a553bb0` (clinical alerts) → `f6a7b8c9d0e1` (icd11_exclusions/differentials) → `f7b8c9d0e1f2` (dsm_chapter) → `031c8a8ec7b8` (user_uuid on professionals). Head is `031c8a8ec7b8`.
+- **Seed order**: `db/seed.py` → `scripts/seed_icd11.py` → `scripts/seed_scales_groups.py` → `scripts/seed_diagnostic_data.py`. All idempotent.
+- **StatisticsService** vs **MetricsService**: Dashboard demographics endpoint uses `app/analytics/statistics/service.py:StatisticsService`. `MetricsService` in `app/services/metrics_service.py` is a separate implementation.
+- **MIA chatbot endpoint**: `POST /api/v1/chatbot/ask` with JSON `{"mensagem": "..."}`. Returns `{sentimento, resultados, resposta}`. Requires `READ_DIAGNOSIS` permission.
 - **`postgresql-42.7.1.jar`** must be mounted at `/opt/spark/work-dir/postgresql-42.7.1.jar` for JDBC; use `--driver-class-path` option with `spark-submit`
 
 ## Relevant Files
-- `app/services/assessment_service.py`: `get_patient_assessment_history()` — queries scale scores per patient across consultations
-- `app/api/v1/clinical/assessments.py`: `GET /api/v1/assessments/patient/{patient_uuid}/history` endpoint
+### Chatbot / MIA
+- `app/services/chatbot_service.py`: `MiaService` + `SentimentoAnalyzer` — sentiment analysis + disorder/criteria/exclusion search across all 19 disorders
+- `app/api/v1/clinical/chatbot.py`: `POST /api/v1/chatbot/ask` endpoint
+- `mind-ui/src/pages/chatbot/MiaPage.tsx`: chat UI with message bubbles, sentiment tags, collapsible disorder cards
+- `mind-ui/src/api/chatbot.ts`: `chatbotApi.ask()` API client with TypeScript types
+- `mind-ui/src/components/MainLayout.tsx`: `FloatButton` chat icon on all pages + nav item `/mia`
+
+### Core Backend
+- `app/analytics/statistics/service.py`: `StatisticsService.get_patient_demographics()` — returns education_level_distribution and ethnicity_distribution
+- `app/services/metrics_service.py`: alternative metrics implementation
+- `app/services/inference_service.py`: `run_inference()` fetches scale responses, passes to engine; `get_explanation()` with scale_scores
+- `app/ml/inference/inference_engine.py`: `InferenceEngine.calculate()` with `_apply_scale_adjustments()` via SCALE_DISORDER_MAP + `_apply_ml_scale_prediction()` via heuristic risk blending
+- `app/ml/inference/confidence_calculator.py`: `calculate_criteria_confidence()` function
+- `app/ml/models/assessment_scales.py`: 21 ScaleDefinitions + SCALE_DISORDER_MAP
+- `app/ml/predictors/personality_factors.py`: per-factor BFP/DT-12 extraction from question-level response data
+- `app/ml/predictors/scale_predictor.py`: `predict_personality_from_scales()`, `predict_disorder_risk_from_scales()`, `build_personality_feature_vector()`
+- `app/ml/training/train_personality_models.py`: `train_personality_model()` with multi-output regression
+- `app/api/v1/ml/scale_predictions.py`: scale ML API endpoints (personality prediction, disorder risk)
+- `app/api/v1/clinical/assessments.py`: `GET /patient/{patient_uuid}/personality-factors` endpoint
+- `app/services/consultation_service.py`: `list_all_consultations()` decrypts patient name
+- `app/services/assessment_service.py`: `get_patient_assessment_history()`
 - `app/services/integrity_service.py`: `ClinicalIntegrityService` with 15+ validation methods
-- `scripts/check_integrity.py`: data quality CLI, outputs JSON report to `data/reports/clinical_integrity_report.json`
-- `migrations/versions/b3c4d5e6f7a8_add_clinical_notes_table.py`: made idempotent (inspector check)
-- `migrations/versions/c1d2e3f4a5b6_add_clinical_check_constraints.py`: 7 DB CHECK constraints
-- `migrations/versions/d4e5f6a7b8c9_add_classification_authorities.py`: authorities table + DSM columns
-- `migrations/versions/e5f6a7b8c9d0_add_professional_patient_assignments.py`: professional–patient assignment table
-- `app/models/base.py`: `ClassificationAuthority`, `ProfessionalPatientAssignment`, DSM columns on `Disorder`, `authority_id` on `ICD11Code`
-- `app/schemas/professional.py`: `HealthcareProfessionalCreate/Update` with `assigned_patient_uuids`; `HealthcareProfessionalResponse` with `patient_assignments` (incl. patient name); `PatientAssignmentResponse`
-- `app/api/v1/clinical/professionals.py`: CRUD routes with `_sync_assignments()` and `_enrich_assignments()`
-- `app/schemas/disorder.py`: `ClassificationAuthorityResponse`, `ICD11CodeResponse`, `ICD11ExclusionResponse`, `ICD11DifferentialResponse`, DSM-column fields in `DisorderBase/Update/Response`
+
+### Models
+- `app/models/base.py`: `Disorder`, `ICD11Code`, `DiagnosticCriteria`, `CriteriaGroup`, `CriteriaRule`, `ScaleResponse`, `ClassificationAuthority`, `ProfessionalPatientAssignment`, `Symptom`
+
+### Schemas
+- `app/schemas/consultation.py`: `ClinicalConsultationResponse` model_validator decrypts patient name
+- `app/schemas/admin.py`: `AdminUserUpdate` with `username: Optional[str]`
+- `app/schemas/disorder.py`: DSM-column fields, ICD11Code/Exclusion/Differential responses
+- `app/schemas/professional.py`: `HealthcareProfessionalCreate/Update` with `assigned_patient_uuids`
 - `app/schemas/patient_profile.py`: `@field_validator("birth_date")` future-date rejection
-- `app/schemas/consultation.py`: validators for consultation_date, intensity 0–10, frequency enum, duration_days ≥ 1, response_value 0–10
-- `scripts/seed_diagnostic_data.py` (new): seeds full DSM-5-TR criteria + ICD-11/DSM-5 exclusions + differentials for 19 disorders
-- `scripts/seed_icd11.py`: fixed with `SHORT_TO_PT` mapping
-- `db/seed.py`: seeds `ClassificationAuthority` (WHO, APA) + added `Transtorno Depressivo Maior` as 19th disorder; all sections idempotent; disorder name mismatches fixed
-- `mind-ui/src/pages/inferences/InferencePage.tsx`: symptom grouped into 14 categories with collapsible sections, patient inference history panel
-- `mind-ui/src/pages/assessments/AssessmentPage.tsx`: patient selector, scale history display, auto-refresh after scoring
-- `mind-ui/src/pages/admin/DisordersPage.tsx`: collapsible DSM-5/ICD-11 criteria, exclusions, differentials
-- `mind-ui/src/pages/professionals/ProfessionalsPage.tsx`: patient assignment multi-select, count badge column
-- `mind-ui/src/api/inferences.ts`: added `listByConsultation()`
-- `mind-ui/src/api/consultations.ts`: added `listByProfile()`
-- `mind-ui/src/api/scales.ts`: added `patientHistory()`
-- `mind-ui/src/types/index.ts`: `Disorder`, `DisorderResponse`, `HealthcareProfessionalResponse` extended with new fields
-- `spark/config.py`: `PG_HOST` env var instead of hardcoded `localhost`
-- `spark/submit.py`: added `sys.path.insert(0, ...)` so `from spark.jobs import ...` works
-- `spark/jobs/population_metrics.py`: JDBC reads from `clinical.patient_profile`, `diagnostic.diagnostic_inference`, `diagnostic.disorders`, `clinical.scale_responses`, `diagnostic.scale_questions`, `diagnostic.assessment_scales`
-- `spark/jobs/batch_inference.py`: JDBC batch inference engine reading `clinical.clinical_consultation`, `clinical.symptom_observation`, `diagnostic.disorders`
-- `spark/jobs/data_import.py`: bulk CSV import into `security.patient_identity`, `clinical.patient_profile`, `diagnostic.symptoms`
-- `postgresql-42.7.1.jar`: PostgreSQL JDBC driver for Spark (1 MB)
+
+### Frontend Pages
+- `mind-ui/src/pages/dashboard/DashboardPage.tsx`: 5-tab demographics card (Sexo, Gênero, Idade, Escolaridade, Etnia)
+- `mind-ui/src/pages/inferences/InferencePage.tsx`: symptom groups (14 categories), patient inference history
+- `mind-ui/src/pages/assessments/AssessmentPage.tsx`: patient selector, scale history
+- `mind-ui/src/pages/consultations/ConsultationListPage.tsx`: patient name + UUID
+- `mind-ui/src/pages/consultations/ConsultationDetailPage.tsx`: patient name prominent at top
+- `mind-ui/src/pages/admin/DisordersPage.tsx`: full DSM-5-TR catalog grouped by chapter, core/reference tags, collapsible DSM/ICD criteria, exclusions, differentials
+- `mind-ui/src/pages/professionals/ProfessionalsPage.tsx`: patient assignment multi-select
+- `mind-ui/src/pages/admin/UsersPage.tsx`: edit modal with username field
+- `mind-ui/src/pages/personality/PersonalityPage.tsx`: BFP factor + DT-12 subscale display, real per-factor progress bars, radar chart, ML prediction fallback with data source badge, feature scales card
+
+### Frontend API
+- `mind-ui/src/api/chatbot.ts`, `inferences.ts`, `consultations.ts`, `scales.ts`, `metrics.ts`, `disorders.ts`, `patients.ts`
+- `mind-ui/src/types/index.ts`: `ChatResponse`, `TranstornoResultado`, `DemographicsResponse`, `ConsultationResponse`, `PersonalityFactorsResponse`, `DisorderRiskResponse`
+
+### Seeds & Scripts
+- `db/seed.py`: base reference data, disorders, criteria, professionals, users
+- `scripts/seed_icd11.py`: ICD-11 codes with `SHORT_TO_PT` mapping
+- `scripts/seed_scales_groups.py`: assessment scales + criteria groups
+- `scripts/seed_diagnostic_data.py`: DSM-5-TR criteria, ICD-11/DSM-5 exclusions + differentials
+- `scripts/seed_clinical_data.py`: clinical dataset generation with `_generate_scale_responses()` — supports full seed and re-seed modes (idempotent)
+- `scripts/seed_full_catalog.py`: full DSM-5-TR catalog activation — seeds criteria text, ICD-11 exclusion/differential data, diagnosis relationships, and Phase 4 (DiagnosticCriteria); contains `DSM5TR_ALL` dict (~111 entries), `REFERENCE_RELATIONSHIPS` (94 entries), `_NAME_MAP` for name resolution, and `seed()` function
+- `scripts/reference_symptom_data.py`: `REFERENCE_SYMPTOM_MAP` dict (426 symptom keys across 109 disorders) consumed by `seed_full_catalog.py` Phase 4
+- `scripts/check_integrity.py`: data quality CLI reporter
+- `scripts/dsm5tr_data.py`: full DSM-5-TR disorder catalog (~192 entries across 22 chapters), used by `db/seed.py`
+
+### DW ETL
+- `app/etl/dw_loader.py`: `run_full_etl()` with `load_dim_scale()`, `load_fact_scale_response()` — loads all 20 scales
+
+### Spark
+- `spark/config.py`, `spark/submit.py`, `spark/jobs/population_metrics.py`, `spark/jobs/batch_inference.py`, `spark/jobs/data_import.py`
+- `postgresql-42.7.1.jar`: PostgreSQL JDBC driver for Spark
 - `requirements-spark.txt`: production deps without scipy/numpy/pandas (Python 3.8 compatible)
+
+### Migrations
+- `migrations/versions/b3c4d5e6f7a8_add_clinical_notes_table.py`, `c1d2e3f4a5b6_add_clinical_check_constraints.py`, `d4e5f6a7b8c9_add_classification_authorities.py`, `e5f6a7b8c9d0_add_professional_patient_assignments.py`
 
 ## Error Log
 
@@ -198,123 +251,100 @@ docker run --rm --network mind_mind-network `
 ### E04 — Alembic UnicodeDecodeError / password wrong
 **Sintoma**: `UnicodeDecodeError` ao rodar `alembic upgrade head`.
 **Causa**: `DATABASE_URL` com senha placeholder `SUA_SENHA_AQUI` e PostgreSQL não rodando.
-**Solução**: Corrigir senha em `.env` para `137_Cmspelo`; iniciar PostgreSQL.
+**Solução**: Corrigir senha em `.env`; iniciar PostgreSQL.
 
 ### E05 — Docker build: bitnami/spark image not found
 **Sintoma**: `docker compose build` falha com `bitnami/spark:3.5.0 not found`.
 **Causa**: Bitnami removeu a imagem do Docker Hub.
-**Solução**: Substituir por `apache/spark:3.5.0` e ajustar env vars para Apache Spark default.
+**Solução**: Substituir por `apache/spark:3.5.0` e ajustar env vars.
 
 ### E06 — Docker build lento (instalação de dependências pesadas)
 **Sintoma**: Build de `airflow` e `spark` excede timeout.
 **Causa**: `requirements.txt` inclui PySpark (~455MB), DVC, MLflow, PyMC, Airflow.
-**Solução**: Criar `requirements-prod.txt` com apenas o necessário para produção. Containers usam este arquivo.
+**Solução**: Criar `requirements-prod.txt` com apenas o necessário para produção.
 
 ### E07 — TypeScript errors travando Docker build
 **Sintoma**: Frontend build falha com TS errors.
-**Causa**: `MedicationsPage.tsx` — `error` sem tipo, `onFilter` sem `value: unknown`, `classifications` sem type guard. `PatientTimelinePage.tsx` — `<Text block>` não existe no antd; deve ser `<Text style={{ display: 'block' }}>`.
-**Solução**: Corrigir tipagens e componente deprecated.
+**Causa**: Tipagens ausentes, componentes deprecated.
+**Solução**: Corrigir tipagens e componente `<Text block>` → `<Text style={{ display: 'block' }}>`.
 
 ### E08 — Alembic migration falha em DB fresco (schema não existe)
-**Sintoma**: `psycopg2.errors.InsufficientPrivilege: permission denied to create schema` ou `relation "diagnostic.icd11_codes" does not exist`.
-**Causa**: Migration inicial (`05ecbb7b2bc1`) não cria os schemas (`audit`, `clinical`, `ml`, `diagnostic`, `security`, `core`). Migration `d4e5f6a7b8c9` referência `icd11_codes` sem tê-la criado.
-**Solução**: Adicionar `CREATE SCHEMA IF NOT EXISTS` para todos os 6 schemas na migration inicial. Adicionar `op.create_table("icd11_codes", ...)` na migration `d4e5f6a7b8c9`. Tornar ambas idempotentes com `inspector.has_table()`.
+**Sintoma**: `psycopg2.errors.InsufficientPrivilege: permission denied to create schema`.
+**Causa**: Migrations não criam schemas nem tabelas ausentes.
+**Solução**: Adicionar `CREATE SCHEMA IF NOT EXISTS` e `op.create_table()` com `inspector.has_table()`.
 
 ### E09 — entrypoint.sh CRLF line endings
 **Sintoma**: Container reinicia com `exec ./entrypoint.sh: no such file or directory`.
-**Causa**: Arquivo com `\r\n` (Windows). Shebang `#!/bin/sh\r` não é executável no Linux.
-**Solução**: Converter para LF: `Get-Content entrypoint.sh -Raw | % { $_ -replace "\`r\`n", "\`n" } | Set-Content entrypoint.sh -NoNewLine -Encoding ASCII`
+**Causa**: Arquivo com `\r\n` (Windows). Shebang `#!/bin/sh\r` não executável no Linux.
+**Solução**: Converter para LF.
 
 ### E10 — ML imports quebram startup (mlflow, sklearn, xgboost)
 **Sintoma**: Uvicorn falha com `ModuleNotFoundError: No module named 'mlflow'`.
-**Causa**: `app/api/v1/ml/training.py` importa `Trainer` no módulo, que importa `mlflow`, `sklearn`, `xgboost` — pacotes não instalados no container de produção.
-**Solução**: Mover imports para dentro dos endpoints (lazy import):
-```python
-@router.post("/train")
-def train_model(...):
-    from app.ml.training.trainer import Trainer  # lazy
-```
+**Causa**: Imports no nível do módulo de pacotes não instalados em produção.
+**Solução**: Usar lazy imports dentro dos endpoints.
 
 ### E11 — pgAdmin reject email (.local / .localhost TLD)
-**Sintoma**: pgAdmin reinicia com `'admin@mind.local' does not appear to be a valid email address`.
-**Causa**: pgAdmin 8+ valida email e rejeita TLDs especiais (`.local`, `.localhost`, `.example`).
+**Sintoma**: pgAdmin rejeita `admin@mind.local`.
+**Causa**: pgAdmin 8+ valida email e rejeita TLDs especiais.
 **Solução**: Usar `admin@mind.example.com`.
 
 ### E12 — Logo em branco (logo.png servindo index.html)
 **Sintoma**: Logo do login aparece como quadrado vazio.
-**Causa**: `app/main.py` monta apenas `/assets` como static files. `/logo.png` não é servido → 404 → SPAFallbackMiddleware retorna `index.html` (HTML renderizado como imagem).
-**Solução**: Modificar SPAFallbackMiddleware para verificar se o arquivo existe no `dist/` antes de cair no SPA:
-```python
-if response.status_code == 404 and not request.url.path.startswith("/api/"):
-    file_path = os.path.join(frontend_dir, request.url.path.lstrip("/"))
-    if os.path.isfile(file_path):
-        return FileResponse(file_path)
-    return FileResponse(os.path.join(frontend_dir, "index.html"))
-```
+**Causa**: SPAFallbackMiddleware retorna index.html para 404 de arquivos estáticos.
+**Solução**: Verificar `os.path.isfile()` antes de cair no SPA fallback.
 
 ### E13 — Página em branco após login
 **Sintoma**: Login bem-sucedido, mas tela fica branca.
-**Causas múltiplas**:
-1. **ProtectedRoute retorna `null`**: após login, `user` ainda não carregou no store → `if (!user) return null`.
-2. **CSP bloqueia React**: `script-src` sem `'unsafe-eval'` — React usa `eval()` internamente.
-3. **Sem ErrorBoundary**: qualquer erro de renderização desmonta a árvore React inteira.
-**Soluções**:
-1. `ProtectedRoute.tsx`: Trocar `if (!user) return null` por `if (loading || (!user && token)) return <Spin />`
-2. `index.html`: Adicionar `'unsafe-eval'` ao CSP; adicionar `ws:` ao `connect-src`
-3. `App.tsx`: Envolver `<BrowserRouter>` em `<ErrorBoundary>` com botão "Recarregar"
+**Causas**: ProtectedRoute retorna null, CSP sem `'unsafe-eval'`, sem ErrorBoundary.
+**Solução**: ProtectedRoute mostra Spin em vez de null; CSP adiciona `'unsafe-eval'`; ErrorBoundary envolve BrowserRouter.
 
 ### E14 — Cannot convert undefined or null to object
-**Sintoma**: ErrorBoundary exibe "Erro na aplicação: Cannot convert undefined or null to object".
-**Causa**: `DashboardPage.tsx:69` — `Object.entries(demographics.gender_identity_distribution)` e `demographics` é um objeto não-nulo, mas `gender_identity_distribution` está `undefined` (API não retorna esse campo quando não há pacientes).
-**Solução**:
-1. Backend (`statistics/service.py`): Adicionar `gender_identity_distribution: {}` ao retorno de 0 pacientes.
-2. Frontend (`DashboardPage.tsx`): Trocar `demographics ? Object.entries(...)` por `demographics?.sex_distribution ? Object.entries(...)` — fallback por campo, não por objeto inteiro. Usar optional chaining em `moving_avg_7d?.[date]`.
+**Sintoma**: ErrorBoundary exibe erro em `Object.entries(demographics.gender_identity_distribution)`.
+**Causa**: `gender_identity_distribution` undefined no response de 0 pacientes.
+**Solução**: Adicionar `gender_identity_distribution: {}` ao retorno vazio; usar optional chaining.
 
 ### E15 — HTTPS setup com mkcert + Caddy
 **Sintoma**: Necessário HTTPS local para cadeado verde.
-**Solução**:
-1. Instalar mkcert: `winget install mkcert` (ou baixar do GitHub)
-2. Instalar CA: `mkcert -install` (admin)
-3. Gerar cert: `mkcert mind.local` → move para `certificates/`
-4. Adicionar ao hosts: `127.0.0.1 mind.local` em `C:\Windows\System32\drivers\etc\hosts`
-5. Adicionar Caddy ao `docker-compose.yml` como reverse proxy com TLS
-6. CSP do servidor: adicionar `'unsafe-eval'` em `middleware/security_middleware.py` (cobre APIs via Caddy)
+**Solução**: Instalar mkcert, gerar certificado para `mind.local`, adicionar ao hosts, configurar Caddy.
 
 ### E16 — favicon.svg inexistente
-**Sintoma**: Erro 404 para `/favicon.svg` no console.
-**Causa**: `index.html` referencia `/favicon.svg` mas `public/favicon.svg` não existe.
+**Sintoma**: Erro 404 para `/favicon.svg`.
+**Causa**: `index.html` referencia `/favicon.svg` mas arquivo não existe.
 **Solução**: Trocar para `<link rel="icon" type="image/png" href="/logo.png">`.
 
 ### E17 — Caddy 502 Bad Gateway após restart
-**Sintoma**: `https://mind.local` retorna 502 após `docker compose up -d --force-recreate`.
-**Causa**: Caddy tenta conectar na API antes dela estar pronta (janela entre restart e healthy).
-**Solução**: Aguardar API ficar healthy (segundos). Se persistir, `docker compose restart caddy`.
+**Sintoma**: `https://mind.local` retorna 502.
+**Causa**: Caddy tenta conectar na API antes dela estar pronta.
+**Solução**: Aguardar API ficar healthy; `docker compose restart caddy` se persistir.
 
 ### E18 — dvc-postgres package does not exist
 **Sintoma**: `pip install dvc-postgres` falha.
-**Causa**: Pacote `dvc-postgres` não existe no PyPI. Suporte PostgreSQL é via `dvc[postgres]`.
-**Solução**: Usar `dvc[postgres]>=3.48.0` em `requirements.txt`.
+**Causa**: Pacote não existe no PyPI; suporte PostgreSQL é via `dvc[postgres]`.
+**Solução**: Usar `dvc[postgres]>=3.48.0`.
 
 ### E19 — CORS bloqueando após deploy com proxy
 **Sintoma**: Requisições cross-origin bloqueadas.
-**Causa**: `VITE_API_URL=/api/v1` resolve para `http://localhost:8000/api/v1/` via proxy, mas em produção com Caddy a origem muda.
-**Solução**: Manter `connect-src 'self'` no CSP (frontend e API no mesmo domínio via Caddy). Ajustar `CORS_ORIGINS` em produção.
+**Causa**: Origem muda com Caddy em produção.
+**Solução**: Manter `connect-src 'self'` no CSP; ajustar `CORS_ORIGINS`.
 
 ### E20 — Spark JDBC driver ClassNotFound / wrong table names
-**Sintoma**: `docker run mind-spark` falha com `ClassNotFoundException: org.postgresql.Driver`.
-**Causa 1**: Driver JAR (`postgresql-42.7.1.jar`) não baixado nem montado no container.
-**Solução 1**: Baixar `postgresql-42.7.1.jar` (1 MB) do Maven Central para a raiz do projeto e montá-lo em `/opt/spark/work-dir/`:
-```bash
-curl -o postgresql-42.7.1.jar https://jdbc.postgresql.org/download/postgresql-42.7.1.jar
-docker run ... -v "${PWD}\postgresql-42.7.1.jar:/opt/spark/work-dir/postgresql-42.7.1.jar:ro" ...
-```
-**Causa 2**: Container tenta conectar em `localhost:5432` (dentro do container) em vez do host `mind-postgres`.
-**Solução 2**: `spark/config.py` usa `PG_HOST=os.getenv("PG_HOST", "mind-postgres")`; passar `-e PG_HOST=mind-postgres` no `docker run` e conectar à network `mind_mind-network`.
+**Sintoma**: Spark falha com `ClassNotFoundException: org.postgresql.Driver` ou `relation "X" does not exist`.
+**Causa 1**: Driver JAR não montado.
+**Solução 1**: Baixar `postgresql-42.7.1.jar` e montar em `/opt/spark/work-dir/`.
+**Causa 2**: Nomes de schema/tabela errados.
+**Solução 2**: Usar `clinical.patient_profile`, `diagnostic.disorders`, etc.
 
-**Sintoma**: `PSQLException: relation "X" does not exist` para alguma tabela.
-**Causa**: Spark jobs usam nomes schema.tabela errados (ex: `core.patient_profile` em vez de `clinical.patient_profile`, `diagnostic.disorder` em vez de `diagnostic.disorders`).
-**Solução**: Mapear todos os schemas e tabelas reais no PostgreSQL (`\dt *.*` na DB `mind`). Tabelas corretas:
-- `clinical.patient_profile`, `diagnostic.diagnostic_inference`, `diagnostic.disorders`
-- `clinical.scale_responses`, `diagnostic.scale_questions`, `diagnostic.assessment_scales`
-- `security.patient_identity`, `diagnostic.symptoms`
-- `clinical.clinical_consultation`, `clinical.symptom_observation`
+### E21 — Inference engine NameError (calculate_criteria_confidence)
+**Sintoma**: Inferências retornam erro 500; `NameError: name 'calculate_criteria_confidence' is not defined`.
+**Causa**: `app/ml/inference/inference_engine.py` linha 75 chama função sem import.
+**Solução**: Adicionar `from app.ml.inference.confidence_calculator import calculate_criteria_confidence`.
+
+### E22 — Explanation endpoint undefined variable (scale_scores)
+**Sintoma**: `GET /api/v1/inferences/{uuid}/explanation` retorna erro 500.
+**Causa**: `get_explanation()` em `inference_service.py` referencia `scale_scores` que não está no escopo.
+**Solução**: Adicionar lógica de consulta de scale_scores dentro do método.
+
+### E23 — Dashboard charts não aparecem (education_level_distribution / ethnicity_distribution ausentes)
+**Sintoma**: Gráficos de Escolaridade e Etnia no dashboard não renderizam.
+**Causa**: `/api/v1/metrics/demographics` usa `StatisticsService` (`app/analytics/statistics/service.py`) que não retornava `education_level_distribution` nem `ethnicity_distribution`. O `MetricsService` (`app/services/metrics_service.py`) tinha os campos, mas não era o service usado pelo endpoint.
+**Solução**: Adicionar queries de EducationLevel e Ethnicity no `StatisticsService.get_patient_demographics()` e incluir ambos no return dict.

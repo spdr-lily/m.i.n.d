@@ -175,6 +175,8 @@ export interface ConsultationResponse {
   consultation_date: string
   profile_uuid: string
   professional_uuid?: string
+  patient_uuid?: string
+  patient_name?: string
   consultation_notes?: string
   healthcare_professional?: HealthcareProfessionalResponse
   symptom_observations?: SymptomObservationResponse[]
@@ -205,11 +207,13 @@ export interface Disorder {
   cid_code: string
   dsm_code: string
   disorder_description?: string
+  dsm_chapter?: string
   dsm_criteria?: string
   dsm_exclusions?: string
   dsm_differentials?: string
   icd11_exclusions?: string
   icd11_differentials?: string
+  is_core?: boolean
 }
 
 export interface DiagnosticCriteria {
@@ -250,7 +254,7 @@ export interface ScaleScoreResponse {
 export interface ScaleHistoryItem {
   date: string
   score: number
-  severity: string
+  severity?: string
 }
 
 export interface ScaleCreateRequest {
@@ -330,10 +334,14 @@ export interface MetricsOverview {
   avg_confidence: number
 }
 
-export interface ScaleTrend {
-  date: string
-  avg_score: number
-  patient_count: number
+export interface ScaleTrendItem {
+  scale_name: string
+  total_records: number
+  statistics?: Record<string, number>
+  trend: {
+    scores: Record<string, number>
+    moving_avg_3: Record<string, number>
+  }
 }
 
 export interface CorrelationData {
@@ -360,6 +368,8 @@ export interface DemographicsResponse {
   sex_distribution: SexDistribution
   gender_identity_distribution: Record<string, number>
   age_distribution: AgeDistribution
+  education_level_distribution: Record<string, number>
+  ethnicity_distribution: Record<string, number>
 }
 
 export interface ConsultationMetricsResponse {
@@ -372,6 +382,12 @@ export interface ConsultationMetricsResponse {
     daily_counts: Record<string, number>
     moving_avg_7d: Record<string, number>
   }
+}
+
+export interface PrevalenceTrendItem {
+  disorder_name: string
+  monthly_counts: { month: string; count: number; avg_probability: number }[]
+  total_count: number
 }
 
 export interface DisorderPrevalenceItem {
@@ -541,6 +557,56 @@ export interface PrescriptionBrief {
   duration_days?: number
 }
 
+export interface DisorderMedicationAssoc {
+  dm_id: number
+  medication_id: number
+  disorder_id: number
+  success_rate?: number
+  failure_rate?: number
+  avg_response_weeks?: number
+  line_of_treatment?: number
+  recommendation_strength?: string
+  notes?: string
+  created_at?: string
+  medication?: Medication
+  disorder_name?: string
+}
+
+export interface TreatmentOutcomeItem {
+  outcome_uuid: string
+  patient_uuid: string
+  medication_id: number
+  disorder_id: number
+  start_date: string
+  end_date?: string
+  outcome: string
+  response_weeks?: number
+  side_effects?: string
+  discontinued_reason?: string
+  adherence?: string
+  created_at?: string
+  medication?: Medication
+  disorder_name?: string
+}
+
+export interface MedicationStat {
+  medication_id: number
+  medication_name: string
+  total_cases: number
+  success_rate: number
+  worsened_count: number
+  discontinued_count: number
+  avg_response_weeks?: number
+}
+
+export interface TreatmentPrediction {
+  medication_id: number
+  medication_name: string
+  success_probability: number
+  expected_response_weeks?: number
+  recommendation_strength?: string
+}
+
 export interface ClinicalNoteBrief {
   chief_complaint?: string
   clinical_assessment?: string
@@ -596,4 +662,174 @@ export interface TimelineResponse {
   patient_uuid: string
   patient_name: string
   events: TimelineEvent[]
+}
+
+// --- Analytics (DW Views) ---
+export interface PrevalenceTrendItem {
+  disorder_name: string
+  data: { month: string; count: number; avg_probability: number }[]
+  total: number
+}
+
+export interface PrevalenceTrendResponse {
+  disorders: PrevalenceTrendItem[]
+  total: number
+}
+
+export interface ComorbidityPair {
+  disorder_a: string
+  category_a: string
+  disorder_b: string
+  category_b: string
+  co_occurrence_count: number
+  prevalence_pct: number
+}
+
+export interface ComorbidityResponse {
+  pairs: ComorbidityPair[]
+  total_pairs: number
+}
+
+export interface ScaleDistributionRow {
+  scale_name: string
+  total_responses: number
+  mean_score: number
+  stddev_score: number
+  min_score: number
+  max_score: number
+  median_score: number
+  mean_pct: number
+  unique_patients: number
+}
+
+export interface ScoreDistributionResponse {
+  scales: ScaleDistributionRow[]
+}
+
+export interface ScaleSeverityLevel {
+  severity: string
+  count: number
+  avg_score: number
+}
+
+export interface ScaleSeverityItem {
+  scale_name: string
+  severity_levels: ScaleSeverityLevel[]
+}
+
+export interface ScaleSeverityResponse {
+  scales: ScaleSeverityItem[]
+}
+
+export interface ProfessionalWorkloadRow {
+  full_name: string
+  profession: string
+  specialty: string
+  total_consultations: number
+  unique_patients: number
+  total_diagnoses: number
+  avg_symptoms_per_consult: number
+  avg_symptom_intensity: number
+  avg_max_probability: number
+  scales_used: number
+}
+
+export interface ProfessionalWorkloadResponse {
+  professionals: ProfessionalWorkloadRow[]
+  total: number
+}
+
+export interface DemographicSummaryRow {
+  age_group: string
+  sex: string
+  education_level: string
+  ethnicity: string
+  patient_count: number
+  avg_consultations: number
+}
+
+export interface DemographicSummaryResponse {
+  demographics: DemographicSummaryRow[]
+  total: number
+}
+
+export interface MonthlyConsultationRow {
+  year_month: string
+  total_consultations: number
+  unique_patients: number
+  avg_symptoms: number
+  avg_total_intensity: number
+  consultations_with_inference: number
+  avg_max_probability: number
+}
+
+export interface MonthlyConsultationResponse {
+  months: MonthlyConsultationRow[]
+  total_months: number
+}
+
+// --- ML Scale Predictions ---
+export interface FactorScore {
+  score: number
+  max_possible: number
+  percentage?: number
+  description?: string
+}
+
+export interface PersonalityScaleSet {
+  factors?: Record<string, FactorScore>
+  subscales?: Record<string, FactorScore>
+  dimensions?: Record<string, FactorScore>
+  total_score: number
+  total_max: number
+}
+
+export interface PersonalityFactorsResponse {
+  bfp: PersonalityScaleSet
+  dt12: PersonalityScaleSet
+  hexaco: PersonalityScaleSet
+  bis11: PersonalityScaleSet
+  tas20: PersonalityScaleSet
+  rses: PersonalityScaleSet
+  data_source?: string
+  feature_scales?: Record<string, number>
+}
+
+export interface DisorderRiskRequest {
+  scale_scores: Record<string, number>
+}
+
+export interface DisorderRiskResponse {
+  risks: Record<string, number>
+}
+
+export interface MLDashboardResponse {
+  personality: {
+    bfp_averages: Record<string, number>
+    dt12_averages: Record<string, number>
+    hexaco_averages: Record<string, number>
+    bis11_averages: Record<string, number>
+    tas20_averages: Record<string, number>
+    rses_averages: Record<string, number>
+    total_assessments: number
+  }
+  efficacy: {
+    total_outcomes: number
+    total_associations: number
+    outcome_distribution: Record<string, number>
+    by_line_of_treatment: {
+      line: string
+      avg_success_rate: number
+      count: number
+    }[]
+  }
+  models: {
+    name: string
+    objective: string
+    algorithm: string
+    stage: string
+    r2: number
+    mae: number
+    description: string
+  }[]
 }

@@ -3,7 +3,7 @@ WORKDIR /app
 COPY mind-ui/package.json mind-ui/package-lock.json ./
 RUN npm ci
 COPY mind-ui/ .
-RUN npm run build
+RUN npx vite build
 
 FROM python:3.12-slim
 

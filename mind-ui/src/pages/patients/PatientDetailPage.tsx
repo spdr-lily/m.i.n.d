@@ -1,11 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Descriptions, Tag, Button, Space, Typography, Breadcrumb, Spin, Table, List } from 'antd'
-import { CalendarOutlined, EditOutlined, HistoryOutlined, DownloadOutlined, PushpinFilled, FileTextOutlined } from '@ant-design/icons'
+import { Card, Descriptions, Tag, Button, Space, Typography, Breadcrumb, Spin, Table, List, Select } from 'antd'
+import { CalendarOutlined, EditOutlined, HistoryOutlined, DownloadOutlined, PushpinFilled, FileTextOutlined, LineChartOutlined } from '@ant-design/icons'
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+} from 'recharts'
 import { patientsApi } from '../../api/patients'
 import { consultationsApi } from '../../api/consultations'
 import { reportsApi } from '../../api/reports'
-import type { PatientResponse, ConsultationListItem, MedicalReport } from '../../types'
+import { scalesApi } from '../../api/scales'
+import type { PatientResponse, ConsultationListItem, MedicalReport, ScaleHistoryItem } from '../../types'
+import { SCALE_OPTIONS, NEURO_SCALES, CLINICAL_SCALES } from '../../utils/constants'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -26,6 +31,10 @@ export default function PatientDetailPage() {
   const [consultations, setConsultations] = useState<ConsultationListItem[]>([])
   const [reports, setReports] = useState<MedicalReport[]>([])
   const [loading, setLoading] = useState(true)
+  const [availableScales, setAvailableScales] = useState<string[]>([])
+  const [selectedScale, setSelectedScale] = useState<string | null>(null)
+  const [scaleHistory, setScaleHistory] = useState<ScaleHistoryItem[]>([])
+  const [scaleLoading, setScaleLoading] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -34,14 +43,27 @@ export default function PatientDetailPage() {
       patientsApi.get(uuid),
       consultationsApi.list(uuid),
       reportsApi.list(uuid),
+      scalesApi.patientHistory(uuid).catch(() => ({ total: 0, assessments: [] })),
     ])
-      .then(([p, c, r]) => {
+      .then(([p, c, r, h]) => {
         setPatient(p)
         setConsultations(c.consultations || [])
         setReports(r.filter(rpt => rpt.is_pinned))
+        const scales = [...new Set(h.assessments.map((a: any) => a.scale_name))].sort()
+        setAvailableScales(scales)
+        if (scales.length > 0) setSelectedScale(scales[0])
       })
       .finally(() => setLoading(false))
   }, [uuid])
+
+  useEffect(() => {
+    if (!uuid || !selectedScale) return
+    setScaleLoading(true)
+    scalesApi.history(uuid, selectedScale)
+      .then(setScaleHistory)
+      .catch(() => setScaleHistory([]))
+      .finally(() => setScaleLoading(false))
+  }, [uuid, selectedScale])
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
   if (!patient) return <Typography.Text type="danger">Paciente nao encontrado</Typography.Text>
@@ -112,6 +134,52 @@ export default function PatientDetailPage() {
           />
         )}
       </Card>
+
+      {availableScales.length > 0 && (
+        <Card title={<Space><LineChartOutlined />Escalas — Tendência</Space>} style={{ marginTop: 16 }} size="small"
+          extra={
+            <Select size="small" style={{ width: 300 }} value={selectedScale} onChange={setSelectedScale}>
+              {availableScales.map((s) => (
+                <Select.Option key={s} value={s}>{SCALE_OPTIONS[s]?.label || s}</Select.Option>
+              ))}
+            </Select>
+          }
+        >
+          {scaleLoading ? (
+            <Spin style={{ display: 'block', margin: '20px auto' }} />
+          ) : scaleHistory.length > 0 ? (
+            <ResponsiveContainer width="100%" height={220}>
+              <LineChart data={scaleHistory.map((s) => ({ date: s.date.slice(5, 10), score: s.score }))}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                <YAxis allowDecimals={false} />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="score" stroke="#1677ff" strokeWidth={2} dot={{ r: 4 }} name={SCALE_OPTIONS[selectedScale!]?.label || selectedScale} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 20 }}>
+              Nenhum dado disponível para esta escala
+            </Typography.Text>
+          )}
+          <Row gutter={16} style={{ marginTop: 8 }}>
+            <Col span={8}><Typography.Text type="secondary">Registros: </Typography.Text><Typography.Text strong>{scaleHistory.length}</Typography.Text></Col>
+            <Col span={8}>
+              <Typography.Text type="secondary">Média: </Typography.Text>
+              <Typography.Text strong>
+                {scaleHistory.length > 0 ? (scaleHistory.reduce((a, b) => a + b.score, 0) / scaleHistory.length).toFixed(1) : '-'}
+              </Typography.Text>
+            </Col>
+            <Col span={8}>
+              <Typography.Text type="secondary">Último: </Typography.Text>
+              <Typography.Text strong>
+                {scaleHistory.length > 0 ? scaleHistory[scaleHistory.length - 1].score.toFixed(1) : '-'}
+              </Typography.Text>
+            </Col>
+          </Row>
+        </Card>
+      )}
 
       <Card title="Consultas" style={{ marginTop: 16 }} size="small">
         <Table

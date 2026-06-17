@@ -14,6 +14,9 @@ export const adminApi = {
   deleteUser: (uuid: string) =>
     apiClient.delete(`/admin/users/${uuid}`),
 
+  createUser: (data: { username: string; password: string; full_name?: string; role?: string }) =>
+    apiClient.post<User>('/admin/users', data).then((r) => r.data),
+
   changePassword: (uuid: string, new_password: string) =>
     apiClient.patch(`/admin/users/${uuid}/password`, { new_password }),
 

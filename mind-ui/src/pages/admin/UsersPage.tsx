@@ -16,22 +16,24 @@ export default function UsersPage() {
   const [editingUser, setEditingUser] = useState<User | null>(null)
   const [passwordModal, setPasswordModal] = useState(false)
   const [passwordUser, setPasswordUser] = useState<User | null>(null)
+  const [createModal, setCreateModal] = useState(false)
   const [form] = Form.useForm()
   const [pwForm] = Form.useForm()
+  const [createForm] = Form.useForm()
 
-  const fetchUsers = () => {
+  const fetchUsers = (p = page) => {
     setLoading(true)
-    adminApi.listUsers(page, 20).then((data) => {
+    adminApi.listUsers(p, 20).then((data) => {
       setUsers(data.users)
       setTotal(data.total)
     }).finally(() => setLoading(false))
   }
 
-  useEffect(() => { fetchUsers() }, [page])
+  useEffect(() => { fetchUsers(1) }, [])
 
   const handleEdit = (user: User) => {
     setEditingUser(user)
-    form.setFieldsValue({ role: user.role, is_active: user.is_active })
+    form.setFieldsValue({ username: user.username, role: user.role, is_active: user.is_active })
     setEditModal(true)
   }
 
@@ -39,6 +41,15 @@ export default function UsersPage() {
     setPasswordUser(user)
     pwForm.resetFields()
     setPasswordModal(true)
+  }
+
+  const handleCreate = async () => {
+    const values = await createForm.validateFields()
+    await adminApi.createUser(values)
+    message.success('Usuário criado com sucesso')
+    setCreateModal(false)
+    createForm.resetFields()
+    fetchUsers(1)
   }
 
   const handlePasswordSave = async () => {
@@ -55,19 +66,24 @@ export default function UsersPage() {
     await adminApi.updateUser(editingUser.user_uuid, values)
     message.success('Usuário atualizado')
     setEditModal(false)
-    fetchUsers()
+    fetchUsers(page)
   }
 
   return (
     <>
       <Breadcrumb items={[{ title: 'Admin' }, { title: 'Usuários' }]} style={{ marginBottom: 16 }} />
       <Card>
-        <Title level={4}>Gerenciar Usuários</Title>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+          <Title level={4} style={{ margin: 0 }}>Gerenciar Usuários</Title>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => { setCreateModal(true); createForm.resetFields() }}>
+            Adicionar Usuário
+          </Button>
+        </div>
         <Table
           dataSource={users}
           rowKey="user_uuid"
           loading={loading}
-          pagination={{ current: page, total, pageSize: 20, onChange: setPage }}
+          pagination={{ current: page, total, pageSize: 20, onChange: (p) => { setPage(p); fetchUsers(p) } }}
           columns={[
             { title: 'Usuário', dataIndex: 'username' },
             { title: 'Nome', dataIndex: 'full_name', ellipsis: true },
@@ -75,7 +91,10 @@ export default function UsersPage() {
               title: 'Perfil',
               dataIndex: 'role',
               width: 140,
-              render: (v: string) => <Tag color={v === 'admin' ? 'red' : v === 'clinician' ? 'blue' : 'default'}>{ROLE_LABELS[v] || v}</Tag>,
+              render: (v: string) => {
+                const colors: Record<string, string> = { admin: 'red', clinician: 'blue', psychologist: 'cyan', psychiatrist: 'purple', clinical_supervisor: 'orange', researcher: 'green', viewer: 'default' }
+                return <Tag color={colors[v] || 'default'}>{ROLE_LABELS[v] || v}</Tag>
+              },
             },
             {
               title: 'Ativo',
@@ -86,9 +105,9 @@ export default function UsersPage() {
             { title: 'Criado em', dataIndex: 'created_at', width: 160 },
             {
               title: 'Ações',
-              width: 100,
+              width: 160,
               render: (_: unknown, record: User) => (
-                <Space>
+                <Space size="small">
                   <Button size="small" icon={<EditOutlined />} onClick={() => handleEdit(record)}>Editar</Button>
                   <Button size="small" icon={<KeyOutlined />} onClick={() => handlePassword(record)}>Senha</Button>
                 </Space>
@@ -122,15 +141,55 @@ export default function UsersPage() {
 
       <Modal title="Editar Usuário" open={editModal} onOk={handleSave} onCancel={() => setEditModal(false)}>
         <Form form={form} layout="vertical">
+          <Form.Item name="username" label="Nome de Usuário" rules={[
+            { min: 3, message: 'Mínimo 3 caracteres' },
+          ]}>
+            <Input />
+          </Form.Item>
           <Form.Item name="role" label="Perfil" rules={[{ required: true }]}>
             <Select options={[
               { value: 'admin', label: 'Administrador' },
               { value: 'clinician', label: 'Clínico' },
+              { value: 'psychologist', label: 'Psicólogo' },
+              { value: 'psychiatrist', label: 'Psiquiatra' },
+              { value: 'clinical_supervisor', label: 'Supervisor Clínico' },
+              { value: 'researcher', label: 'Pesquisador' },
               { value: 'viewer', label: 'Visualizador' },
             ]} />
           </Form.Item>
-          <Form.Item name="is_active" label="Ativo" valuePropName="checked">
+          <Form.Item name="is_active" label="Ativo">
             <Select options={[{ value: true, label: 'Sim' }, { value: false, label: 'Não' }]} />
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal title="Adicionar Usuário" open={createModal} onOk={handleCreate} onCancel={() => setCreateModal(false)}>
+        <Form form={createForm} layout="vertical">
+          <Form.Item name="username" label="Usuário" rules={[
+            { required: true, message: 'Obrigatório' },
+            { min: 3, message: 'Mínimo 3 caracteres' },
+          ]}>
+            <Input />
+          </Form.Item>
+          <Form.Item name="full_name" label="Nome Completo">
+            <Input />
+          </Form.Item>
+          <Form.Item name="password" label="Senha" rules={[
+            { required: true, message: 'Obrigatório' },
+            { min: 6, message: 'Mínimo 6 caracteres' },
+          ]}>
+            <Input.Password />
+          </Form.Item>
+          <Form.Item name="role" label="Perfil" rules={[{ required: true, message: 'Obrigatório' }]}>
+            <Select options={[
+              { value: 'admin', label: 'Administrador' },
+              { value: 'clinician', label: 'Clínico' },
+              { value: 'psychologist', label: 'Psicólogo' },
+              { value: 'psychiatrist', label: 'Psiquiatra' },
+              { value: 'clinical_supervisor', label: 'Supervisor Clínico' },
+              { value: 'researcher', label: 'Pesquisador' },
+              { value: 'viewer', label: 'Visualizador' },
+            ]} />
           </Form.Item>
         </Form>
       </Modal>

@@ -10,10 +10,17 @@ class QuestionResponse(BaseModel):
     response_value: float
 
 
-class AssessmentRequest(BaseModel):
-    consultation_uuid: UUID
+class ScoreRequest(BaseModel):
+    """Simple score computation — no persistence."""
     scale_name: str
-    responses: List[QuestionResponse]
+    responses: List[float]
+
+
+class AssessmentApplyRequest(BaseModel):
+    """Save scale responses to a new consultation and return the score."""
+    patient_uuid: UUID
+    scale_name: str
+    responses: List[float]
 
 
 class AssessmentResult(BaseModel):
@@ -22,8 +29,8 @@ class AssessmentResult(BaseModel):
     total_score: float
     severity: str
     interpretation: str
-    responses: List[QuestionResponse]
     timestamp: str
+    consultation_uuid: str = ""
 
 
 class AssessmentHistoryItem(BaseModel):

@@ -1,8 +1,9 @@
 from datetime import datetime, timezone
 from typing import Optional, List
 from uuid import UUID
-from pydantic import BaseModel, Field, ConfigDict, field_validator
+from pydantic import BaseModel, Field, ConfigDict, field_validator, model_validator
 from app.schemas.common import TimestampMixin
+from app.security.lgpd import decrypt_pii
 
 VALID_FREQUENCIES = {
     "daily", "several_times_week", "weekly", "several_times_month",
@@ -136,12 +137,32 @@ class ClinicalNoteResponse(TimestampMixin):
 class ClinicalConsultationResponse(ClinicalConsultationBase, TimestampMixin):
     consultation_uuid: UUID
     profile_uuid: UUID
+    patient_uuid: Optional[UUID] = None
+    patient_name: Optional[str] = None
     healthcare_professional: Optional[HealthcareProfessionalResponse] = None
     symptom_observations: Optional[List[SymptomObservationResponse]] = None
     scale_responses: Optional[List[ScaleResponseResponse]] = None
     diagnostic_inferences: Optional[List[DiagnosticInferenceResponse]] = None
     clinical_note: Optional[ClinicalNoteResponse] = None
     model_config = ConfigDict(from_attributes=True)
+
+    @model_validator(mode='before')
+    @classmethod
+    def resolve_patient_info(cls, data):
+        if isinstance(data, dict):
+            return data
+        profile = getattr(data, 'patient_profile', None)
+        if profile:
+            identity = getattr(profile, 'patient_identity', None)
+            if identity:
+                encrypted = getattr(identity, 'full_name', None)
+                if encrypted:
+                    try:
+                        data.patient_name = decrypt_pii(encrypted)
+                    except Exception:
+                        data.patient_name = encrypted
+                data.patient_uuid = getattr(identity, 'patient_uuid', None)
+        return data
 
 
 class ConsultationWithDataCreate(ClinicalConsultationCreate):
