@@ -950,6 +950,12 @@ EN_TO_PT_SYMPTOM = {
     "stuttering_anxiety": "ansiedade_gagueira",
     "use_risco_fisico": "uso_risco_fisico",
     "voyeuristic_action": "voyeurismo_acao",
+    # ── Residual / unspecified disorder symptom keys ──
+    "distress_impairment_symptoms": "distress_impairment_symptoms",
+    "clinician_specifies_reason": "clinician_specifies_reason",
+    "exclude_primary_disorder": "exclude_primary_disorder",
+    "insufficient_information": "insufficient_information",
+    "emergency_context": "emergency_context",
 }
 
 # Scale definitions

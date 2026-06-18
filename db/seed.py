@@ -635,6 +635,12 @@ def seed(db):
     # ── Missed by verification (Phase 4 detected) ──
     ("abstinencia_alcool", "Síndrome fisiológica de abstinência após cessação do álcool"),
     ("sonhos_disfóricos_extensos", "Sonhos prolongados, angustiantes e bem lembrados"),
+    # ── Residual / unspecified disorder symptom keys ──
+    ("distress_impairment_symptoms", "Sintomas característicos de transtorno mental que causam sofrimento ou prejuízo clinicamente significativo"),
+    ("clinician_specifies_reason", "O clínico opta por especificar a razão pela qual os critérios não são totalmente preenchidos"),
+    ("exclude_primary_disorder", "Os sintomas não são mais bem explicados por outro transtorno mental"),
+    ("insufficient_information", "Não há informação suficiente para fazer um diagnóstico mais específico"),
+    ("emergency_context", "Em contextos de emergência onde não é possível determinar se os sintomas são primários ou induzidos"),
     ]
 
     symptom_objects = {}

@@ -197,12 +197,8 @@ class TestAssessmentsAPI:
 
     def test_score_phq9(self, auth_client):
         response = auth_client.post("/api/v1/assessments/score", json={
-            "consultation_uuid": "00000000-0000-0000-0000-000000000001",
             "scale_name": "PHQ-9",
-            "responses": [
-                {"question_id": i, "question_text": f"Q{i}", "response_value": 2}
-                for i in range(9)
-            ],
+            "responses": [2] * 9,
         })
         assert response.status_code == 200
         data = response.json()
@@ -211,12 +207,8 @@ class TestAssessmentsAPI:
 
     def test_score_gad7_mild(self, auth_client):
         response = auth_client.post("/api/v1/assessments/score", json={
-            "consultation_uuid": "00000000-0000-0000-0000-000000000002",
             "scale_name": "GAD-7",
-            "responses": [
-                {"question_id": i, "question_text": f"Q{i}", "response_value": 1}
-                for i in range(7)
-            ],
+            "responses": [1] * 7,
         })
         assert response.status_code == 200
         data = response.json()
@@ -225,7 +217,6 @@ class TestAssessmentsAPI:
 
     def test_score_unknown_scale(self, auth_client):
         response = auth_client.post("/api/v1/assessments/score", json={
-            "consultation_uuid": "00000000-0000-0000-0000-000000000003",
             "scale_name": "FAKE",
             "responses": [],
         })

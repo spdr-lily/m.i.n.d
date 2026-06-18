@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.schemas.assessment import (
-    AssessmentRequest,
+    ScoreRequest,
     AssessmentResult,
     AssessmentHistoryResponse,
     QuestionResponse,
@@ -28,7 +28,7 @@ def list_available_scales():
 
 
 @router.post("/score", response_model=AssessmentResult)
-def score_assessment_endpoint(request: AssessmentRequest):
+def score_assessment_endpoint(request: ScoreRequest):
     try:
         return score_assessment(request)
     except ValueError as e:

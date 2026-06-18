@@ -390,7 +390,7 @@ export default function DashboardPage() {
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={8}>
           <Card title="Tendência de Prevalência (12 meses)" size="small">
             {prevalenceLineData.length > 0 && prevalenceTrends.length <= 10 ? (
               <ResponsiveContainer width="100%" height={280}>
@@ -419,7 +419,7 @@ export default function DashboardPage() {
             )}
           </Card>
         </Col>
-        <Col xs={24} lg={12}>
+        <Col xs={24} lg={8}>
           <Card title="Comorbidades mais frequentes" size="small">
             {comorbidityPairsSorted.length > 0 ? (
               <Table dataSource={comorbidityPairsSorted} rowKey={(r) => `${r.disorder_a}-${r.disorder_b}`} size="small" pagination={false}
@@ -432,6 +432,40 @@ export default function DashboardPage() {
             ) : (
               <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 40 }}>
                 Nenhum dado de comorbidade disponível
+              </Typography.Text>
+            )}
+          </Card>
+        </Col>
+        <Col xs={24} lg={8}>
+          <Card title="Modelos ML em Produção" size="small" loading={mlLoading}>
+            {mlData?.models?.length ? (
+              <List
+                dataSource={mlData.models}
+                size="small"
+                split={false}
+                renderItem={(m) => (
+                  <List.Item style={{ padding: '6px 0' }}>
+                    <Space direction="vertical" style={{ width: '100%' }} size={2}>
+                      <Space>
+                        <Tag color="green">{m.stage}</Tag>
+                        <Typography.Text strong style={{ fontSize: 13 }}>{m.name}</Typography.Text>
+                      </Space>
+                      <Typography.Text type="secondary" style={{ fontSize: 11 }}>{m.description}</Typography.Text>
+                      <Space size={16}>
+                        <Typography.Text style={{ fontSize: 12 }}>
+                          R²: <Tag color={m.r2 >= 0.4 ? 'blue' : m.r2 >= 0.2 ? 'orange' : 'red'}>{m.r2.toFixed(3)}</Tag>
+                        </Typography.Text>
+                        <Typography.Text style={{ fontSize: 12 }}>
+                          MAE: <Tag>{m.mae.toFixed(2)}</Tag>
+                        </Typography.Text>
+                      </Space>
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 40 }}>
+                Nenhum modelo em produção
               </Typography.Text>
             )}
           </Card>
@@ -654,43 +688,6 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginTop: 4 }}>
-        <Col xs={24} lg={8}>
-          <Card title="Modelos ML em Produção" size="small" loading={mlLoading}>
-            {mlData?.models?.length ? (
-              <List
-                dataSource={mlData.models}
-                size="small"
-                split={false}
-                renderItem={(m) => (
-                  <List.Item style={{ padding: '6px 0' }}>
-                    <Space direction="vertical" style={{ width: '100%' }} size={2}>
-                      <Space>
-                        <Tag color="green">{m.stage}</Tag>
-                        <Typography.Text strong style={{ fontSize: 13 }}>{m.name}</Typography.Text>
-                      </Space>
-                      <Typography.Text type="secondary" style={{ fontSize: 11 }}>{m.description}</Typography.Text>
-                      <Space size={16}>
-                        <Typography.Text style={{ fontSize: 12 }}>
-                          R²: <Tag color={m.r2 >= 0.4 ? 'blue' : m.r2 >= 0.2 ? 'orange' : 'red'}>{m.r2.toFixed(3)}</Tag>
-                        </Typography.Text>
-                        <Typography.Text style={{ fontSize: 12 }}>
-                          MAE: <Tag>{m.mae.toFixed(2)}</Tag>
-                        </Typography.Text>
-                      </Space>
-                    </Space>
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <Typography.Text type="secondary" style={{ display: 'block', textAlign: 'center', padding: 40 }}>
-                Nenhum modelo em produção
-              </Typography.Text>
-            )}
-          </Card>
-        </Col>
-      </Row>
-
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col xs={24} md={12}>
           <Card title="Eficácia de Medicamentos" size="small" loading={mlLoading}>

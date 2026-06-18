@@ -41,8 +41,9 @@ class ScaleQuestionBase(BaseModel):
     question_order: Optional[int] = None
 
 
-class ScaleQuestionCreate(ScaleQuestionBase):
-    pass
+class ScaleQuestionCreate(BaseModel):
+    question_text: str
+    question_order: Optional[int] = None
 
 
 class ScaleQuestionUpdate(BaseModel):

@@ -1,4 +1,3 @@
-from uuid import uuid4
 import pytest
 from app.ml.models.assessment_scales import (
     PHQ9,
@@ -9,7 +8,7 @@ from app.ml.models.assessment_scales import (
     SCALES_REGISTRY,
 )
 from app.services.assessment_service import score_assessment
-from app.schemas.assessment import AssessmentRequest, QuestionResponse
+from app.schemas.assessment import ScoreRequest
 
 
 class TestPHQ9:
@@ -114,13 +113,9 @@ class TestScaleRegistry:
 
 class TestAssessmentService:
     def test_score_assessment_phq9_mild(self):
-        request = AssessmentRequest(
-            consultation_uuid=uuid4(),
+        request = ScoreRequest(
             scale_name="PHQ-9",
-            responses=[
-                QuestionResponse(question_id=i, question_text=q, response_value=1)
-                for i, q in enumerate(PHQ9.questions)
-            ],
+            responses=[1] * 9,
         )
         result = score_assessment(request)
         assert result.scale_name == "PHQ-9"
@@ -129,13 +124,9 @@ class TestAssessmentService:
         assert result.interpretation != ""
 
     def test_score_assessment_gad7_severe(self):
-        request = AssessmentRequest(
-            consultation_uuid=uuid4(),
+        request = ScoreRequest(
             scale_name="GAD-7",
-            responses=[
-                QuestionResponse(question_id=i, question_text=q, response_value=3)
-                for i, q in enumerate(GAD7.questions)
-            ],
+            responses=[3] * 7,
         )
         result = score_assessment(request)
         assert result.scale_name == "GAD-7"
@@ -145,17 +136,15 @@ class TestAssessmentService:
     def test_score_assessment_unknown_scale(self):
         import pytest
 
-        request = AssessmentRequest(
-            consultation_uuid=uuid4(),
+        request = ScoreRequest(
             scale_name="FAKE",
-            responses=[QuestionResponse(question_id=1, question_text="?", response_value=1)],
+            responses=[1],
         )
         with pytest.raises(ValueError, match="Unknown scale"):
             score_assessment(request)
 
     def test_score_assessment_empty_responses(self):
-        request = AssessmentRequest(
-            consultation_uuid=uuid4(),
+        request = ScoreRequest(
             scale_name="PHQ-9",
             responses=[],
         )

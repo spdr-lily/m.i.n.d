@@ -83,7 +83,8 @@ class TestInferenceEngine:
             InferenceResult(disorder_id=2, disorder_name="Transtorno Bipolar", probability=0.5),
         ]
         results = self.engine._apply_scale_adjustments(results, {"PHQ-9": 20.0})
-        assert results[0].probability == pytest.approx(0.63, rel=0.01)
+        # Cumulative boost: (15 threshold) 0.08+(20-15)/100=0.13, (10 threshold) 0.08+(20-10)/100=0.18
+        assert results[0].probability == pytest.approx(0.81, rel=0.01)
         assert results[1].probability == 0.5
 
     def test_apply_scale_adjustments_below_threshold(self):
@@ -149,10 +150,15 @@ def _make_mock_evaluation(met_criteria: int = 0, total_criteria: int = 0, intens
             self.present = present
             self.intensity_score = intensity_score
 
+    # Python 3.14+ class body scoping
+    _total = total_criteria
+    _met = met_criteria
+    _all_groups = met_criteria >= (total_criteria // 2) if total_criteria > 0 else False
+
     class MockEval:
-        total_criteria = total_criteria
-        met_criteria = met_criteria
-        all_groups_satisfied = met_criteria >= (total_criteria // 2) if total_criteria > 0 else False
+        total_criteria = _total
+        met_criteria = _met
+        all_groups_satisfied = _all_groups
         all_durations_met = True
         disorder_id = 1
         disorder_name = "Test Disorder"
@@ -166,5 +172,5 @@ def _make_mock_evaluation(met_criteria: int = 0, total_criteria: int = 0, intens
                 mock.criteria_results.append(MockCriteriaResult(True, None))
     else:
         mock.criteria_results = [MockCriteriaResult(True, None) for _ in range(met_criteria)]
-    mock.all_groups_satisfied = met_criteria >= (total_criteria // 2) if total_criteria > 0 else False
+    mock.all_groups_satisfied = _all_groups
     return mock

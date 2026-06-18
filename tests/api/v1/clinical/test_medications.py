@@ -41,7 +41,7 @@ class TestMedicationsAPI:
             "profile": {"birth_date": "1990-01-01"},
         })
         assert resp.status_code == 201
-        return resp.json()["profile"]["patient_uuid"]
+        return resp.json()["profile"]["profile_uuid"]
 
     def _create_professional(self, client) -> str:
         resp = client.post("/api/v1/professionals", json={
@@ -51,9 +51,9 @@ class TestMedicationsAPI:
         assert resp.status_code == 201
         return resp.json()["professional_uuid"]
 
-    def _create_consultation(self, client, patient_uuid: str, prof_uuid: str) -> str:
+    def _create_consultation(self, client, profile_uuid: str, prof_uuid: str) -> str:
         resp = client.post("/api/v1/consultations", json={
-            "profile_uuid": patient_uuid,
+            "profile_uuid": profile_uuid,
             "professional_uuid": prof_uuid,
             "consultation_date": "2025-06-01T10:00:00",
         })
@@ -142,9 +142,9 @@ class TestMedicationsAPI:
     # --- Prescription tests ---
 
     def test_create_prescription(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         mid = self._create_medication(client)
         resp = client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={
             "notes": "Tomar 1x ao dia",
@@ -157,9 +157,9 @@ class TestMedicationsAPI:
         assert data["items"][0]["dosage"] == "50mg"
 
     def test_create_prescription_multiple_items(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         m1 = self._create_medication(client)
         resp_m2 = client.post(self.BASE, json={"name": "Risperidona"})
         m2 = resp_m2.json()["medication_id"]
@@ -173,9 +173,9 @@ class TestMedicationsAPI:
         assert len(resp.json()["items"]) == 2
 
     def test_list_prescriptions(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         mid = self._create_medication(client)
         client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={
             "items": [{"medication_id": mid, "dosage": "50mg", "frequency": "1x/dia"}],
@@ -187,9 +187,9 @@ class TestMedicationsAPI:
         assert len(data["prescriptions"]) >= 1
 
     def test_get_prescription(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         mid = self._create_medication(client)
         create = client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={
             "items": [{"medication_id": mid, "dosage": "50mg", "frequency": "1x/dia"}],
@@ -204,9 +204,9 @@ class TestMedicationsAPI:
         assert resp.status_code == 404
 
     def test_delete_prescription(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         mid = self._create_medication(client)
         create = client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={
             "items": [{"medication_id": mid, "dosage": "50mg", "frequency": "1x/dia"}],
@@ -224,18 +224,18 @@ class TestMedicationsAPI:
         assert resp.status_code == 404
 
     def test_create_prescription_nonexistent_medication(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         resp = client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={
             "items": [{"medication_id": 999999, "dosage": "50mg", "frequency": "1x/dia"}],
         })
         assert resp.status_code in (201, 400, 404)
 
     def test_medication_full_lifecycle(self, client):
-        patient_uuid = self._create_patient(client)
+        profile_uuid = self._create_patient(client)
         prof_uuid = self._create_professional(client)
-        cons_uuid = self._create_consultation(client, patient_uuid, prof_uuid)
+        cons_uuid = self._create_consultation(client, profile_uuid, prof_uuid)
         mid = self._create_medication(client)
         assert client.get(f"{self.BASE}/{mid}").status_code == 200
         presc = client.post(f"/api/v1/consultations/{cons_uuid}/prescriptions", json={

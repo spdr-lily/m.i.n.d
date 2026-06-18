@@ -44,19 +44,8 @@ class TestAssessmentsAPI:
 
     def test_score_phq9_minimal(self, client):
         resp = client.post(f"{self.BASE}/score", json={
-            "consultation_uuid": str(uuid4()),
             "scale_name": "PHQ-9",
-            "responses": [
-                {"question_id": 1, "question_text": "P1", "response_value": 0},
-                {"question_id": 2, "question_text": "P2", "response_value": 0},
-                {"question_id": 3, "question_text": "P3", "response_value": 0},
-                {"question_id": 4, "question_text": "P4", "response_value": 0},
-                {"question_id": 5, "question_text": "P5", "response_value": 0},
-                {"question_id": 6, "question_text": "P6", "response_value": 0},
-                {"question_id": 7, "question_text": "P7", "response_value": 0},
-                {"question_id": 8, "question_text": "P8", "response_value": 0},
-                {"question_id": 9, "question_text": "P9", "response_value": 0},
-            ],
+            "responses": [0, 0, 0, 0, 0, 0, 0, 0, 0],
         })
         assert resp.status_code == 200
         data = resp.json()
@@ -66,17 +55,8 @@ class TestAssessmentsAPI:
 
     def test_score_gad7_severe(self, client):
         resp = client.post(f"{self.BASE}/score", json={
-            "consultation_uuid": str(uuid4()),
             "scale_name": "GAD-7",
-            "responses": [
-                {"question_id": 10, "question_text": "P1", "response_value": 3},
-                {"question_id": 11, "question_text": "P2", "response_value": 3},
-                {"question_id": 12, "question_text": "P3", "response_value": 3},
-                {"question_id": 13, "question_text": "P4", "response_value": 3},
-                {"question_id": 14, "question_text": "P5", "response_value": 3},
-                {"question_id": 15, "question_text": "P6", "response_value": 3},
-                {"question_id": 16, "question_text": "P7", "response_value": 3},
-            ],
+            "responses": [3, 3, 3, 3, 3, 3, 3],
         })
         assert resp.status_code == 200
         data = resp.json()
@@ -86,7 +66,6 @@ class TestAssessmentsAPI:
 
     def test_score_unknown_scale(self, client):
         resp = client.post(f"{self.BASE}/score", json={
-            "consultation_uuid": str(uuid4()),
             "scale_name": "SCALA_INEXISTENTE",
             "responses": [],
         })
@@ -94,11 +73,8 @@ class TestAssessmentsAPI:
 
     def test_score_invalid_response_count(self, client):
         resp = client.post(f"{self.BASE}/score", json={
-            "consultation_uuid": str(uuid4()),
             "scale_name": "PHQ-9",
-            "responses": [
-                {"question_id": 1, "question_text": "P1", "response_value": 0},
-            ],
+            "responses": [0],
         })
         assert resp.status_code == 200
         data = resp.json()
@@ -106,20 +82,8 @@ class TestAssessmentsAPI:
 
     def test_score_mdd_thresholds(self, client):
         resp = client.post(f"{self.BASE}/score", json={
-            "consultation_uuid": str(uuid4()),
             "scale_name": "MADRS",
-            "responses": [
-                {"question_id": 1, "question_text": "P1", "response_value": 5},
-                {"question_id": 2, "question_text": "P2", "response_value": 5},
-                {"question_id": 3, "question_text": "P3", "response_value": 5},
-                {"question_id": 4, "question_text": "P4", "response_value": 5},
-                {"question_id": 5, "question_text": "P5", "response_value": 5},
-                {"question_id": 6, "question_text": "P6", "response_value": 5},
-                {"question_id": 7, "question_text": "P7", "response_value": 5},
-                {"question_id": 8, "question_text": "P8", "response_value": 5},
-                {"question_id": 9, "question_text": "P9", "response_value": 5},
-                {"question_id": 10, "question_text": "P10", "response_value": 5},
-            ],
+            "responses": [5, 5, 5, 5, 5, 5, 5, 5, 5, 5],
         })
         assert resp.status_code == 200
         data = resp.json()
@@ -132,6 +96,8 @@ class TestAssessmentsAPI:
         assert resp.json()["assessments"] == []
 
     def test_get_detail_known_scale(self, client):
+        # Seed scale questions first
+        client.post(f"{self.BASE}/seed")
         resp = client.get(f"{self.BASE}/detail/PHQ-9")
         assert resp.status_code == 200
         data = resp.json()
