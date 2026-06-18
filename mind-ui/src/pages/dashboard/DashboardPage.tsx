@@ -22,9 +22,23 @@ import { SEVERITY_COLORS, SEVERITY_LABELS, ALERT_TYPE_LABELS, SCALE_OPTIONS, NEU
 const { Title } = Typography
 
 const SEX_LABELS: Record<string, string> = { '7': 'Masculino', '8': 'Feminino', '1': 'Masculino', '2': 'Feminino', '0': 'Não informado' }
-const PIE_COLORS = ['#1677ff', '#ff69b4', '#d9d9d9', '#52c41a', '#faad14', '#722ed1']
-const GENDER_PIE_COLORS = ['#52c41a', '#722ed1', '#1677ff', '#ff69b4', '#faad14', '#13c2c2']
-const BAR_COLORS = ['#1677ff', '#52c41a', '#faad14', '#f5222d', '#722ed1']
+const PIE_COLORS = ['#1677ff', '#ff69b4', '#d9d9d9', '#52c41a', '#ffe600', '#722ed1']
+const GENDER_PIE_COLORS = ['#52c41a', '#722ed1', '#1677ff', '#ff69b4', '#ffe600', '#13c2c2']
+
+const SEX_COLOR_MAP: Record<string, string> = {
+  'Masculino': '#1677ff',
+  'Feminino': '#ff69b4',
+  'Não informado': '#d9d9d9',
+}
+
+const GENDER_COLOR_MAP: Record<string, string> = {
+  'Masculino': '#1677ff',
+  'Feminino': '#ff69b4',
+  'Não-Binário': '#ffe600',
+  'Prefiro não informar': '#d9d9d9',
+  'Não informado': '#d9d9d9',
+}
+const BAR_COLORS = ['#1677ff', '#52c41a', '#ffe600', '#f5222d', '#722ed1']
 const EDU_COLORS = ['#ebd9b4', '#b8d4b0', '#8db5d8', '#5b8db5', '#3d5a80']
 const ETHNICITY_COLORS = ['#8B4513', '#DEB887', '#2F2F2F', '#F0C75E', '#CD853F']
 
@@ -236,7 +250,7 @@ export default function DashboardPage() {
                       <PieChart>
                         <Pie data={sexPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                           {sexPieData.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                            <Cell key={i} fill={SEX_COLOR_MAP[sexPieData[i].name] || PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -256,7 +270,7 @@ export default function DashboardPage() {
                       <PieChart>
 <Pie data={genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                           {genderPieData.map((_, i) => (
-                            <Cell key={i} fill={GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
+                            <Cell key={i} fill={GENDER_COLOR_MAP[genderPieData[i].name] || GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -390,7 +404,7 @@ export default function DashboardPage() {
       </Row>
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={12}>
           <Card title="Tendência de Prevalência (12 meses)" size="small">
             {prevalenceLineData.length > 0 && prevalenceTrends.length <= 10 ? (
               <ResponsiveContainer width="100%" height={280}>
@@ -419,7 +433,7 @@ export default function DashboardPage() {
             )}
           </Card>
         </Col>
-        <Col xs={24} lg={8}>
+        <Col xs={24} lg={12}>
           <Card title="Comorbidades mais frequentes" size="small">
             {comorbidityPairsSorted.length > 0 ? (
               <Table dataSource={comorbidityPairsSorted} rowKey={(r) => `${r.disorder_a}-${r.disorder_b}`} size="small" pagination={false}
@@ -436,7 +450,10 @@ export default function DashboardPage() {
             )}
           </Card>
         </Col>
-        <Col xs={24} lg={8}>
+      </Row>
+
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col xs={24} lg={12}>
           <Card title="Modelos ML em Produção" size="small" loading={mlLoading}>
             {mlData?.models?.length ? (
               <List
