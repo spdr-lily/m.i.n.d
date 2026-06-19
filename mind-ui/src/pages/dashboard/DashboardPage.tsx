@@ -25,18 +25,20 @@ const SEX_LABELS: Record<string, string> = { '7': 'Masculino', '8': 'Feminino', 
 const PIE_COLORS = ['#1677ff', '#ff69b4', '#d9d9d9', '#52c41a', '#ffe600', '#722ed1']
 const GENDER_PIE_COLORS = ['#52c41a', '#722ed1', '#1677ff', '#ff69b4', '#ffe600', '#13c2c2']
 
-const SEX_COLOR_MAP: Record<string, string> = {
-  'Masculino': '#1677ff',
-  'Feminino': '#ff69b4',
-  'Não informado': '#d9d9d9',
+const RAW_SEX_COLORS: Record<string, string> = {
+  '0': '#d9d9d9',
+  '1': '#1677ff',
+  '2': '#ff69b4',
+  '7': '#1677ff',
+  '8': '#ff69b4',
 }
 
-const GENDER_COLOR_MAP: Record<string, string> = {
-  'Masculino': '#1677ff',
-  'Feminino': '#ff69b4',
-  'Não-Binário': '#ffe600',
-  'Prefiro não informar': '#d9d9d9',
-  'Não informado': '#d9d9d9',
+function getGenderColor(name: string): string {
+  if (name === 'Masculino') return '#1677ff'
+  if (name === 'Feminino') return '#ff69b4'
+  if (name === 'Não-Binário') return '#ffe600'
+  if (name === 'Prefiro não informar' || name === 'Não informado') return '#d9d9d9'
+  return '#52c41a'
 }
 const BAR_COLORS = ['#1677ff', '#52c41a', '#ffe600', '#f5222d', '#722ed1']
 const EDU_COLORS = ['#ebd9b4', '#b8d4b0', '#8db5d8', '#5b8db5', '#3d5a80']
@@ -104,6 +106,7 @@ export default function DashboardPage() {
     ? Object.entries(demographics.sex_distribution).map(([k, v]) => ({
         name: SEX_LABELS[k] || `Tipo ${k}`,
         value: v,
+        color: RAW_SEX_COLORS[k] || '#1677ff',
       })) : []
 
   const genderPieData = demographics?.gender_identity_distribution
@@ -250,7 +253,7 @@ export default function DashboardPage() {
                       <PieChart>
                         <Pie data={sexPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                           {sexPieData.map((_, i) => (
-                            <Cell key={i} fill={SEX_COLOR_MAP[sexPieData[i].name] || PIE_COLORS[i % PIE_COLORS.length]} />
+                            <Cell key={i} fill={sexPieData[i].color} />
                           ))}
                         </Pie>
                         <Tooltip />
@@ -270,7 +273,7 @@ export default function DashboardPage() {
                       <PieChart>
 <Pie data={genderPieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label={({ name, percent }: { name: string; percent?: number }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                           {genderPieData.map((_, i) => (
-                            <Cell key={i} fill={GENDER_COLOR_MAP[genderPieData[i].name] || GENDER_PIE_COLORS[i % GENDER_PIE_COLORS.length]} />
+                            <Cell key={i} fill={getGenderColor(genderPieData[i].name)} />
                           ))}
                         </Pie>
                         <Tooltip />
