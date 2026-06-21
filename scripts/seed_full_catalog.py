@@ -1,4 +1,10 @@
-"""Seed DSM-5-TR criteria, symptoms, relationships, and ICD-11 data for ALL disorders.
+"""
+⚠️  WARNING: DIAGNOSIS RELATIONSHIPS AND SYMPTOM-DISORDER MAPPINGS IN THIS SCRIPT
+⚠️  ARE PROCEDURALLY GENERATED BASED ON DSM-5-TR AND ICD-11 AUTHORITY DATA.
+⚠️  CLINICAL CRITERIA TEXT IS FROM DSM-5-TR (APA, 2022). PATIENT-LEVEL DATA IS
+⚠️  SYNTHETIC — DO NOT USE WITH REAL PATIENTS.
+
+Seed DSM-5-TR criteria, symptoms, relationships, and ICD-11 data for ALL disorders.
 
 Activates the full ~192-disorder catalog with diagnostic criteria text,
 ICD-11 exclusions/differentials, symptom mappings, diagnosis relationships,

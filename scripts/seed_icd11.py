@@ -9,6 +9,7 @@ SHORT_TO_PT = {
     "PANIC": "Transtorno do Pânico",
     "AGORAPHOBIA": "Agorafobia",
     "BIPOLAR": "Transtorno Bipolar Tipo I",
+    "BIPOLAR_II": "Transtorno Bipolar Tipo II",
     "OCD": "Transtorno Obsessivo-Compulsivo",
     "PTSD": "Transtorno de Estresse Pós-Traumático",
     "SUD": "Transtorno por Uso de Substâncias",
@@ -18,6 +19,8 @@ SHORT_TO_PT = {
     "INSOMNIA": "Transtorno de Insônia",
     "PSYCHOTIC": "Esquizofrenia / Transtorno Psicótico",
     "SOMATIC": "Transtorno de Sintomas Somáticos",
+    "DYSTHYMIA": "Transtorno Depressivo Persistente (Distimia)",
+    "SOCIAL_ANXIETY": "Transtorno de Ansiedade Social",
     "ASD": "Transtorno do Espectro Autista",
     "ADHD": "Transtorno de Déficit de Atenção/Hiperatividade",
 }
@@ -150,6 +153,30 @@ ICD11_DATA = {
         "chapter_code": "06",
         "clinical_description": "ADHD is characterized by a persistent pattern of inattention and/or hyperactivity-impulsivity that interferes with functioning or development.",
         "diagnostic_requirements": "6+ symptoms of inattention and/or 6+ symptoms of hyperactivity-impulsivity (5+ if age 17+) persisting for 6+ months, present before age 12, in 2+ settings.",
+    },
+    "BIPOLAR_II": {
+        "code": "6A61",
+        "title": "Bipolar type II disorder",
+        "chapter": "Mental, behavioural or neurodevelopmental disorders",
+        "chapter_code": "06",
+        "clinical_description": "Bipolar type II disorder is characterized by a pattern of hypomanic episodes and depressive episodes, without full manic episodes that meet the criteria for bipolar type I.",
+        "diagnostic_requirements": "At least one hypomanic episode (4+ days, elevated mood plus 3+ symptoms) and at least one major depressive episode. No history of manic episodes. Symptoms cause clinically significant distress or impairment.",
+    },
+    "DYSTHYMIA": {
+        "code": "6A72",
+        "title": "Dysthymic disorder",
+        "chapter": "Mental, behavioural or neurodevelopmental disorders",
+        "chapter_code": "06",
+        "clinical_description": "Dysthymic disorder (persistent depressive disorder) is characterized by a chronically depressed mood that persists for at least 2 years, accompanied by additional depressive symptoms that do not meet the severity or duration of a major depressive episode.",
+        "diagnostic_requirements": "Depressed mood for most of the day, more days than not, for at least 2 years (1 year for children/adolescents). Presence of 2+ associated symptoms (poor appetite, insomnia, low energy, low self-esteem, poor concentration, hopelessness).",
+    },
+    "SOCIAL_ANXIETY": {
+        "code": "6B04",
+        "title": "Social anxiety disorder",
+        "chapter": "Mental, behavioural or neurodevelopmental disorders",
+        "chapter_code": "06",
+        "clinical_description": "Social anxiety disorder is characterized by marked and persistent fear or anxiety about one or more social situations where the individual may be scrutinized by others, such as social interactions, being observed, or performing in front of others.",
+        "diagnostic_requirements": "Marked fear or anxiety about 1+ social situations, fear of negative evaluation, social situations consistently provoke fear or anxiety, avoided or endured with intense fear, symptoms persist for 6+ months, cause clinically significant distress or impairment.",
     },
 }
 
@@ -905,7 +932,13 @@ def seed():
     db = SessionLocal()
     try:
         disorders = {d.disorder_name: d for d in db.query(Disorder).all()}
-        count = 0
+        count_new = 0
+        count_upd = 0
+
+        # Build core set for update detection
+        core_pt_names = set()
+        for short_name in ICD11_DATA:
+            core_pt_names.add(SHORT_TO_PT[short_name])
 
         # Merge core + reference data
         all_data = {}
@@ -925,6 +958,21 @@ def seed():
                 disorder_id=disorder.disorder_id, icd11_code=data["code"]
             ).first()
             if existing:
+                # Update existing core records with rich data
+                if pt_name in core_pt_names:
+                    needs_update = False
+                    if data.get("clinical_description") and (
+                        not existing.clinical_description or existing.clinical_description != data["clinical_description"]
+                    ):
+                        existing.clinical_description = data["clinical_description"]
+                        needs_update = True
+                    if data.get("diagnostic_requirements") and (
+                        not existing.diagnostic_requirements or existing.diagnostic_requirements != data["diagnostic_requirements"]
+                    ):
+                        existing.diagnostic_requirements = data["diagnostic_requirements"]
+                        needs_update = True
+                    if needs_update:
+                        count_upd += 1
                 continue
             db.add(ICD11Code(
                 disorder_id=disorder.disorder_id,
@@ -936,9 +984,9 @@ def seed():
                 clinical_description=data.get("clinical_description", ""),
                 diagnostic_requirements=data.get("diagnostic_requirements", ""),
             ))
-            count += 1
+            count_new += 1
         db.commit()
-        print(f"OK - {count} CID-11 codes seeded ({len(all_data)} total disorders mapped)")
+        print(f"OK - {count_new} new, {count_upd} updated ({len(all_data)} total disorders mapped)")
     finally:
         db.close()
 

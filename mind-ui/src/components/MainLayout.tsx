@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Typography, theme, FloatButton } from 'antd'
+import { Layout as AntLayout, Menu, Button, Avatar, Dropdown, Typography, theme, FloatButton, Drawer, Grid } from 'antd'
 import {
   DashboardOutlined,
   UserOutlined,
@@ -13,6 +13,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  MenuOutlined,
   TeamOutlined,
   MedicineBoxOutlined,
   OrderedListOutlined,
@@ -28,6 +29,7 @@ import MindLogo from './MindLogo'
 
 const { Header, Sider, Content } = AntLayout
 const { Text } = Typography
+const { useBreakpoint } = Grid
 
 const SUBMENU_MAP: Record<string, string> = { clinico: '/patients', admin: '/admin', ferramentas: '/mia' }
 
@@ -70,17 +72,19 @@ const menuStructure = (role: string) => [
 
 export default function MainLayout() {
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
   const [openKeys, setOpenKeys] = useState<string[]>([])
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
   const { token: themeToken } = theme.useToken()
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
 
   const visibleItems = menuStructure(user?.role || '')
 
   const selectedKey = location.pathname === '/' ? '/' : location.pathname.replace(/\/$/, '')
 
-  // Auto-open parent submenu based on current route
   useEffect(() => {
     const path = location.pathname
     if (path === '/' || path === '') { setOpenKeys([]); return }
@@ -90,7 +94,6 @@ export default function MainLayout() {
         return
       }
     }
-    // Check clinico routes individually (diagnostic, personality, etc.)
     const clinicoRoutes = ['/patients', '/consultations', '/assessments', '/personality', '/inferences', '/professionals', '/alerts', '/analytics']
     if (clinicoRoutes.some((r) => path.startsWith(r))) {
       setOpenKeys((prev) => prev.includes('clinico') ? prev : [...prev, 'clinico'])
@@ -98,6 +101,14 @@ export default function MainLayout() {
     }
     setOpenKeys([])
   }, [location.pathname])
+
+  useEffect(() => {
+    setMobileDrawerOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!isMobile) setMobileDrawerOpen(false)
+  }, [isMobile])
 
   const userMenu = {
     items: [
@@ -113,48 +124,84 @@ export default function MainLayout() {
     },
   }
 
+  const handleMenuClick = ({ key }: { key: string }) => {
+    navigate(key)
+    if (isMobile) setMobileDrawerOpen(false)
+  }
+
+  const menuComponent = (
+    <Menu
+      mode="inline"
+      selectedKeys={[selectedKey]}
+      openKeys={isMobile ? openKeys : collapsed ? [] : openKeys}
+      onOpenChange={setOpenKeys}
+      items={visibleItems}
+      onClick={handleMenuClick}
+      style={{ borderRight: 0 }}
+    />
+  )
+
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
-        <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #f0f0f0' }}>
-          <div style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
-            <MindLogo size={collapsed ? 40 : 180} collapsed={collapsed} />
+      {!isMobile && (
+        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
+          <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #f0f0f0' }}>
+            <div style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
+              <MindLogo size={collapsed ? 40 : 180} collapsed={collapsed} />
+            </div>
           </div>
-        </div>
-        <Menu
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          openKeys={collapsed ? [] : openKeys}
-          onOpenChange={setOpenKeys}
-          items={visibleItems}
-          onClick={({ key }) => navigate(key)}
-          style={{ borderRight: 0 }}
-        />
-      </Sider>
+          {menuComponent}
+        </Sider>
+      )}
+
+      <Drawer
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }} onClick={() => { navigate('/'); setMobileDrawerOpen(false) }}>
+            <MindLogo size={120} />
+          </div>
+        }
+        placement="left"
+        onClose={() => setMobileDrawerOpen(false)}
+        open={isMobile && mobileDrawerOpen}
+        width={280}
+        styles={{ body: { padding: 0 } }}
+      >
+        {menuComponent}
+      </Drawer>
+
       <AntLayout>
         <Header
           style={{
-            padding: '0 24px',
+            padding: isMobile ? '0 12px' : '0 24px',
             background: themeToken.colorBgContainer,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             borderBottom: '1px solid #f0f0f0',
+            height: isMobile ? 56 : 64,
+            lineHeight: isMobile ? '56px' : '64px',
           }}
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-          />
+          {isMobile ? (
+            <Button type="text" icon={<MenuOutlined />} onClick={() => setMobileDrawerOpen(true)} />
+          ) : (
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+            />
+          )}
+          {isMobile && (
+            <Text strong style={{ fontSize: 16, flex: 1, textAlign: 'center' }}>M.I.N.D</Text>
+          )}
           <Dropdown menu={userMenu} placement="bottomRight">
             <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Avatar icon={<UserOutlined />} style={{ backgroundColor: themeToken.colorPrimary }} />
-              <Text>{user?.full_name}</Text>
+              <Avatar icon={<UserOutlined />} style={{ backgroundColor: themeToken.colorPrimary }} size={isMobile ? 'small' : 'default'} />
+              {!isMobile && <Text>{user?.full_name}</Text>}
             </div>
           </Dropdown>
         </Header>
-        <Content style={{ margin: 24 }}>
+        <Content style={{ margin: isMobile ? 12 : 24 }}>
           <Outlet />
         </Content>
       </AntLayout>
@@ -162,9 +209,9 @@ export default function MainLayout() {
         <FloatButton
           icon={<MessageOutlined />}
           type="primary"
-          tooltip="MIA - Assistente Diagnóstico"
+          tooltip={isMobile ? undefined : "MIA - Assistente Diagnóstico"}
           onClick={() => navigate('/mia')}
-          style={{ right: 24, bottom: 24 }}
+          style={{ right: isMobile ? 16 : 24, bottom: isMobile ? 16 : 24 }}
         />
       )}
     </AntLayout>

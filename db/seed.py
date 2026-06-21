@@ -1,4 +1,9 @@
-"""Seed script — inserts initial reference data, symptoms, disorders, professionals, and patients."""
+"""
+⚠️  WARNING: CLINICAL DATA (PATIENTS, PROFESSIONALS, CONSULTATIONS) IS SYNTHETIC.
+⚠️  Reference data (sex types, ethnicities, symptoms, disorders, medications) is
+⚠️  based on real-world classifications. All patient/professional records are
+⚠️  procedurally generated for development and testing only.
+"""
 
 import sys
 from pathlib import Path

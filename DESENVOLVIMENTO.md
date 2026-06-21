@@ -3,7 +3,7 @@
 **Data:** Junho 2026
 **Versão:** 1.0.0
 **Status:** CDSS Completo — 12 fases implementadas
-**Testes:** 174+ (unitários + integração)
+**Testes:** 548 (unitários + integração)
 **Stack:** FastAPI + PostgreSQL 16 + React + Pandas + Airflow + PySpark + MLflow
 
 ---
@@ -267,7 +267,7 @@ Uso: `python spark/submit.py <job_name> [--csv path]`
 
 ## Testes
 
-**174+ testes** (7 unitários + 5 de integração):
+**548 testes** (7 unitários + 5 de integração):
 
 ```
 tests/
@@ -328,7 +328,7 @@ pytest --cov=app --cov-report=html  # Cobertura
 - **Fernet AES** — Criptografia de campos sensíveis
 - **Audit trail** — `audit_logs` com timestamp, profissional, operação, IP, user-agent
 - **Consentimento** — `consent_logs` com registro de consentimento do paciente
-- **Retenção** — 5 anos (previsto)
+- **Retenção** — 5 anos (configurável, implementado via `is_within_retention()` + `data_retention_days` em config)
 - **Pseudonimização** — SHA-256 de CPF e email
 - **Human-in-the-loop** — Nenhum diagnóstico é definitivo sem validação clínica
 

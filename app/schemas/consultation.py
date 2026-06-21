@@ -7,7 +7,7 @@ from app.security.lgpd import decrypt_pii
 
 VALID_FREQUENCIES = {
     "daily", "several_times_week", "weekly", "several_times_month",
-    "monthly", "rarely", "continuous",
+    "monthly", "rarely", "continuous", "occasionally",
 }
 
 

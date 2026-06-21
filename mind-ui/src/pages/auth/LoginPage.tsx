@@ -45,21 +45,22 @@ export default function LoginPage() {
         alignItems: 'center',
         justifyContent: 'center',
         background: GRADIENT,
-        padding: 24,
+        padding: 16,
       }}
     >
       <Card
         style={{
-          width: 420,
+          width: '100%',
+          maxWidth: 420,
           borderRadius: 16,
           boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
           border: 'none',
         }}
-        styles={{ body: { padding: 40 } }}
+        styles={{ body: { padding: 32 } }}
       >
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-            <MindLogo size={576} />
+            <MindLogo size={window.innerWidth < 400 ? 160 : 576} />
           </div>
           <Title level={3} style={{ margin: 0, fontWeight: 700 }}>
             MIND

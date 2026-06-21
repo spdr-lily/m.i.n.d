@@ -1,6 +1,6 @@
 from uuid import UUID
 from typing import Optional, List
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.models.base import DiagnosticInference, ProbabilisticFeatureWeight, BayesianRelationship
 
 
@@ -32,7 +32,9 @@ class InferenceRepository:
         return inference
 
     def list_inferences_by_consultation(self, consultation_uuid: UUID) -> List[DiagnosticInference]:
-        return self.session.query(DiagnosticInference).filter(
+        return self.session.query(DiagnosticInference).options(
+            joinedload(DiagnosticInference.disorder)
+        ).filter(
             DiagnosticInference.consultation_uuid == consultation_uuid
         ).all()
 

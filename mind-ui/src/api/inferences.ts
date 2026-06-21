@@ -9,5 +9,5 @@ export const inferencesApi = {
     apiClient.post<InferenceResponse>('/inferences/bayesian', data).then((r) => r.data),
 
   listByConsultation: (consultationUuid: string) =>
-    apiClient.get<{ total: number; inferences: DiagnosticInferenceResponse[] }>(`/inferences/${consultationUuid}`).then((r) => r.data),
+    apiClient.post<{ total: number; inferences: DiagnosticInferenceResponse[] }>('/inferences/list', { consultation_uuid: consultationUuid }).then((r) => r.data),
 }

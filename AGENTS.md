@@ -1,5 +1,5 @@
 ## Goal
-- Transform MVP into a hardened CDSS with formal diagnostic engine, probabilistic Bayesian inference, clinical DW, RBAC, LGPD compliance, full ML pipeline (4 objectives × 3 algorithms), fully populated clinical reference data (DSM-5-TR, ICD-11, APA/WHO authorities, criteria/exclusions/differentials, scales, medications), professional CRM/CRP management with patient assignments, multi-layer clinical data integrity validation, and AI-powered diagnostic assistant (MIA).
+- Transform MVP into a hardened CDSS with formal diagnostic engine, probabilistic Bayesian inference, clinical DW, RBAC, LGPD compliance, full ML pipeline (4 objectives × 3 algorithms), fully populated clinical reference data (DSM-5-TR, ICD-11, APA/WHO authorities, criteria/exclusions/differentials, scales, medications), professional CRM/CRP management with patient assignments, prescription management (CRUD with audit trail), multi-layer clinical data integrity validation, and AI-powered diagnostic assistant (MIA).
 
 ## Constraints & Preferences
 - LGPD compliance for mental health data (consent, pseudonymization, encryption, audit, retention).
@@ -17,7 +17,7 @@
 - **Disorder naming unified to Portuguese (BR, 19 disorders)**: `scripts/seed_clinical_data.py` with `DISORDER_DEFS` (Portuguese names), `BN_TO_PT` mapping. 9 English-named disorders renamed in-place, 10 added. Transtorno Depressivo Maior added as 19th (F32.9, 296.22). All seeds idempotent.
 - **Classification authorities**: `ClassificationAuthority` model (WHO authority_id=1, APA=2) with name, short_name, website_url. `authority_id` FK on `ICD11Code` linking codes to WHO. Migration `d4e5f6a7b8c9`.
 - **DSM-5-TR criteria data mined and seeded**: `scripts/seed_diagnostic_data.py` — full DSM-5-TR criteria, ICD-11/DSM-5 exclusions and differentials for all 19 disorders. Columns on `Disorder`: `dsm_criteria`, `dsm_exclusions`, `dsm_differentials`, `icd11_exclusions`, `icd11_differentials`.
-- **ICD-11 codes, criteria groups, scales**: 19 ICD-11 codes, 29 criteria groups/29 rules/30 thresholds, 21 assessment scales (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, DT-12, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY).
+- **ICD-11 codes, criteria groups, scales**: 191 ICD-11 codes across all DSM-5-TR disorders (all 19 core + 172 reference), 29 criteria groups/29 rules/30 thresholds, 21 assessment scales (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, DT-12, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY).
 - **ML pipeline**: 12 models (4 objectives × 3 algorithms) trained, registered in MLflow, promoted to Production.
 - **Clinical integrity system**: `ClinicalIntegrityService` (15+ methods), Pydantic validators, DB CHECK constraints (migration `c1d2e3f4a5b6`), `scripts/check_integrity.py` CLI reporter.
 - **Professional management with patient assignments**: `ProfessionalPatientAssignment` model, migration `e5f6a7b8c9d0`, CRUD routes with `_sync_assignments()` and `_enrich_assignments()`.
@@ -43,10 +43,14 @@
 - **Menu reorganization**: Sidebar menu in `MainLayout.tsx` reorganized into 3 logical submenus — Clínico (pacientes, consultas, escalas, inferência, profissionais, alertas), Administração (usuários, transtornos, gerenciar escalas, sintomas, medicamentos, permissões, monitoramento), and Ferramentas (MIA, auditoria). Root-level Dashboard remains standalone. Role-based filtering preserved per item within submenus.
 - **Personality metrics enhanced**: BFP (Big Five) expanded from 6 to 25 questions (5 per factor: Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo) with updated thresholds. Dark Triad (DT-12 / Tríade Sombria) added via SD-12 scale (12 itens, Likert 0-6) covering Maquiavelismo, Narcisismo, Psicopatia. Both added to `SCALES_REGISTRY`, `SCALE_DISORDER_MAP`, `MAX_Q_SCORE`, DW ETL `max_scores`, seed data, and frontend `SCALE_OPTIONS`.
 
-### In Progress
+### Blocked
 - *(none)*
 
-### Done (New — This Session)
+### Done (This Session)
+- **Docker sync + treatment date fix**: Copied updated Python sources (`assessment_scales.py`, `analytics.py`, `dw/service.py`, `medication.py`) and rebuilt frontend (`npm run build` + `docker cp`) to Docker container. Fixed `TreatmentOutcomeResponse` schema crash (`start_date`/`end_date` typed as `str` but ORM stores `date`; changed to `date` type). Verified inference works end-to-end via Docker API (191 results per consultation, explanation endpoint, treatment outcomes endpoint all passing).
+- **ICD-11 codes expanded to all 191 disorders**: All 19 core + 172 reference disorders now have ICD-11 codes with WHO authority. `scripts/seed_icd11.py` updated — added 3 missing core disorders (Bipolar Tipo II, Distimia, Ansiedade Social) to `ICD11_DATA` with full `clinical_description`/`diagnostic_requirements`. Seed function now updates existing core records on re-run. `scripts/enrich_icd11_descriptions.py` backfills `clinical_description` for all 172 reference codes from DSM-5-TR criteria text. Frontend `DisordersPage.tsx` now displays CID-11 code tag in table + structured ICD-11 info panel (code, title, chapter, who_url, description, requirements) in expanded row. TypeScript `Disorder` type updated with `icd11_codes: ICD11Code[]`.
+- **SCALE_DISORDER_MAP expanded to reference disorders**: Added 40+ new keyword mappings across BFP, MEMÓRIA, RSES, TAS-20, DT-12 scales. Coverage improved from 18 → 9 minimally covered disorders (remaining 9 are catch-all "Outro"/"Não Especificado" variants with inherently broad coverage). Sleep disorders gained specific mappings (Sono REM, Sono-Vigília, Ritmo Circadiano, Sono Induzido) under BFP and MEMÓRIA. Sexual dysfunctions gained mappings under RSES, TAS-20, DT-12, and BFP.
+- **MIA chatbot tests**: 15 tests passing (test_chatbot.py — auth, sentiment, suicide alert, disorder search, session, knowledge). Fixed test_suicide_alert_keywords to match actual crisis term list.
 - **REFERENCE_SYMPTOM_MAP completed (179 entries)**: Added 8 missing non-core variant entries — "Transtorno Específico da Aprendizagem — com Prejuízo na Leitura", "Transtorno Neurocognitivo Maior — Doença de Alzheimer", "Tricotilomania (Transtorno de Arrancar Cabelo)", and 5 TDAH variants (Combinada, Desatenção, Hiperatividade, Outra Apresentação Especificada, Não Especificado). Now covers all 191 catalog disorders (19 core handled separately via DISORDER_DEFS).
 - **5 residual symptom keys added**: `distress_impairment_symptoms`, `clinician_specifies_reason`, `exclude_primary_disorder`, `insufficient_information`, `emergency_context` — added to `db/seed.py` (528 total symptoms) and `EN_TO_PT_SYMPTOM`.
 - **Full catalog verified after rebuild**: All 191 disorders have DSM criteria, exclusions, differentials, ICD-11 exclusions/differentials, DSM chapters, and DiagnosticCriteria. 857 total criteria records. 528 symptoms in DB.
@@ -57,9 +61,20 @@
   - **Training script**: `app/ml/training/train_personality_models.py` — SQL extracts per-factor scores from question-level DB data, trains multi-output regression models, registers in MLflow + ModelRegistry, auto-promotes to Production.
   - **API endpoints**: `POST /api/v1/ml/scales/predict-personality`, `POST /api/v1/ml/scales/predict-disorder-risk`, `POST /api/v1/ml/scales/predict-personality-from-patient/{uuid}`, `GET /api/v1/assessments/patient/{patient_uuid}/personality-factors` (real data with ML fallback).
   - **Frontend enhancement**: `PersonalityPage.tsx` — now renders real per-factor progress bars from DB question-level data (instead of naive total/5 division), includes Recharts radar chart for BFP factors, data source badge (real data / ML-predicted / unavailable), feature scales card when ML-predicted.
+- **Dashboard layout — ML Models abaixo da prevalência**: Repositioned "Modelos ML em Produção" card from its own row to a new row directly below "Tendência de Prevalência (12 meses)" (2-row layout: Row 1 = prevalence `lg={12}` + comorbidity `lg={12}`, Row 2 = ML Models `lg={12}`).
+- **Dashboard pie chart colors por categoria**: Sexo uses `RAW_SEX_COLORS` by raw `sex_type_id` key (azul=Masculino, rosa=Feminino, cinza=Não informado); Identidade de Gênero uses `getGenderColor()` function (Masculino=azul, Feminino=rosa, Não-Binário=amarelo, Agênero=#7CFC00, Gênero Fluido=#912CEE, Outro=#CDC673, Prefiro não informar=#778899).
+- **Bar chart "Não informado" color**: Escolaridade and Etnia bars apply `#778899` for "Não informado" category via ternary Cell fill check.
+- **Advanced DW analytics views**: Added 3 new materialized views in migration `a2b3c4d5e6f7` (symptom prevalence by disorder, scale trends monthly, disorder by demographic). Updated `DWAnalyticsService` with 3 query methods (`get_symptom_prevalence_by_disorder`, `get_scale_trends_monthly`, `get_disorder_by_demographic`). 3 new API endpoints at `/api/v1/analytics/symptom-prevalence`, `/api/v1/analytics/scale-trends-monthly`, `/api/v1/analytics/disorder-by-demographic`. All 11 DW views verified with data (24 symptom-disorder rows, 273 scale-month rows, 51 disorder-demographic rows).
+- **Model evaluation notebook**: `notebooks/model_evaluation.ipynb` — comprehensive evaluation of all 12 ML models (4 objectives × 3 algorithms) with temporal split (80/20 por data de consulta), AUC-ROC curves, Precision-Recall curves, F1 per class, calibration plots, confusion matrices, cross-algorithm comparison per objective, cross-objective leaderboard, and explicit limitations section. All 17 cells pass syntax validation. Requires PostgreSQL + MLflow DB to run.
+- **Inference listing optimization**: `app/api/v1/diagnostic/inferences.py` — replaced ORM lazy-loading of `i.disorder.disorder_name` with explicit outer join query (`DiagnosticInference LEFT JOIN Disorder`), eliminating N+1 queries on both list endpoints. `DisorderPredictor.symptom_scores` updated with full Portuguese column mapping for clarity.
+- **Mobile responsive layout**: `MainLayout.tsx` — Drawer-based sidebar for mobile (`<768px`) with hamburger menu (`MenuOutlined` icon) replacing collapsible Sider. Auto-closes on navigation. Responsive header height (56px mobile vs 64px desktop), centered M.I.N.D title on mobile, smaller avatar, hidden user name. FloatButton repositioned (`16px` bottom on mobile) with no tooltip. `InferencePage.tsx` — symptom group list maxHeight reduced to 260px on mobile, disorder name resolved from pre-fetched map instead of ORM relationship.
+- **Mobile responsive styles**: `index.css` — added `@media (max-width: 767px)` block with table horizontal scroll (`overflow-x: auto`, `min-width: 600px`), reduced card border-radius (`6px`), compact card body padding (`12px` / `8px`), and `overflow-x: hidden` on body.
+- **Mobile responsive login**: `LoginPage.tsx` — `width: 100%` with `maxWidth: 420` for fluid card, body padding reduced to 32px, `MindLogo` size adapts to viewport (`window.innerWidth < 400 ? 160 : 576`).
+- **Mobile responsive MIA**: `MiaPage.tsx` — card title shortened on mobile, reduced card height (`calc(100vh - 112px)`), body padding 8px, input size `middle`, single row input, button text hidden on mobile.
+- **Dashboard scale selector responsive**: `DashboardPage.tsx` — scale Select changed from fixed `width: 360` to `width: 200, maxWidth: '100%'` for mobile.
 
-### Blocked
-- *(none)*
+### Next Steps
+- Run `notebooks/model_evaluation.ipynb` with Docker PostgreSQL running to generate evaluation plots and metrics
 
 ## Key Decisions
 - Disorder unification via `scripts/seed_clinical_data.py` as single source of truth; `BN_TO_PT` mapping bridges BN English → DB Portuguese.
@@ -76,12 +91,7 @@
 - Scale-based disorder risk blending weight set at 0.15 (minority signal vs symptom-driven inference).
 
 ## Next Steps
-- Create analytics views/queries on DW (prevalence trends, comorbidity heatmaps, score distributions).
 - Add API tests for professionals routes (assignment CRUD, sync edge cases).
-- Add API tests for MIA chatbot endpoint.
-- Add neuropsychological scale trends to dashboard (dashboard scale trends component currently shows only clinical scales).
-- Expand ICD-11 codes for all reference disorders (currently only 16 codes for 19 core disorders).
-- Expand SCALE_DISORDER_MAP to reference disorders beyond the 19 core.
 
 ## Quickstart
 
@@ -109,6 +119,7 @@ docker compose up -d api pgadmin caddy            # aplicação + HTTPS
 > e certificados mkcert em `certificates/`. Ver [E15](#e15--https-setup-com-mkcert--caddy).
 
 ### 3. Seeds (primeira vez ou DB vazio)
+> **⚠️ AVISO:** Dados clínicos (pacientes, consultas) gerados pelos seeds são **sintéticos** — para desenvolvimento/testes/ML. Nenhum dado real.
 ```bash
 docker exec mind-api pip install -e . --no-deps
 docker exec mind-api python db/seed.py
@@ -126,10 +137,29 @@ docker exec mind-api python scripts/seed_diagnostic_data.py
 
 ### 5. Testes
 ```bash
-python -m pytest tests/ -q          # 399 testes, ~2 min
+python -m pytest tests/ -q          # 548 testes, ~2 min
 ```
 
-### 6. Spark (análise populacional via JDBC)
+### 6. Atualizar frontend no Docker após build
+```bash
+cd mind-ui; npm run build
+docker cp mind-ui/dist/. mind-api:/app/mind-ui/dist/   # hard refresh (Ctrl+F5) no browser
+```
+
+### 7. Notebook de avaliação dos modelos ML (requer PostgreSQL + Docker)
+```bash
+# Instalar dependências do notebook
+pip install jupyter nbconvert matplotlib seaborn
+
+# Executar notebook e gerar saída com plots
+jupyter nbconvert --to notebook --execute notebooks/model_evaluation.ipynb \
+  --output notebooks/model_evaluation_executed.ipynb
+
+# Ou converter para HTML
+jupyter nbconvert --to html notebooks/model_evaluation.ipynb
+```
+
+### 8. Spark (análise populacional via JDBC)
 ```bash
 docker run --rm --network mind_mind-network `
   -v "${PWD}\postgresql-42.7.1.jar:/opt/spark/work-dir/postgresql-42.7.1.jar:ro" `
@@ -150,6 +180,7 @@ docker run --rm --network mind_mind-network `
 - **StatisticsService** vs **MetricsService**: Dashboard demographics endpoint uses `app/analytics/statistics/service.py:StatisticsService`. `MetricsService` in `app/services/metrics_service.py` is a separate implementation.
 - **MIA chatbot endpoint**: `POST /api/v1/chatbot/ask` with JSON `{"mensagem": "..."}`. Returns `{sentimento, resultados, resposta}`. Requires `READ_DIAGNOSIS` permission.
 - **`postgresql-42.7.1.jar`** must be mounted at `/opt/spark/work-dir/postgresql-42.7.1.jar` for JDBC; use `--driver-class-path` option with `spark-submit`
+- **Frontend Docker update**: After `npm run build`, run `docker cp mind-ui/dist/. mind-api:/app/mind-ui/dist/` to refresh the API container's static files. Always hard refresh (Ctrl+F5) the browser to clear cache.
 
 ## Relevant Files
 ### Chatbot / MIA
@@ -186,7 +217,7 @@ docker run --rm --network mind_mind-network `
 - `app/schemas/patient_profile.py`: `@field_validator("birth_date")` future-date rejection
 
 ### Frontend Pages
-- `mind-ui/src/pages/dashboard/DashboardPage.tsx`: 5-tab demographics card (Sexo, Gênero, Idade, Escolaridade, Etnia)
+- `mind-ui/src/pages/dashboard/DashboardPage.tsx`: 5-tab demographics card (Sexo, Gênero, Idade, Escolaridade, Etnia) with per-category colors via `RAW_SEX_COLORS`, `getGenderColor()`, and ternary "Não informado" check for bars
 - `mind-ui/src/pages/inferences/InferencePage.tsx`: symptom groups (14 categories), patient inference history
 - `mind-ui/src/pages/assessments/AssessmentPage.tsx`: patient selector, scale history
 - `mind-ui/src/pages/consultations/ConsultationListPage.tsx`: patient name + UUID
@@ -200,9 +231,13 @@ docker run --rm --network mind_mind-network `
 - `mind-ui/src/api/chatbot.ts`, `inferences.ts`, `consultations.ts`, `scales.ts`, `metrics.ts`, `disorders.ts`, `patients.ts`
 - `mind-ui/src/types/index.ts`: `ChatResponse`, `TranstornoResultado`, `DemographicsResponse`, `ConsultationResponse`, `PersonalityFactorsResponse`, `DisorderRiskResponse`
 
+### Notebooks
+- `notebooks/model_evaluation.ipynb`: comprehensive ML model evaluation — temporal split, AUC-ROC, PR curves, F1 per class, calibration plots, confusion matrices for all 12 models (4 objectives × 3 algorithms). 17 cells, all passing syntax validation.
+
 ### Seeds & Scripts
 - `db/seed.py`: base reference data, disorders, criteria, professionals, users
-- `scripts/seed_icd11.py`: ICD-11 codes with `SHORT_TO_PT` mapping
+- `scripts/seed_icd11.py`: ICD-11 codes with `SHORT_TO_PT` mapping (191 codes across all disorders; `ICD11_DATA` covers 19 core with full descriptions; `ICD11_REFERENCE_MAP` covers ~172 reference with basic data)
+- `scripts/enrich_icd11_descriptions.py`: backfills `clinical_description` for reference ICD-11 codes from DSM-5-TR criteria text
 - `scripts/seed_scales_groups.py`: assessment scales + criteria groups
 - `scripts/seed_diagnostic_data.py`: DSM-5-TR criteria, ICD-11/DSM-5 exclusions + differentials
 - `scripts/seed_clinical_data.py`: clinical dataset generation with `_generate_scale_responses()` — supports full seed and re-seed modes (idempotent)
@@ -339,3 +374,13 @@ docker run --rm --network mind_mind-network `
 **Sintoma**: Gráficos de Escolaridade e Etnia no dashboard não renderizam.
 **Causa**: `/api/v1/metrics/demographics` usa `StatisticsService` (`app/analytics/statistics/service.py`) que não retornava `education_level_distribution` nem `ethnicity_distribution`. O `MetricsService` (`app/services/metrics_service.py`) tinha os campos, mas não era o service usado pelo endpoint.
 **Solução**: Adicionar queries de EducationLevel e Ethnicity no `StatisticsService.get_patient_demographics()` e incluir ambos no return dict.
+
+### E24 — Dashboard color map label mismatch (GENDER_COLOR_MAP)
+**Sintoma**: Cores do gráfico Identidade de Gênero não aplicavam; categorias apareciam com cores erradas (fallback index-based).
+**Causa**: `GENDER_COLOR_MAP` usava chave `'Não binário'` (minúsculo, sem hífen) mas o label real do DB era `'Não-Binário'` (hífen, B maiúsculo). Lookup por objeto falhava silenciosamente, caindo em `GENDER_PIE_COLORS` posicional.
+**Solução**: Substituir lookup por objeto por função `getGenderColor()` com comparações diretas de string. Sexo passou a usar `RAW_SEX_COLORS` indexado pela chave bruta do backend (`sex_type_id` raw key "0"/"1"/"2") em vez de label mapeado por `SEX_LABELS`.
+
+### E25 — Frontend dist não atualiza no Docker após build
+**Sintoma**: Após `npm run build`, alterações no frontend não apareciam no navegador.
+**Causa**: O container Docker `mind-api` tem sua própria cópia dos arquivos em `/app/mind-ui/dist/`. O build local gera novos hashes nos nomes dos assets, mas o container continua servindo os arquivos antigos.
+**Solução**: Copiar os novos arquivos com `docker cp mind-ui/dist/. mind-api:/app/mind-ui/dist/`. Requer hard refresh (Ctrl+F5) no navegador para limpar cache.

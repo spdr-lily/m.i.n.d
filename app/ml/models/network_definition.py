@@ -3,10 +3,14 @@ Network topology definition for the Bayesian Network.
 
 References:
 - DSM-5-TR diagnostic criteria for MDD, Bipolar, GAD, Panic, PTSD
-- Kessler et al. (2005) — NCS-R prevalence estimates
+- Andrade et al. (2012) — SPMHS prevalence estimates (Brazil, São Paulo)
 - Andrews et al. (2018) — symptom-level conditional probabilities
 - Kendler et al. (2021) — risk factor epidemiological data
 - Kessler et al. (2015) — comorbidity patterns in mental disorders
+
+Prior calibration:
+  All 9 disorder priors updated from NCS-R (USA) to SPMHS (Brazil) values.
+  See docs/prior_calibration.md for full methodology and comparison table.
 """
 
 from app.ml.inference.bayesian_network import BayesianNetwork, InferenceEvidence, BayesianInferenceResult
@@ -28,17 +32,18 @@ def build_mood_disorder_network() -> BayesianNetwork:
     # =========================================================================
     # DISORDER NODES (priors = epidemiological prevalence)
     # =========================================================================
-    # Sources: Kessler et al. (2005) NCS-R, WHO World Mental Health Surveys
+    # Sources: Andrade et al. (2012) SPMHS — São Paulo Megacity Mental Health Survey
+    #          (Brazil, n=5,037). See docs/prior_calibration.md for full details.
 
-    bn.add_disorder_node("Major Depressive Disorder", prior_probability=0.052)
-    bn.add_disorder_node("Bipolar I Disorder", prior_probability=0.010)
+    bn.add_disorder_node("Major Depressive Disorder", prior_probability=0.094)
+    bn.add_disorder_node("Bipolar I Disorder", prior_probability=0.012)
     bn.add_disorder_node("Bipolar II Disorder", prior_probability=0.003)
-    bn.add_disorder_node("Generalized Anxiety Disorder", prior_probability=0.031)
-    bn.add_disorder_node("Panic Disorder", prior_probability=0.022)
-    bn.add_disorder_node("Post-Traumatic Stress Disorder", prior_probability=0.037)
-    bn.add_disorder_node("Persistent Depressive Disorder", prior_probability=0.020)
-    bn.add_disorder_node("Social Anxiety Disorder", prior_probability=0.070)
-    bn.add_disorder_node("Obsessive-Compulsive Disorder", prior_probability=0.012)
+    bn.add_disorder_node("Generalized Anxiety Disorder", prior_probability=0.023)
+    bn.add_disorder_node("Panic Disorder", prior_probability=0.011)
+    bn.add_disorder_node("Post-Traumatic Stress Disorder", prior_probability=0.016)
+    bn.add_disorder_node("Persistent Depressive Disorder", prior_probability=0.013)
+    bn.add_disorder_node("Social Anxiety Disorder", prior_probability=0.039)
+    bn.add_disorder_node("Obsessive-Compulsive Disorder", prior_probability=0.039)
 
     # =========================================================================
     # RISK FACTOR NODES

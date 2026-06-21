@@ -15,7 +15,7 @@ vulnerability, please report it privately before public disclosure.
 
 ### How to Report
 
-Send an email to the security team at **security@mind-cdss.example.com**
+Send an email to the security team at **security@mind.example.com**
 (placeholder — replace with actual contact).
 
 Include as much detail as possible:

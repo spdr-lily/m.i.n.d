@@ -37,7 +37,7 @@ export default function PatientListPage() {
           </Space>
         </div>
         <Table
-          dataSource={patients}
+          dataSource={search ? patients.filter((p) => p.full_name.toLowerCase().includes(search.toLowerCase())) : patients}
           rowKey="patient_uuid"
           loading={loading}
           pagination={{ current: page, total, pageSize: 20, onChange: setPage }}

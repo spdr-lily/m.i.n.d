@@ -1,14 +1,15 @@
-import { useEffect, useState, useCallback } from 'react'
-import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space } from 'antd'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid } from 'antd'
 import { ExperimentOutlined, ThunderboltOutlined, SafetyOutlined, HistoryOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { inferencesApi } from '../../api/inferences'
 import { patientsApi } from '../../api/patients'
 import { consultationsApi } from '../../api/consultations'
 import { disordersApi } from '../../api/disorders'
-import type { PatientListItem, Symptom, InferenceResult } from '../../types'
+import type { PatientListItem, Symptom, InferenceResult, Disorder } from '../../types'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
+const { useBreakpoint } = Grid
 
 const SYMPTOM_GROUPS: Record<string, string> = {
   'abstinencia_substancia': 'Substâncias',
@@ -242,20 +243,30 @@ interface InferenceHistoryItem {
 }
 
 export default function InferencePage() {
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
   const [patients, setPatients] = useState<PatientListItem[]>([])
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [selectedPatient, setSelectedPatient] = useState<string>('')
   const [evidence, setEvidence] = useState<Record<string, boolean>>({})
   const [results, setResults] = useState<InferenceResult[]>([])
   const [loading, setLoading] = useState(false)
-  const [mode, setMode] = useState<'bayesian' | 'criteria'>('bayesian')
+  const [mode, setMode] = useState<'bayesian' | 'criteria'>('criteria')
   const [history, setHistory] = useState<InferenceHistoryItem[]>([])
   const [historyLoading, setHistoryLoading] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
+  const disorderNameById = useRef<Record<number, string>>({})
 
   useEffect(() => {
     patientsApi.list(1, 100).then((data) => setPatients(data.patients))
     disordersApi.listSymptoms().then(setSymptoms)
+    disordersApi.listDisorders().then((disorders) => {
+      const map: Record<number, string> = {}
+      for (const d of disorders) {
+        map[d.disorder_id] = d.disorder_name
+      }
+      disorderNameById.current = map
+    })
   }, [])
 
   const loadHistory = useCallback(async (patientUuid: string) => {
@@ -275,7 +286,7 @@ export default function InferencePage() {
               items.push({
                 consultation_uuid: c.consultation_uuid,
                 consultation_date: c.consultation_date,
-                disorder_name: i.disorder?.disorder_name || 'N/A',
+                disorder_name: disorderNameById.current[i.disorder_id] ?? i.disorder_name ?? i.disorder?.disorder_name ?? '',
                 inference_probability: i.inference_probability,
                 confidence_level: i.confidence_level ?? null,
                 generated_by_model: i.generated_by_model || '-',
@@ -303,7 +314,7 @@ export default function InferencePage() {
     }
     const presentSymptoms = symptoms
       .filter((s) => evidence[s.symptom_name])
-      .map((s) => ({ symptom_id: s.symptom_id, intensity: 50, frequency: 'daily' }))
+      .map((s) => ({ symptom_id: s.symptom_id, intensity: 7, frequency: 'daily' }))
     if (presentSymptoms.length === 0) {
       message.warning('Selecione pelo menos um sintoma')
       return
@@ -380,7 +391,7 @@ export default function InferencePage() {
               </Form.Item>
             </Form>
 
-            <div style={{ maxHeight: 420, overflowY: 'auto' }}>
+            <div style={{ maxHeight: isMobile ? 260 : 420, overflowY: 'auto' }}>
               {Object.entries(groupedSymptoms).map(([group, syms]) => (
                 <div key={group} style={{ marginBottom: 4 }}>
                   <div

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { disordersApi } from '../../api/disorders'
-import type { Disorder, Symptom, DiagnosticCriteria } from '../../types'
+import type { Disorder, Symptom, DiagnosticCriteria, ICD11Code } from '../../types'
 
 const { Title, Text } = Typography
 
@@ -132,6 +132,15 @@ export default function DisordersPage() {
       render: (v: string) => v ? <Tag>{v}</Tag> : null,
     },
     {
+      title: 'CID-11',
+      key: 'icd11',
+      width: 100,
+      render: (_: unknown, r: DisorderRow) =>
+        r.icd11_codes && r.icd11_codes.length > 0
+          ? <Tag color="green">{r.icd11_codes[0].icd11_code}</Tag>
+          : null,
+    },
+    {
       title: 'Capítulo',
       dataIndex: 'dsm_chapter',
       key: 'dsm_chapter',
@@ -181,6 +190,22 @@ export default function DisordersPage() {
         key: 'icd11_differentials',
         label: `Diagnóstico Diferencial CID-11`,
         children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13 }}>{record.icd11_differentials}</pre>,
+      })
+    }
+    if (record.icd11_codes && record.icd11_codes.length > 0) {
+      const icd = record.icd11_codes[0]
+      const icdLines = [
+        `Código: ${icd.icd11_code}`,
+        icd.icd11_title ? `Título CID-11: ${icd.icd11_title}` : null,
+        icd.chapter ? `Capítulo CID-11: ${icd.chapter} (${icd.chapter_code || ''})` : null,
+        icd.who_url ? `Referência: ${icd.who_url}` : null,
+        icd.clinical_description ? `\nDescrição Clínica:\n${icd.clinical_description}` : null,
+        icd.diagnostic_requirements ? `\nRequisitos Diagnósticos:\n${icd.diagnostic_requirements}` : null,
+      ].filter(Boolean).join('\n')
+      items.push({
+        key: 'icd11_codes',
+        label: `Informações CID-11`,
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13 }}>{icdLines}</pre>,
       })
     }
     return items.length > 0

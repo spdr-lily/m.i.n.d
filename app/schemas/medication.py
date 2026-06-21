@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime
 from typing import Optional, List
 from uuid import UUID
 from pydantic import BaseModel, ConfigDict
@@ -105,8 +105,8 @@ class TreatmentOutcomeBase(BaseModel):
     medication_id: int
     disorder_id: int
     prescription_item_uuid: Optional[UUID] = None
-    start_date: str  # YYYY-MM-DD
-    end_date: Optional[str] = None
+    start_date: date
+    end_date: Optional[date] = None
     outcome: str  # improved, no_change, worsened, discontinued, remission
     response_weeks: Optional[float] = None
     side_effects: Optional[str] = None

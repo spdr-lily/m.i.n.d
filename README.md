@@ -36,12 +36,13 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 4. **Motor Bayesiano** — Naive Bayes com priors epidemiológicos (Kessler NCS-R, WHO WMHS)
 5. **10 Escalas Psicométricas** — Scoring completo com interpretação por gravidade
 6. **Pipeline de ML** — 12 modelos treinados (diagnóstico, recaída, risco de suicídio, resposta terapêutica), registrados no MLflow
-7. **Gestão de Profissionais** — CRM/CRP, especialidade, atribuição de pacientes
-8. **Validação de Integridade Clínica** — 3 camadas: Pydantic → Service → DB CHECK constraints
-9. **Data Warehouse** — Star schema com ETL dedicado
-10. **Segurança em Camadas** — CSP, HSTS, Rate Limit (100 req/min), proteção SQL injection, Bandit zero
-11. **LGPD Compliance** — UUID, pseudonimização, criptografia Fernet AES, auditoria, retenção
-12. **Frontend Web** — 10 páginas React com sidebar responsiva por role
+7. **Gestão de Prescrições** — CRUD de prescrições por consulta com rastreabilidade (itens, notas, vínculo com medicações)
+8. **Gestão de Profissionais** — CRM/CRP, especialidade, atribuição de pacientes
+9. **Validação de Integridade Clínica** — 3 camadas: Pydantic → Service → DB CHECK constraints
+10. **Data Warehouse** — Star schema com ETL dedicado
+11. **Segurança em Camadas** — CSP, HSTS, Rate Limit (100 req/min), proteção SQL injection, Bandit zero
+12. **LGPD Compliance** — UUID, pseudonimização, criptografia Fernet AES, auditoria, retenção configurável (5 anos, implementado via `is_within_retention`)
+13. **Frontend Web** — 12 páginas React com sidebar responsiva por role
 
 ---
 
@@ -124,6 +125,8 @@ Aplicação React + TypeScript + Vite em `mind-ui/`:
 | Inferência | `/inferences` | Sintomas em 14 categorias clínicas, histórico do paciente |
 | Profissionais | `/professionals` | Gestão com atribuição de pacientes |
 | Alertas | `/alerts` | Alertas clínicos |
+| MIA (chatbot) | `/mia` | Assistente diagnóstico com IA |
+| Personalidade | `/personality` | Fatores BFP e DT-12 com radar chart |
 | Admin | `/admin/*` | Usuários, permissões, transtornos, monitoramento |
 | Auditoria | `/audit` | Logs de auditoria |
 
@@ -137,10 +140,10 @@ npm run dev    # http://localhost:8000 (API em http://127.0.0.1:8000/api/v1)
 
 ## Testes
 
-**174+ testes** (unitários + integração):
+**548 testes** (unitários + integração):
 
 ```bash
-pytest tests/ -v                     # Todos os testes
+pytest tests/ -v                     # 548 testes
 pytest tests/unit/ -v                # Unitários
 pytest tests/integration/ -v         # Integração
 pytest --cov=app --cov-report=html   # Cobertura
@@ -163,6 +166,8 @@ docker compose up -d          # postgres + pgadmin + airflow
 alembic upgrade head
 
 # 3. Seed (ordem correta)
+# ⚠️ Dados clínicos de pacientes e consultas gerados pelos seeds são SINTÉTICOS.
+#    Destinados exclusivamente a desenvolvimento, testes e demonstração de ML.
 python db/seed.py
 python scripts/seed_icd11.py
 python scripts/seed_scales_groups.py

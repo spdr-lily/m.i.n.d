@@ -29,6 +29,7 @@ class DiagnosticInferenceResponse(TimestampMixin):
     inference_uuid: UUID
     consultation_uuid: UUID
     disorder_id: int
+    disorder_name: Optional[str] = None
     inference_probability: float
     confidence_level: Optional[float] = None
     generated_by_model: Optional[str] = None

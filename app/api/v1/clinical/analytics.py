@@ -73,3 +73,29 @@ def get_monthly_consultations(
 ):
     service = DWAnalyticsService(db)
     return service.get_monthly_consultation_stats(months=months)
+
+
+@router.get("/symptom-prevalence")
+def get_symptom_prevalence(
+    top_n: int = Query(10, ge=3, le=30),
+    db: Session = Depends(get_db),
+):
+    service = DWAnalyticsService(db)
+    return service.get_symptom_prevalence_by_disorder(top_n=top_n)
+
+
+@router.get("/scale-trends-monthly")
+def get_scale_trends(
+    months: int = Query(12, ge=1, le=60),
+    db: Session = Depends(get_db),
+):
+    service = DWAnalyticsService(db)
+    return service.get_scale_trends_monthly(months=months)
+
+
+@router.get("/disorder-by-demographic")
+def get_disorder_demographic(
+    db: Session = Depends(get_db),
+):
+    service = DWAnalyticsService(db)
+    return service.get_disorder_by_demographic()

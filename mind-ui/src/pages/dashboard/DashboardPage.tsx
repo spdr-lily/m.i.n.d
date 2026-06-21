@@ -37,7 +37,11 @@ function getGenderColor(name: string): string {
   if (name === 'Masculino') return '#1677ff'
   if (name === 'Feminino') return '#ff69b4'
   if (name === 'Não-Binário') return '#ffe600'
-  if (name === 'Prefiro não informar' || name === 'Não informado') return '#d9d9d9'
+  if (name === 'Agênero') return '#7CFC00'
+  if (name === 'Gênero Fluido') return '#912CEE'
+  if (name === 'Outro') return '#CDC673'
+  if (name === 'Prefiro não informar') return '#778899'
+  if (name === 'Não informado') return '#d9d9d9'
   return '#52c41a'
 }
 const BAR_COLORS = ['#1677ff', '#52c41a', '#ffe600', '#f5222d', '#722ed1']
@@ -316,7 +320,7 @@ export default function DashboardPage() {
                         <Tooltip />
                         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                           {eduBarData.map((_, i) => (
-                            <Cell key={i} fill={EDU_COLORS[i % EDU_COLORS.length]} />
+                            <Cell key={i} fill={eduBarData[i].name === 'Não informado' ? '#778899' : EDU_COLORS[i % EDU_COLORS.length]} />
                           ))}
                         </Bar>
                       </BarChart>
@@ -339,7 +343,7 @@ export default function DashboardPage() {
                         <Tooltip />
                         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                           {ethnicityBarData.map((_, i) => (
-                            <Cell key={i} fill={ETHNICITY_COLORS[i % ETHNICITY_COLORS.length]} />
+                            <Cell key={i} fill={ethnicityBarData[i].name === 'Não informado' ? '#778899' : ETHNICITY_COLORS[i % ETHNICITY_COLORS.length]} />
                           ))}
                         </Bar>
                       </BarChart>
@@ -494,7 +498,7 @@ export default function DashboardPage() {
 
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col span={24}>
-          <Card title={<Space>Tendências de Escalas <Select size="small" style={{ width: 360 }} value={selectedScale} onChange={setSelectedScale}>
+          <Card title={<Space wrap>Tendências de Escalas <Select size="small" style={{ width: 200, maxWidth: '100%' }} value={selectedScale} onChange={setSelectedScale}>
             <Select.OptGroup label="Clínicas">
               {clinicalOptions.map((o) => <Select.Option key={o.value} value={o.value}>{o.label}</Select.Option>)}
             </Select.OptGroup>

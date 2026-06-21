@@ -11,6 +11,7 @@ from app.models.base import DiagnosticInference
 
 
 SYMPTOM_TO_NODE: Dict[str, str] = {
+    # English keys (original)
     "depressed_mood": "depressed_mood",
     "loss_of_interest": "loss_of_interest",
     "sleep_disturbance": "sleep_disturbance",
@@ -67,18 +68,79 @@ SYMPTOM_TO_NODE: Dict[str, str] = {
     "compulsions": "compulsions",
     "repetitive_behavior": "repetitive_behavior",
     "intrusive_thoughts": "intrusive_thoughts",
+    # Portuguese (BR) keys — map from DB symptom names
+    "humor_deprimido": "depressed_mood",
+    "anhedonia": "loss_of_interest",
+    "alteracao_peso": "appetite_changes",
+    "insonia_hipersonia": "sleep_disturbance",
+    "agitacao_retardo": "psychomotor_changes",
+    "fadiga": "fatigue",
+    "sentimento_inutilidade": "low_self_esteem",
+    "concentracao": "concentration_problems",
+    "pensamento_morte": "suicidal_ideation",
+    "lentificacao": "psychomotor_changes",
+    "hipersonia_atipica": "sleep_disturbance",
+    "choro_frequente": "depressed_mood",
+    "preocupacao_excessiva": "excessive_worry",
+    "inquietacao": "restlessness",
+    "tensao_muscular": "muscle_tension",
+    "irritabilidade": "irritability",
+    "sono_prejudicado": "sleep_disturbance_gad",
+    "fadiga_constante": "fatigue_gad",
+    "palpitacoes": "palpitations",
+    "sudorese": "panic_attacks",
+    "tremores": "panic_attacks",
+    "sensacao_sufocamento": "shortness_of_breath",
+    "medo_morrer": "fear_of_dying",
+    "dor_peito": "chest_pain",
+    "nausea_abdominal": "panic_attacks",
+    "tontura_vertigem": "panic_attacks",
+    "parestesias": "panic_attacks",
+    "desrealizacao": "derealization",
+    "medo_enlouquecer": "panic_attacks",
+    "calafrios_ondas_calor": "panic_attacks",
+    "medo_morrer_panico": "fear_of_dying",
+    "euforia": "euphoric_mood",
+    "grandiosidade": "grandiosity",
+    "logorreia": "rapid_speech",
+    "reducao_sono": "decreased_sleep",
+    "fuga_ideias": "racing_thoughts",
+    "comportamento_risco": "risk_behavior",
+    "hiperssexualidade": "risk_behavior",
+    "gastos_excessivos": "risk_behavior",
+    "planos_grandiosos": "grandiosity",
+    "obsessoes": "obsessions",
+    "compulsoes": "compulsions",
+    "simetria_ordenacao": "repetitive_behavior",
+    "verificacao_repetitiva": "compulsions",
+    "lavagem_limpeza": "compulsions",
+    "contagem_ritualistica": "compulsions",
+    "acumulo_objetos": "repetitive_behavior",
+    "reexperiencia": "intrusive_memories",
+    "esquiva": "avoidance_behavior",
+    "hipervigilancia": "hypervigilance",
+    "sonhos_angustia": "nightmares",
+    "flashbacks_dissociativos": "intrusive_memories",
+    "sobresalto_acentuado": "startle_response",
+    "culpa_merito": "guilt_feelings",
+    "desesperanca_futuro": "hopelessness",
+    "amnesia_traumatica": "intrusive_memories",
+    "amnésia_traumática": "intrusive_memories",
+    "crencas_negativas": "negative_cognitions",
+    "crenças_negativas": "negative_cognitions",
 }
 
 DISORDER_NAME_REVERSE: Dict[str, str] = {
-    "Major Depressive Disorder": "Major Depressive Disorder",
-    "Bipolar I Disorder": "Bipolar I Disorder",
-    "Bipolar II Disorder": "Bipolar II Disorder",
-    "Generalized Anxiety Disorder": "Generalized Anxiety Disorder",
-    "Panic Disorder": "Panic Disorder",
-    "Post-Traumatic Stress Disorder": "Post-Traumatic Stress Disorder",
-    "Persistent Depressive Disorder": "Persistent Depressive Disorder",
-    "Social Anxiety Disorder": "Social Anxiety Disorder",
-    "Obsessive-Compulsive Disorder": "Obsessive-Compulsive Disorder",
+    # English (Bayesian network) → Portuguese (DB)
+    "Major Depressive Disorder": "Transtorno Depressivo Maior",
+    "Bipolar I Disorder": "Transtorno Bipolar Tipo I",
+    "Bipolar II Disorder": "Transtorno Bipolar Tipo II",
+    "Generalized Anxiety Disorder": "Transtorno de Ansiedade Generalizada",
+    "Panic Disorder": "Transtorno do Pânico",
+    "Post-Traumatic Stress Disorder": "Transtorno de Estresse Pós-Traumático",
+    "Persistent Depressive Disorder": "Transtorno Depressivo Persistente (Distimia)",
+    "Social Anxiety Disorder": "Transtorno de Ansiedade Social",
+    "Obsessive-Compulsive Disorder": "Transtorno Obsessivo-Compulsivo",
 }
 
 
@@ -87,19 +149,27 @@ class DisorderPredictor:
         self.session = session
         self.network: BayesianNetwork = build_mood_disorder_network()
         self.dsm_icd_mapper = DSMICDMapper()
+        self._symptom_id_to_name: Optional[Dict[int, str]] = None
+
+    def _load_symptom_id_to_name(self) -> Dict[int, str]:
+        if self._symptom_id_to_name is None:
+            from app.models.base import Symptom
+            symptoms = self.session.query(Symptom).all()
+            self._symptom_id_to_name = {s.symptom_id: s.symptom_name for s in symptoms}
+        return self._symptom_id_to_name
 
     def build_evidence(
         self,
         observations: List,
         symptom_id_to_name: Optional[Dict[int, str]] = None,
     ) -> List[InferenceEvidence]:
+        if symptom_id_to_name is None:
+            symptom_id_to_name = self._load_symptom_id_to_name()
         evidence = []
         for obs in observations:
-            symptom_name = None
-            if symptom_id_to_name:
-                symptom_name = symptom_id_to_name.get(obs.symptom_id)
+            symptom_name = symptom_id_to_name.get(obs.symptom_id)
             if not symptom_name:
-                symptom_name = getattr(obs, "symptom_name", None) or getattr(obs, "symptom", None)
+                symptom_name = getattr(obs, "symptom", None)
                 if symptom_name and hasattr(symptom_name, "symptom_name"):
                     symptom_name = symptom_name.symptom_name
 
@@ -148,14 +218,16 @@ class DisorderPredictor:
         disorder_repo = DisorderRepository(self.session)
         disorders = disorder_repo.list_disorders()
 
+        db_by_name = {d.disorder_name: d for d in disorders}
         disorder_map = {}
-        for d in disorders:
-            key = DISORDER_NAME_REVERSE.get(d.disorder_name, d.disorder_name)
-            disorder_map[key] = d
+        for en_name, pt_name in DISORDER_NAME_REVERSE.items():
+            disorder = db_by_name.get(pt_name)
+            if disorder:
+                disorder_map[en_name] = disorder
 
         inferences = []
         for result in results:
-            disorder = disorder_map.get(result.disorder_name)
+            disorder = disorder_map.get(result.disorder_name) or db_by_name.get(result.disorder_name)
             if not disorder:
                 continue
 

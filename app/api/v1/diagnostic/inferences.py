@@ -1,15 +1,22 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import join
+from pydantic import BaseModel
 from app.core.database import get_db
 from app.services.inference_service import InferenceService
 from app.ml.inference.disorder_predictor import DisorderPredictor
+from app.models.base import DiagnosticInference, Disorder
 from app.schemas.inference import (
     InferenceRequest, InferenceResponse, InferenceResult,
     DiagnosticInferenceResponse, ExplanationResponse
 )
 from app.api.v1.auth.auth import get_current_user, require_permission
 from app.security.permissions import Permission
+
+
+class ListInferencesRequest(BaseModel):
+    consultation_uuid: UUID
 
 router = APIRouter(prefix="/api/v1", tags=["inferences"])
 
@@ -153,9 +160,57 @@ async def list_inferences(
     db: Session = Depends(get_db),
     _=Depends(require_permission(Permission.READ_INFERENCE)),
 ):
-    service = InferenceService(db)
-    inferences = service.list_inferences(consultation_uuid)
+    rows = db.query(
+        DiagnosticInference, Disorder.disorder_name
+    ).outerjoin(
+        Disorder, DiagnosticInference.disorder_id == Disorder.disorder_id
+    ).filter(
+        DiagnosticInference.consultation_uuid == consultation_uuid
+    ).all()
     return {
-        "total": len(inferences),
-        "inferences": [DiagnosticInferenceResponse.model_validate(i) for i in inferences]
+        "total": len(rows),
+        "inferences": [
+            DiagnosticInferenceResponse(
+                inference_uuid=inf.inference_uuid,
+                consultation_uuid=inf.consultation_uuid,
+                disorder_id=inf.disorder_id,
+                disorder_name=disorder_name,
+                inference_probability=inf.inference_probability,
+                confidence_level=inf.confidence_level,
+                generated_by_model=inf.generated_by_model,
+                model_version=inf.model_version,
+            )
+            for inf, disorder_name in rows
+        ]
+    }
+
+
+@router.post("/inferences/list")
+async def list_inferences_post(
+    request: ListInferencesRequest,
+    db: Session = Depends(get_db),
+    _=Depends(require_permission(Permission.READ_INFERENCE)),
+):
+    rows = db.query(
+        DiagnosticInference, Disorder.disorder_name
+    ).outerjoin(
+        Disorder, DiagnosticInference.disorder_id == Disorder.disorder_id
+    ).filter(
+        DiagnosticInference.consultation_uuid == request.consultation_uuid
+    ).all()
+    return {
+        "total": len(rows),
+        "inferences": [
+            DiagnosticInferenceResponse(
+                inference_uuid=inf.inference_uuid,
+                consultation_uuid=inf.consultation_uuid,
+                disorder_id=inf.disorder_id,
+                disorder_name=disorder_name,
+                inference_probability=inf.inference_probability,
+                confidence_level=inf.confidence_level,
+                generated_by_model=inf.generated_by_model,
+                model_version=inf.model_version,
+            )
+            for inf, disorder_name in rows
+        ]
     }

@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {
-  Card, Input, Button, Typography, Breadcrumb, Spin, Space, Tag, Collapse, Tooltip, Progress,
+  Card, Input, Button, Typography, Breadcrumb, Spin, Space, Tag, Collapse, Tooltip, Progress, Grid,
 } from 'antd'
 import {
   SendOutlined, RobotOutlined, UserOutlined,
@@ -11,6 +11,7 @@ import {
 import { chatbotApi, getSessionId, setSessionId, type ChatResponse, type TranstornoResultado } from '../../api/chatbot'
 
 const { Text, Paragraph } = Typography
+const { useBreakpoint } = Grid
 
 interface Mensagem {
   tipo: 'user' | 'bot'
@@ -232,6 +233,8 @@ const BOAS_VINDAS: Mensagem = {
 }
 
 export default function MiaPage() {
+  const screens = useBreakpoint()
+  const isMobile = !screens.md
   const [mensagens, setMensagens] = useState<Mensagem[]>([BOAS_VINDAS])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -316,7 +319,7 @@ export default function MiaPage() {
         title={
           <Space>
             <RobotOutlined style={{ fontSize: 20, color: '#52c41a' }} />
-            <span>MIA — Assistente Diagnóstico DSM-5-TR / CID-11</span>
+            <span>{isMobile ? 'MIA — Assistente Diagnóstico' : 'MIA — Assistente Diagnóstico DSM-5-TR / CID-11'}</span>
           </Space>
         }
         extra={
@@ -326,8 +329,8 @@ export default function MiaPage() {
             </Button>
           </Tooltip>
         }
-        style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 140px)' }}
-        styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: 16, overflow: 'hidden' } }}
+        style={{ display: 'flex', flexDirection: 'column', height: isMobile ? 'calc(100vh - 112px)' : 'calc(100vh - 140px)' }}
+        styles={{ body: { flex: 1, display: 'flex', flexDirection: 'column', padding: isMobile ? 8 : 16, overflow: 'hidden' } }}
       >
         <div
           ref={chatRef}
@@ -363,13 +366,13 @@ export default function MiaPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Pergunte sobre transtornos, critérios, exclusões..."
-            size="large"
+            size={isMobile ? 'middle' : 'large'}
             style={{ flex: 1, resize: 'none' }}
             disabled={loading}
-            rows={2}
+            rows={isMobile ? 1 : 2}
           />
           <Button type="primary" icon={<SendOutlined />} loading={loading} onClick={enviar} style={{ height: '100%' }}>
-            Enviar
+            {isMobile ? '' : 'Enviar'}
           </Button>
         </div>
       </Card>

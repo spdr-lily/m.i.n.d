@@ -151,6 +151,7 @@ export interface DiagnosticInferenceResponse {
   inference_uuid: string
   consultation_uuid: string
   disorder_id: number
+  disorder_name?: string
   inference_probability: number
   confidence_level?: number
   generated_by_model?: string
@@ -201,6 +202,18 @@ export interface Symptom {
   symptom_description?: string
 }
 
+export interface ICD11Code {
+  code_id: number
+  disorder_id: number
+  icd11_code: string
+  icd11_title?: string
+  chapter?: string
+  chapter_code?: string
+  who_url?: string
+  clinical_description?: string
+  diagnostic_requirements?: string
+}
+
 export interface Disorder {
   disorder_id: number
   disorder_name: string
@@ -213,6 +226,7 @@ export interface Disorder {
   dsm_differentials?: string
   icd11_exclusions?: string
   icd11_differentials?: string
+  icd11_codes?: ICD11Code[]
   is_core?: boolean
 }
 

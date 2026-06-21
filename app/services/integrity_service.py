@@ -46,7 +46,7 @@ class ClinicalIntegrityService:
 
     VALID_FREQUENCIES = {
         "daily", "several_times_week", "weekly", "several_times_month",
-        "monthly", "rarely", "continuous",
+        "monthly", "rarely", "continuous", "occasionally",
     }
     MAX_AGE_YEARS = 120
     MIN_AGE_FOR_CONSULTATION = 3
