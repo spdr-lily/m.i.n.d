@@ -15,7 +15,7 @@ vulnerability, please report it privately before public disclosure.
 
 ### How to Report
 
-Send an email to the security team at **campelosusana@gmail.com**
+Send an email to the security team at **mind,admin1@gmail.com**
 (placeholder — replace with actual contact).
 
 Include as much detail as possible:
