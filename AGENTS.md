@@ -47,6 +47,11 @@
 - *(none)*
 
 ### Done (This Session)
+- **Therapeutic response label generator fixed**: `app/ml/training/label_builder.py` — replaced `next_phq9 < current_phq9` (24.5% positives, PHQ-9 max 7.0) with `generate_therapeutic_response()` — probabilistic model using PHQ-9 severity, days_since_last_consult, consult_num, and disorder type. Baseline ~30% + modifiers. Clipped to [0.10, 0.80]. **Result: 41.27% positives** (within 35-50% target). All 189 consultations receive labels (not only paired ones).
+- **scale_pos_weight for XGBoost**: `app/ml/training/trainer.py` — injects `scale_pos_weight = n_neg / n_pos` from y_train distribution dynamically into XGBoost params post-train-test-split.
+- **PR-AUC and Brier Score metrics**: Added to `trainer.py:_compute_metrics()` — PR-AUC (primary imbalance metric) and Brier score (calibration). Logged alongside existing ROC-AUC.
+- **Model card therapeutic_response.md updated**: Sections 2, 5, 6, 7 revised — reflects probabilistic label, modifiers table, PR-AUC/Brier metrics, limitations of synthetic probabilistic target.
+- **features_therapeutic_response.csv regenerated**: 189 rows, 41.27% positive rate, 22 features + target.
 - **Model evaluation notebook executed real**: `notebooks/model_evaluation.ipynb` executed against live PostgreSQL + MLflow with temporal split (80/20). Real metrics extracted (2026-06-22). README_PORTFOLIO metrics table updated with actual values + footnote for LR/skipped models.
 - **Brazilian priors corrected**: Removed false claim of Brazilian priors from README_PORTFOLIO. Replaced with honest NCS-R (Kessler et al., 2005) attribution. Marked Brazilian priors as planned evolution.
 - **Test count synchronized (548)**: Ran `pytest --collect-only` → 548 confirmed. Updated count in: README_PORTFOLIO, README.md, AGENTS.md, DESENVOLVIMENTO.md, QUICKSTART.md.

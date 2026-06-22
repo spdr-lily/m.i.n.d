@@ -8,13 +8,13 @@
 - **Stage:** Produção (auto-promovido pós-treino)
 
 ## 2. Task
-Classificação binária que prediz se o paciente apresentará melhora na consulta seguinte, definida como redução no escore PHQ-9.
+Classificação binária que prediz resposta terapêutica com base em perfil clínico sintético.
 
 **Classes (2):**
-- `0` — Sem melhora (PHQ-9 estável ou aumentou)
-- `1` — Melhora (PHQ-9 diminuiu na consulta subsequente)
+- `0` — Sem resposta
+- `1` — Respondeu ao tratamento
 
-**Critério de melhora:** `next_phq9 < current_phq9`, considerando apenas pares consecutivos de consultas do mesmo paciente.
+**Critério de melhora:** Label gerado por modelo probabilístico (`generate_therapeutic_response` em `app/ml/training/label_builder.py`) com baseline de ~30%, modificado por gravidade (PHQ-9), duração do tratamento, número de consultas e tipo de transtorno. Alvo: 35–50% de positivos.
 
 ## 3. Uso Pretendido (Intended Use)
 - **Cenário principal:** Monitorar probabilidade de resposta ao tratamento ao longo do tempo, permitindo ajuste terapêutico precoce
@@ -30,11 +30,19 @@ Classificação binária que prediz se o paciente apresentará melhora na consul
 - **Previsão de longo prazo (> 1 consulta):** O modelo prediz apenas a consulta imediatamente seguinte
 
 ## 5. Dados de Treino
-- **Natureza: ⚠️ Sintéticos** — gerados por `scripts/seed_clinical_data.py`
-- **Tamanho:** ~945 consultas rotuladas (depende do número de pacientes com ≥ 2 consultas e PHQ-9 registrado)
-- **Label (proxy):** `therapeutic_response_target = 1` quando `next_phq9 < current_phq9` (agrupado por `patient_uuid`, ordenado por `consultation_date`)
-- **Features (51):** Idênticas aos demais objetivos (ver `docs/model_cards/diagnosis.md` seção 5)
-- **Split temporal:** 80% treino / 20% teste
+- **Natureza: ⚠️ Sintéticos** — gerados por `app/ml/training/label_builder.py:generate_therapeutic_response()`
+- **Tamanho:** ~189–200 consultas rotuladas (todas as consultas recebem label, não apenas as com pares consecutivos)
+- **Label (probabilístico):** `therapeutic_response_target` gerado via `np.random.binomial(1, p)` onde `p` é calculado por:
+  - Base: ~0.30
+  - PHQ-9 < 10: +0.05; PHQ-9 ≥ 20: -0.05
+  - `days_since_last_consult > 60`: +0.07; `< 14`: -0.05
+  - `consult_num >= 3`: +0.05
+  - Transtornos depressivos/TAG: +0.03
+  - Transtornos psicóticos/bipolares: -0.08
+  - Clipping: [0.10, 0.80]
+- **Distribuição alvo:** 35–50% positivos
+- **Features (22):** Demográficas (age, sex, education, marital) + sintomas (count, intensity) + escalas (PHQ-9, GAD-7) + temporais (consult_num, days_since_last_consult) + histórico (avg_phq9_per_item)
+- **Split:** 75% treino / 25% teste com estratificação
 
 ## 6. Métricas de Performance
 
@@ -45,16 +53,18 @@ Classificação binária que prediz se o paciente apresentará melhora na consul
 | `recall_macro` | Média macro da revocação |
 | `f1_score` | F1-score macro médio |
 | `roc_auc` | AUC-ROC (disponível por ser binário) |
+| `pr_auc` | **PR-AUC** — métrica primária para classes desbalanceadas |
+| `brier_score` | **Brier Score** — calibração das probabilidades (0 = perfeita) |
 
 > **Nota:** Consulte `notebooks/model_evaluation.ipynb` para curvas ROC, Precision-Recall, calibração (Brier score), e matriz de confusão.
 
 ## 7. Limitações Conhecidas
-1. **Proxy limitado de melhora:** Redução no PHQ-9 é uma proxy restrita; não captura domínios funcionais, qualidade de vida ou remissão sindrômica
-2. **PHQ-9 como única âncora:** Transtornos que não cursam com sintomas depressivos podem ter PHQ-9 basal baixo e teto para melhora, tornando o alvo ruidoso
-3. **Label condicionado a dados pareados:** Pacientes com única consulta ou com PHQ-9 faltante são excluídos (viés de amostra)
-4. **Regressão à média:** Redução no PHQ-9 pode refletir regressão à média em escores extremos, não efeito terapêutico verdadeiro
-5. **Sem controle para duração do tratamento:** O intervalo entre consultas não é uniforme; uma consulta após 7 dias pode ter dinâmica diferente de uma após 90 dias
-6. **Efeito placebo não modelado:** Dados sintéticos não incorporam resposta placebo, que corresponde a 30–40% da melhora observada em ensaios clínicos reais
+1. **Label probabilístico, não observacional:** O alvo é gerado por função determinística+aleatória, não derivado de acompanhamento clínico real
+2. **Modificadores limitados:** O gerador usa apenas PHQ-9, intervalo entre consultas e tipo de transtorno; não incorpora adesão, efeito placebo, comorbidades nem resposta diferencial por medicamento
+3. **Baseado em dados sintéticos:** A distribuição de 35–50% positivos é uma conveniência do gerador, não um dado epidemiológico real
+4. **Sem variáveis de tratamento:** O dataset não inclui medicação específica, dose, adesão nem tipo de psicoterapia — fatores críticos para resposta terapêutica
+5. **Dataset pequeno:** ~189–200 amostras com 22 features — alta varianza e risco de overfitting, especialmente para XGBoost
+6. **Sem controle para duração do tratamento:** O intervalo entre consultas não é uniforme; uma consulta após 7 dias pode ter dinâmica diferente de uma após 90 dias
 
 ## 8. ⚠️ Aviso Clínico (Clinical Warning)
 **Este modelo é uma ferramenta de apoio à decisão clínica, não um dispositivo diagnóstico autônomo.**

@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
-    roc_auc_score, classification_report, confusion_matrix,
+    roc_auc_score, average_precision_score, brier_score_loss,
+    classification_report, confusion_matrix,
 )
 from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.preprocessing import LabelEncoder
@@ -110,11 +111,20 @@ class Trainer:
                 params = est_def["default_params"]
                 model = est_def["class"](**params)
 
-            self.tracker.log_params(params)
-
             X_train, X_test, y_train, y_test = train_test_split(
                 X, y, test_size=test_size, stratify=y, random_state=42
             )
+
+            # XGBoost: inject scale_pos_weight based on training distribution
+            if algorithm == "xgboost":
+                neg = (y_train == 0).sum()
+                pos = (y_train == 1).sum()
+                if pos > 0:
+                    ratio = float(neg / pos)
+                    model.set_params(scale_pos_weight=ratio)
+                    params["scale_pos_weight"] = ratio
+
+            self.tracker.log_params(params)
 
             model.fit(X_train, y_train)
             y_pred = model.predict(X_test)
@@ -177,10 +187,13 @@ class Trainer:
         }
         if y_proba is not None and y_proba.shape[1] == 2:
             try:
-                metrics["roc_auc"] = round(float(roc_auc_score(y_true, y_proba[:, 1])), 4)
+                y_prob_pos = y_proba[:, 1]
+                metrics["roc_auc"] = round(float(roc_auc_score(y_true, y_prob_pos)), 4)
+                metrics["pr_auc"] = round(float(average_precision_score(y_true, y_prob_pos)), 4)
+                metrics["brier_score"] = round(float(brier_score_loss(y_true, y_prob_pos)), 4)
             except Exception as e:
                 import logging
-                logging.getLogger(__name__).warning("ROC AUC calculation failed: %s", e)
+                logging.getLogger(__name__).warning("Metrics calculation failed: %s", e)
         return metrics
 
     def _param_grid(self, tune_params: dict):
