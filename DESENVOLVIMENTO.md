@@ -62,7 +62,7 @@
 - **12+ endpoints** `/api/v1/admin/`
 
 ### Qualidade & DevOps
-- **pytest** — 174+ testes
+- **pytest** — 548 testes
 - **black, isort** — Formatação
 - **flake8, mypy** — Lint e tipos
 - **GitHub Actions** — CI completo
@@ -216,19 +216,35 @@ mind-ui/src/
 └── utils/         # Constantes
 ```
 
-### Páginas
+### Páginas (27 .tsx, ~16 rotas)
 | Rota | Página | Descrição |
 |---|---|---|
 | `/login` | LoginPage | Autenticação com gradiente escuro |
 | `/` | Dashboard | Cards de resumo + gráficos Recharts |
 | `/patients` | PatientList | Lista com Ant Design Table |
 | `/patients/:uuid` | PatientDetail | Detalhes + consultas |
+| `/patients/:uuid/edit` | PatientEdit | Edição de paciente |
+| `/patients/:uuid/timeline` | PatientTimeline | Timeline de eventos |
+| `/patients/:uuid/reports` | PatientReports | Relatórios médicos |
+| `/patients/new` | PatientCreate | Criação de paciente |
 | `/consultations` | ConsultationList | Histórico de consultas |
+| `/consultations/:uuid` | ConsultationDetail | Detalhes da consulta |
+| `/consultations/new` | ConsultationCreate | Criar consulta |
 | `/assessments` | AssessmentPage | Escalas + histórico do paciente |
 | `/inferences` | InferencePage | 14 categorias de sintomas + histórico |
+| `/personality` | PersonalityPage | Perfil BFP + Dark Triad |
 | `/professionals` | ProfessionalsPage | Gestão com atribuição de pacientes |
+| `/treatments` | TreatmentEfficacyPage | Eficácia terapêutica |
+| `/analytics` | AnalyticsPage | Análises avançadas |
 | `/alerts` | AlertList | Alertas clínicos |
-| `/admin/*` | AdminPages | Transtornos (DSM-5/ICD-11 collapsible), permissões, monitoramento |
+| `/mia` | MiaPage | Chatbot diagnóstico MIA |
+| `/admin/disorders` | DisordersPage | DSM-5-TR/ICD-11 catalog |
+| `/admin/medications` | MedicationsPage | Gerenciar medicações |
+| `/admin/scales` | ScalesPage | Gerenciar escalas |
+| `/admin/symptoms` | SymptomsPage | Gerenciar sintomas |
+| `/admin/permissions` | PermissionsPage | Permissões de roles |
+| `/admin/monitoring` | MonitoringPage | Monitoramento do sistema |
+| `/admin/users` | UsersPage | Gerenciar usuários |
 | `/audit` | AuditLog | Logs de auditoria |
 
 ### Build
@@ -267,24 +283,23 @@ Uso: `python spark/submit.py <job_name> [--csv path]`
 
 ## Testes
 
-**548 testes** (7 unitários + 5 de integração):
+**548 testes** (unitários + integração + API + ML + segurança):
 
 ```
 tests/
-├── unit/
-│   ├── test_assessment_scales.py   — Scoring das 20 escalas
-│   ├── test_auth.py                — JWT, RBAC
-│   ├── test_bayesian_network.py    — Naive Bayes
-│   ├── test_criteria_evaluator.py  — Regras DSM-5-TR
-│   ├── test_dsm_icd_mapper.py      — Mapeamento DSM ↔ CID
-│   ├── test_inference_engine.py    — Cálculo probabilístico
-│   └── test_metrics.py             — Métricas e correlações
-└── integration/
-    ├── test_admin.py               — Sistema administrativo
-    ├── test_api.py                 — End-to-end API
-    ├── test_audit.py               — Auditoria
-    ├── test_audit_api.py           — API de auditoria
-    └── test_repositories.py        — Camada de dados
+├── unit/                          # 7 testes unitários legado
+├── integration/                   # 6 testes de integração
+├── api/
+│   └── v1/
+│       ├── clinical/              # Escalas, consultas, profissionais, etc.
+│       ├── diagnostic/            # Chatbot MIA
+│       └── auth/                  # Admin, auditoria
+├── ml/
+│   ├── inference/                 # Bayesian network, inference engine
+│   ├── evaluation/                # Criteria evaluator
+│   └── models/                    # Assessment scales, DSM-ICD mapper
+├── security/                      # Auth, LGPD, consent, encryption
+└── analytics/                     # Métricas
 ```
 
 ```bash

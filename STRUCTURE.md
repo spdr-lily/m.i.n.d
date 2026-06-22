@@ -137,16 +137,20 @@ m.i.n.d/
 │   │   ├── components/
 │   │   │   ├── MainLayout.tsx    # Sidebar + Header (Ant Design)
 │   │   │   └── MindLogo.tsx      # Logo componente
-│   │   ├── pages/
+│   │   ├── pages/               # 27 .tsx, ~16 rotas
 │   │   │   ├── auth/LoginPage.tsx
 │   │   │   ├── dashboard/
-│   │   │   ├── patients/
-│   │   │   ├── consultations/
-│   │   │   ├── assessments/     # Com histórico do paciente
-│   │   │   ├── inferences/      # 14 categorias de sintomas
-│   │   │   ├── professionals/   # Atribuição de pacientes
+│   │   │   ├── patients/        # List, Detail, Create, Edit, Reports, Timeline
+│   │   │   ├── consultations/   # List, Detail, Create
+│   │   │   ├── assessments/
+│   │   │   ├── inferences/
+│   │   │   ├── personality/
+│   │   │   ├── professionals/
+│   │   │   ├── treatments/      # TreatmentEfficacyPage
+│   │   │   ├── analytics/
 │   │   │   ├── alerts/
-│   │   │   ├── admin/           # Transtornos com DSM-5/ICD-11 collapsible
+│   │   │   ├── chatbot/MiaPage.tsx
+│   │   │   ├── admin/           # 7 páginas: disorders, meds, scales, symptoms, permissions, monitoring, users
 │   │   │   └── audit/
 │   │   ├── store/
 │   │   │   ├── authStore.ts     # Zustand auth state
@@ -226,22 +230,20 @@ m.i.n.d/
 │
 ├── mlruns/                     # MLflow experiment tracking
 │
-├── tests/
+├── tests/                        # 548 testes
 │   ├── conftest.py
-│   ├── unit/
-│   │   ├── test_assessment_scales.py
-│   │   ├── test_auth.py
-│   │   ├── test_bayesian_network.py
-│   │   ├── test_criteria_evaluator.py
-│   │   ├── test_dsm_icd_mapper.py
-│   │   ├── test_inference_engine.py
-│   │   └── test_metrics.py
-│   └── integration/
-│       ├── test_admin.py
-│       ├── test_api.py
-│       ├── test_audit.py
-│       ├── test_audit_api.py
-│       └── test_repositories.py
+│   ├── unit/                     # 7 unitários (legado)
+│   ├── integration/              # 6 integração
+│   ├── api/v1/
+│   │   ├── clinical/             # Escalas, consultas, profissionais
+│   │   ├── diagnostic/           # Chatbot MIA
+│   │   └── auth/                 # Admin, auditoria
+│   ├── ml/
+│   │   ├── inference/            # Bayesian network, engine
+│   │   ├── evaluation/           # Criteria evaluator
+│   │   └── models/               # Assessment scales, mapper
+│   ├── security/                 # Auth, LGPD, consent
+│   └── analytics/                # Métricas
 │
 ├── .certs/                     # Certificados SSL (desenvolvimento)
 │

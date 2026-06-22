@@ -110,7 +110,7 @@ Todas as 20 escalas estão traduzidas para português (itens, gravidade e interp
 ## Testes
 
 ```bash
-.venv\Scripts\python.exe -m pytest tests/ -v          # 399+ testes
+.venv\Scripts\python.exe -m pytest tests/ -v          # 548 testes
 .venv\Scripts\python.exe -m pytest tests/ --cov=app --cov-report=html
 ```
 

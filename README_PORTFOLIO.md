@@ -39,17 +39,17 @@ A maioria dos CDSS usa uma única abordagem (árvore de decisão, rede neural pu
 | Camada | O que faz | O que cobre |
 |---|---|---|
 | **Critérios DSM-5-TR** (rule engine) | Gatekeeper: contagem mínima de sintomas, duração, satisfação de grupos | Se falha, `prob *= 0.3` — nenhuma probabilidade alta passa sem os critérios formais |
-| **Naive Bayes epidemiológico** | Priors brasileiros, CPTs da literatura, atualização sequencial por sintoma | ~70% do sinal — modela incerteza inerente ao diagnóstico |
+| **Naive Bayes epidemiológico** | Priors do NCS-R (Kessler et al., 2005), CPTs da literatura, atualização sequencial por sintoma | ~70% do sinal — modela incerteza inerente ao diagnóstico |
 | **Ajuste por escalas** (threshold match) | Mapeia scores de PHQ-9, GAD-7, etc. para boost via `SCALE_DISORDER_MAP` | Adiciona `0.08 + (score - threshold) / 100` — evidencia objetiva de instrumentos validados |
 | **ML blending** (RF/XGBoost) | Predição de risco baseada em escalas | Peso 0.15 — sinal complementar, minoritário por design |
 
 **Por quê**: O paciente pode minimizar sintomas (escala subestima), o clínico pode perder um diferencial (regra falha), o modelo ML pode viciar em dados sintéticos. Quatro fontes de evidência independentes com pesos calibrados reduzem o risco de qualquer ponto cego isolado dominar a decisão.
 
-### 2. Bayesian network com priors epidemiológicos brasileiros, não uniformes
+### 2. Bayesian network com priors epidemiológicos (NCS-R), não uniformes
 
-Muitos sistemas assumem `P(disorder) = 1/N`. Este projeto usa prevalências do **São Paulo Megacity Mental Health Survey** (Andrade et al., 2012): depressão maior 9.4%, TOC 3.9%, bipolar tipo II 0.3%. A diferença entre `1/19 ≈ 5.3%` e 9.4% para depressão altera drasticamente o posterior quando há poucos sintomas.
+Muitos sistemas assumem `P(disorder) = 1/N`. Este projeto usa prevalências do **National Comorbidity Survey Replication** (Kessler et al., 2005): ansiedade social 7.0%, depressão maior 5.2%, TAG 3.1%. A diferença entre `1/19 ≈ 5.3%` e 5.2% para depressão parece pequena, mas o impacto cumulativo no posterior com múltiplos sintomas é significativo.
 
-**Por quê**: Priors uniformes penalizam transtornos comuns e superestimam raros. Um prior calibrado faz o sistema ser conservador onde deve ser (diagnóstico raro exige mais evidência para superar o prior baixo). As probabilidades condicionais `P(sintoma | transtorno)` vêm de Andrews et al. (2018) e as correlações de comorbidade de Kessler et al. (2005, 2015).
+**Por quê**: Priors uniformes penalizam transtornos comuns e superestimam raros. Um prior calibrado faz o sistema ser conservador onde deve ser (diagnóstico raro exige mais evidência para superar o prior baixo). As probabilidades condicionais `P(sintoma | transtorno)` vêm de Andrews et al. (2018) e as correlações de comorbidade de Kessler et al. (2005, 2015). A implementação atual usa dados populacionais dos EUA (NCS-R). Priors brasileiros (São Paulo Megacity Survey) são uma evolução planejada, não implementada.
 
 ### 3. Separação de identidade clínica — não é schema, é arquitetura de privacidade
 
@@ -109,24 +109,27 @@ Em vez de chave estrangeira entre `Scale` e `Disorder`, um dicionário de `(thre
 
 ## Machine Learning Pipeline
 
-### 12 Modelos — Resultados (MLflow, última execução)
+### 12 Modelos — Resultados (Avaliação Temporal, 2026-06-22)
+
+Métricas obtidas via `notebooks/model_evaluation.ipynb` com split temporal (80% train / 20% test por data de consulta, 219 consultas, 53 features). Modelos registrados no MLflow (sqlite:///mlflow.db) e promovidos para Production no Model Registry do PostgreSQL.
 
 | Objetivo | Algoritmo | Acurácia | F1 (macro) | AUC-ROC |
 |---|---|---|---|---|
-| **Diagnóstico** (20 classes) | XGBoost | 1.000 | 1.000 | — |
+| **Diagnóstico** | XGBoost | 1.000 | 1.000 | — |
 | | Random Forest | 1.000 | 1.000 | — |
-| | Logistic Reg. | 0.480 | 0.390 | — |
-| **Suicídio** (binário) | XGBoost | 0.979 | 0.977 | 0.996 |
-| | Random Forest | 0.958 | 0.955 | 0.998 |
-| | Logistic Reg. | 0.958 | 0.953 | 0.985 |
-| **Recaída** (binário) | Logistic Reg. | 0.688 | 0.681 | 0.751 |
-| | Random Forest | 0.688 | 0.670 | 0.673 |
-| | XGBoost | 0.646 | 0.626 | 0.673 |
-| **Resposta Terapêutica** (binário) | Random Forest | 0.729 | 0.604 | 0.789 |
-| | XGBoost | 0.792 | 0.625 | 0.713 |
-| | Logistic Reg. | 0.500 | 0.395 | 0.408 |
+| | Logistic Reg. | — | — | —¹ |
+| **Suicídio** (binário) | XGBoost | 0.952 | 0.923 | 0.997 |
+| | Random Forest | 0.976 | 0.963 | 0.995 |
+| | Logistic Reg. | 0.952 | 0.933 | 0.985 |
+| **Recaída** (binário) | Logistic Reg. | 0.714 | 0.625 | 0.739 |
+| | Random Forest | 0.571 | 0.357 | 0.658 |
+| | XGBoost | 0.619 | 0.529 | 0.683 |
+| **Resposta Terapêutica** (binário) | Logistic Reg. | 0.619 | 0.273 | 0.915 |
+| | Random Forest | 0.738 | 0.000² | 0.709 |
+| | XGBoost | 0.881 | 0.000² | 0.547 |
 
-Todos os modelos registrados no MLflow (sqlite:///mlflow.db) com metadados de treino (hiperparâmetros, test_size=0.25, cv_folds=5).
+¹ Logistic Regression para diagnóstico foi pulada — o modelo registrado (batch 20260606) usou split aleatório, então o LabelEncoder não reconhece classes do split temporal.
+² RF e XGB preveem apenas classe majoritária (39/42 casos = classe 0); LR tenta capturar minoria com recall=1.0 mas precision=0.16.
 
 ### O que os números realmente significam (e o que não significam)
 
@@ -171,7 +174,7 @@ Retreinamento em dados reais → estudo prospectivo com SCID-5-CV (padrão ouro)
 │              │     │                                          │
 │              │     ├── PostgreSQL 16 (clinical, diagnostic,   │
 │              │     │     dw schemas) + 12 migrations Alembic  │
-│              │     ├── Redis (cache + rate limit 100 req/min) │
+│              │     ├── Redis (cache — sessão, filas, MLflow)  │
 │              │     ├── Airflow (4 DAGs: treino, etl, backup,  │
 │              │     │     monitoria)                           │
 │              │     └── PySpark 3.5 (batch inference, métricas │

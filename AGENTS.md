@@ -47,7 +47,13 @@
 - *(none)*
 
 ### Done (This Session)
-- **Docker sync + treatment date fix**: Copied updated Python sources (`assessment_scales.py`, `analytics.py`, `dw/service.py`, `medication.py`) and rebuilt frontend (`npm run build` + `docker cp`) to Docker container. Fixed `TreatmentOutcomeResponse` schema crash (`start_date`/`end_date` typed as `str` but ORM stores `date`; changed to `date` type). Verified inference works end-to-end via Docker API (191 results per consultation, explanation endpoint, treatment outcomes endpoint all passing).
+- **Model evaluation notebook executed real**: `notebooks/model_evaluation.ipynb` executed against live PostgreSQL + MLflow with temporal split (80/20). Real metrics extracted (2026-06-22). README_PORTFOLIO metrics table updated with actual values + footnote for LR/skipped models.
+- **Brazilian priors corrected**: Removed false claim of Brazilian priors from README_PORTFOLIO. Replaced with honest NCS-R (Kessler et al., 2005) attribution. Marked Brazilian priors as planned evolution.
+- **Test count synchronized (548)**: Ran `pytest --collect-only` → 548 confirmed. Updated count in: README_PORTFOLIO, README.md, AGENTS.md, DESENVOLVIMENTO.md, QUICKSTART.md.
+- **Redis architecture corrected**: Changed "cache + rate limit" to "cache" in README_PORTFOLIO diagram. Rate limiting is in-memory, not Redis.
+- **Duplicates + unused files cleaned**: Deleted 6 " - Copia" markdown files + `app/ml/bayesian_network.py` (duplicate, no imports used).
+- **Frontend page list synced**: 27 .tsx pages counted. STRUCTURE.md and DESENVOLVIMENTO.md pages sections updated with full rota/page listing and annotations.
+- **Data leak fixed — clinical_notes redacted**: `SymptomObservation.clinical_notes` in `GET /api/v1/inferences/{consultation_uuid}/explanation` now passes through `_redact_pii()` which redacts CPF, phone, email, and 11-digit document numbers before returning. Schema `SymptomSummary.clinical_notes` annotated with redaction notice. 93 inference tests pass.
 - **ICD-11 codes expanded to all 191 disorders**: All 19 core + 172 reference disorders now have ICD-11 codes with WHO authority. `scripts/seed_icd11.py` updated — added 3 missing core disorders (Bipolar Tipo II, Distimia, Ansiedade Social) to `ICD11_DATA` with full `clinical_description`/`diagnostic_requirements`. Seed function now updates existing core records on re-run. `scripts/enrich_icd11_descriptions.py` backfills `clinical_description` for all 172 reference codes from DSM-5-TR criteria text. Frontend `DisordersPage.tsx` now displays CID-11 code tag in table + structured ICD-11 info panel (code, title, chapter, who_url, description, requirements) in expanded row. TypeScript `Disorder` type updated with `icd11_codes: ICD11Code[]`.
 - **SCALE_DISORDER_MAP expanded to reference disorders**: Added 40+ new keyword mappings across BFP, MEMÓRIA, RSES, TAS-20, DT-12 scales. Coverage improved from 18 → 9 minimally covered disorders (remaining 9 are catch-all "Outro"/"Não Especificado" variants with inherently broad coverage). Sleep disorders gained specific mappings (Sono REM, Sono-Vigília, Ritmo Circadiano, Sono Induzido) under BFP and MEMÓRIA. Sexual dysfunctions gained mappings under RSES, TAS-20, DT-12, and BFP.
 - **MIA chatbot tests**: 15 tests passing (test_chatbot.py — auth, sentiment, suicide alert, disorder search, session, knowledge). Fixed test_suicide_alert_keywords to match actual crisis term list.
@@ -74,7 +80,7 @@
 - **Dashboard scale selector responsive**: `DashboardPage.tsx` — scale Select changed from fixed `width: 360` to `width: 200, maxWidth: '100%'` for mobile.
 
 ### Next Steps
-- Run `notebooks/model_evaluation.ipynb` with Docker PostgreSQL running to generate evaluation plots and metrics
+- Add API tests for professionals routes (assignment CRUD, sync edge cases).
 
 ## Key Decisions
 - Disorder unification via `scripts/seed_clinical_data.py` as single source of truth; `BN_TO_PT` mapping bridges BN English → DB Portuguese.
@@ -90,8 +96,6 @@
 - ML personality prediction uses heuristic rules as fallback when no trained models exist; `MultiOutputRegressor` with RF/XGBoost provides model-based prediction when trained.
 - Scale-based disorder risk blending weight set at 0.15 (minority signal vs symptom-driven inference).
 
-## Next Steps
-- Add API tests for professionals routes (assignment CRUD, sync edge cases).
 
 ## Quickstart
 

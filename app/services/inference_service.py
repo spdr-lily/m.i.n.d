@@ -8,6 +8,18 @@ from app.repositories.disorder_repository import DisorderRepository
 from app.ml.inference.inference_engine import InferenceEngine
 
 
+import re
+
+
+def _redact_pii(text: str) -> str:
+    """Redact common PII patterns from clinical notes before exposing via API."""
+    text = re.sub(r'\d{3}\.\d{3}\.\d{3}-\d{2}', '[CPF REDACTED]', text)  # CPF
+    text = re.sub(r'\d{2}\s?\d{8,9}', '[PHONE REDACTED]', text)  # Brazilian phone
+    text = re.sub(r'\b\d{11}\b', '[DOC REDACTED]', text)  # 11-digit document numbers
+    text = re.sub(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', '[EMAIL REDACTED]', text)  # email
+    return text
+
+
 class InferenceService:
     def __init__(self, session: Session):
         self.session = session
@@ -134,7 +146,7 @@ class InferenceService:
                     "intensity": float(o.intensity) if o.intensity else None,
                     "frequency": o.frequency,
                     "duration_days": o.duration_days,
-                    "clinical_notes": o.clinical_notes
+                    "clinical_notes": _redact_pii(o.clinical_notes) if o.clinical_notes else None
                 }
                 for o in (observations or [])
             ],

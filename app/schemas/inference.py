@@ -60,6 +60,7 @@ class ExplanationDiagnosis(BaseModel):
 
 
 class SymptomSummary(BaseModel):
+    """Symptom observation in explanation response. clinical_notes are redacted (PII stripped)."""
     symptom_id: int
     intensity: Optional[float] = None
     frequency: Optional[str] = None
