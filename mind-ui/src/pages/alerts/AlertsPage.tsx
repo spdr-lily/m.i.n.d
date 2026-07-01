@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Table, Tag, Button, Typography, Breadcrumb, Spin, Space, Badge } from 'antd'
 import { CheckCircleOutlined, BellOutlined } from '@ant-design/icons'
-import { alertsApi } from '../../api/alerts'
+import { alertsApi } from '../../api/endpoints'
 import type { Alert } from '../../types'
 import { SEVERITY_COLORS, SEVERITY_LABELS, ALERT_TYPE_LABELS } from '../../utils/constants'
 

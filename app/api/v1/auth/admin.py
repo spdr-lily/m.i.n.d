@@ -45,7 +45,7 @@ def create_user(
     _=Depends(require_permission(Permission.MANAGE_USERS)),
 ):
     service = AdminService(db)
-    from app.repositories.auth_repository import AuthRepository
+    from app.repositories import AuthRepository
     existing = AuthRepository(db).get_by_username(data.username)
     if existing:
         raise HTTPException(status_code=409, detail="Username already exists")

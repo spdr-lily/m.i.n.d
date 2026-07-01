@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
-import { disordersApi } from '../../api/disorders'
+import { disordersApi } from '../../api/endpoints'
 import type { Disorder, Symptom, DiagnosticCriteria, ICD11Code } from '../../types'
 
 const { Title, Text } = Typography

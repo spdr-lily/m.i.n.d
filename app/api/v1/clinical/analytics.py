@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.analytics.dw.service import DWAnalyticsService
+from app.analytics.service import DWAnalyticsService
 
 router = APIRouter(prefix="/api/v1/analytics", tags=["analytics"])
 

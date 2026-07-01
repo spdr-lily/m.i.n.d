@@ -8,7 +8,7 @@ import {
   PlusOutlined, PushpinOutlined, PushpinFilled,
   EditOutlined, DeleteOutlined, PrinterOutlined,
 } from '@ant-design/icons'
-import { reportsApi } from '../../api/reports'
+import { reportsApi } from '../../api/endpoints'
 import type { MedicalReport } from '../../types'
 
 const { Title, Paragraph, Text } = Typography

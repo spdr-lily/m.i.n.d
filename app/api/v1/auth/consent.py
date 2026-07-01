@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.services.consent_service import ConsentService
+from app.services.crud_service import ConsentService
 from app.api.v1.auth.auth import get_current_user, require_permission
 from app.security.permissions import Permission
 

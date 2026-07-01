@@ -2,10 +2,7 @@ import pytest
 from unittest.mock import Mock, MagicMock, patch
 from uuid import uuid4
 from datetime import datetime, timezone, timedelta
-from app.analytics.metrics.service import ConsultationMetricsService
-from app.analytics.bi.service import BIService
-from app.analytics.dashboards.service import DashboardService
-from app.analytics.statistics.service import StatisticsService
+from app.analytics.service import ConsultationMetricsService, BIService, DashboardService, StatisticsService
 from app.services.alerts_service import AlertsService
 
 

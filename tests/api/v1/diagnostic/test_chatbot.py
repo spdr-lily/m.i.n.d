@@ -4,7 +4,7 @@ import pytest
 from uuid import uuid4
 from datetime import datetime
 from app.security.hashing import get_password_hash
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 from app.models.base import Disorder, Symptom, AssessmentScale, DiagnosticCriteria, Medication
 from app.ml.models.assessment_scales import SCALES_REGISTRY
 

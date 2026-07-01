@@ -1,10 +1,8 @@
 import pytest
 from uuid import UUID
 from datetime import date
-from app.repositories.patient_repository import PatientRepository
-from app.repositories.base import BaseRepository
+from app.repositories import PatientRepository, BaseRepository, AuthRepository
 from app.models.base import PatientIdentity, PatientProfile, AssessmentScale, ScaleQuestion, User
-from app.repositories.auth_repository import AuthRepository
 from app.security.hashing import get_password_hash
 
 

@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.models.base import User, RolePermission, RoutePermission
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 
 
 class AdminService:

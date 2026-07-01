@@ -4,10 +4,7 @@ import {
   Tabs, Row, Col, Statistic, Button, Alert, Divider, Spin,
 } from 'antd'
 import { WarningOutlined, CheckCircleOutlined, MedicineBoxOutlined, BulbOutlined } from '@ant-design/icons'
-import { treatmentsApi } from '../../api/treatments'
-import { medicationsApi } from '../../api/medications'
-import { disordersApi } from '../../api/disorders'
-import { patientsApi } from '../../api/patients'
+import { treatmentsApi, medicationsApi, disordersApi, patientsApi } from '../../api/endpoints'
 import type {
   DisorderMedicationAssoc, MedicationStat, Medication, Disorder,
   TreatmentPrediction,
@@ -65,7 +62,7 @@ export default function TreatmentEfficacyPage() {
       setAssocs(a)
       setMedications(m)
       setDisorders(d)
-      setPatients(p.patients.map(p2 => ({ patient_uuid: p2.patient_uuid, full_name: p2.full_name })))
+      setPatients(p.patients.map((p2: any) => ({ patient_uuid: p2.patient_uuid, full_name: p2.full_name })))
     } finally {
       setLoading(false)
     }
@@ -94,7 +91,7 @@ export default function TreatmentEfficacyPage() {
     try {
       const medIds = medications.map(m => m.medication_id)
       const result = await treatmentsApi.predict(predPatient, predDisorder, medIds)
-      setPredictions(result.predictions.sort((a, b) => b.success_probability - a.success_probability))
+      setPredictions(result.predictions.sort((a: any, b: any) => b.success_probability - a.success_probability))
       setPredicted(true)
     } catch {
       // handle error

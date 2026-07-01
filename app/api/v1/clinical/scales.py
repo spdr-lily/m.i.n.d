@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.services.scale_service import ScaleService
+from app.services.crud_service import ScaleService
 from app.schemas.scale import (
     AssessmentScaleCreate, AssessmentScaleUpdate, AssessmentScaleResponse,
     ScaleQuestionCreate, ScaleQuestionUpdate, ScaleQuestionResponse

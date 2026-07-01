@@ -4,7 +4,7 @@ from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from app.models.base import ClinicalConsultation, ClinicalNote, SymptomObservation, ScaleResponse, PatientProfile
-from app.repositories.consultation_repository import ConsultationRepository
+from app.repositories import ConsultationRepository
 from app.schemas.consultation import (
     ClinicalConsultationCreate, SymptomObservationCreate,
     ScaleResponseCreate, ConsultationWithDataCreate, ClinicalNoteCreate

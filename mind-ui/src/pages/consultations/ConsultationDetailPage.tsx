@@ -8,13 +8,8 @@ import {
   ThunderboltOutlined, BulbOutlined, ReloadOutlined, InfoCircleOutlined, FileTextOutlined,
   MedicineBoxOutlined,
 } from '@ant-design/icons'
-import { consultationsApi } from '../../api/consultations'
-import { inferencesApi } from '../../api/inferences'
-import { medicationsApi } from '../../api/medications'
-import { treatmentsApi } from '../../api/treatments'
+import { consultationsApi, inferencesApi, medicationsApi, treatmentsApi, scalesApi, disordersApi } from '../../api/endpoints'
 import type { ConsultationResponse, InferenceResponse, ScaleResponseResponse, ConsultationCompleteness, Prescription, TreatmentPrediction } from '../../types'
-import { scalesApi } from '../../api/scales'
-import { disordersApi } from '../../api/disorders'
 import type { AssessmentScale, Disorder } from '../../types'
 
 const { Title, Text } = Typography
@@ -231,7 +226,7 @@ export default function ConsultationDetailPage() {
     try {
       const medIds = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53]
       const result = await treatmentsApi.predict(consultation!.patient_uuid!, disorderId, medIds)
-      setPredPredictions(result.predictions.sort((a, b) => b.success_probability - a.success_probability))
+      setPredPredictions(result.predictions.sort((a: any, b: any) => b.success_probability - a.success_probability))
     } catch {
       setPredPredictions([])
     } finally {

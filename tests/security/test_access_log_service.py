@@ -1,6 +1,6 @@
 from uuid import uuid4
 from unittest.mock import MagicMock
-from app.services.access_log_service import AccessLogService
+from app.services.crud_service import AccessLogService
 
 
 class TestAccessLogService:

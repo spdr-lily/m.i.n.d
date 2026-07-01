@@ -6,7 +6,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend,
 } from 'recharts'
-import { analyticsApi } from '../../api/analytics'
+import { analyticsApi } from '../../api/endpoints'
 import type {
   PrevalenceTrendResponse, ComorbidityResponse, ScoreDistributionResponse,
   ScaleSeverityResponse, ProfessionalWorkloadResponse, DemographicSummaryResponse,

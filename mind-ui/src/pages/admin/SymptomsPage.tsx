@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Card, Table, Button, Modal, Form, Input, Space, Typography, Breadcrumb, message, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons'
-import { disordersApi } from '../../api/disorders'
+import { disordersApi } from '../../api/endpoints'
 import type { Symptom } from '../../types'
 
 const { Title } = Typography

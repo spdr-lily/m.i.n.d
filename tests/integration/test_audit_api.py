@@ -1,6 +1,6 @@
 import pytest
 from app.security.hashing import get_password_hash
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 from app.services.audit_service import AuditService
 
 

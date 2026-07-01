@@ -6,10 +6,7 @@ from app.models.base import (
     HealthcareProfessional, ClinicalConsultation,
     SymptomObservation, ScaleResponse,
 )
-from app.repositories.patient_repository import PatientRepository
-from app.repositories.consultation_repository import ConsultationRepository
-from app.repositories.scale_repository import ScaleRepository
-from app.repositories.professional_repository import ProfessionalRepository
+from app.repositories import PatientRepository, ConsultationRepository, ScaleRepository, ProfessionalRepository
 
 db = SessionLocal()
 

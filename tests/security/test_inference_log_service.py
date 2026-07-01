@@ -1,6 +1,6 @@
 from uuid import uuid4
 from unittest.mock import MagicMock
-from app.services.inference_log_service import InferenceLogService
+from app.services.crud_service import InferenceLogService
 
 
 class TestInferenceLogService:

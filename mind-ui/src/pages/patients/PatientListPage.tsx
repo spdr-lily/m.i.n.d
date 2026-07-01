@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Table, Button, Input, Card, Space, Tag, Typography, Breadcrumb } from 'antd'
 import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
-import { patientsApi } from '../../api/patients'
+import { patientsApi } from '../../api/endpoints'
 import type { PatientListItem } from '../../types'
 
 const { Title } = Typography
@@ -17,11 +17,17 @@ export default function PatientListPage() {
 
   useEffect(() => {
     setLoading(true)
-    patientsApi.list(page).then((data) => {
-      setPatients(data.patients)
-      setTotal(data.total)
+    const size = search ? 500 : 20
+    patientsApi.list(search ? 1 : page, size).then((data) => {
+      if (search) {
+        setPatients(data.patients.filter((p: any) => p.full_name.toLowerCase().includes(search.toLowerCase())))
+        setTotal(data.patients.filter((p: any) => p.full_name.toLowerCase().includes(search.toLowerCase())).length)
+      } else {
+        setPatients(data.patients)
+        setTotal(data.total)
+      }
     }).finally(() => setLoading(false))
-  }, [page])
+  }, [page, search])
 
   return (
     <>
@@ -37,10 +43,10 @@ export default function PatientListPage() {
           </Space>
         </div>
         <Table
-          dataSource={search ? patients.filter((p) => p.full_name.toLowerCase().includes(search.toLowerCase())) : patients}
+          dataSource={patients}
           rowKey="patient_uuid"
           loading={loading}
-          pagination={{ current: page, total, pageSize: 20, onChange: setPage }}
+          pagination={search ? false : { current: page, total, pageSize: 20, onChange: setPage }}
           onRow={(record) => ({ onClick: () => navigate(`/patients/${record.patient_uuid}`), style: { cursor: 'pointer' } })}
           columns={[
             { title: 'Nome', dataIndex: 'full_name', ellipsis: true },

@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.services.professional_service import ProfessionalService
+from app.services.crud_service import ProfessionalService
 from app.models.base import (
     ProfessionalPatientAssignment, PatientIdentity,
 )

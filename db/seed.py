@@ -14,7 +14,7 @@ from app.models.base import (
     Symptom, Disorder, DiagnosticCriteria, DiagnosisRelationship,
     HealthcareProfessional, Medication, ClassificationAuthority,
 )
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 from app.security.hashing import get_password_hash
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from scripts.dsm5tr_data import DSM5TR_DISORDERS, CORE_DISORDER_NAMES

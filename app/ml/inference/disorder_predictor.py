@@ -4,9 +4,7 @@ from sqlalchemy.orm import Session
 from app.ml.inference.bayesian_network import BayesianNetwork, InferenceEvidence, BayesianInferenceResult
 from app.ml.models.network_definition import build_mood_disorder_network
 from app.ml.models.dsm_icd_mapper import DSMICDMapper
-from app.repositories.inference_repository import InferenceRepository
-from app.repositories.disorder_repository import DisorderRepository
-from app.repositories.consultation_repository import ConsultationRepository
+from app.repositories import InferenceRepository, DisorderRepository, ConsultationRepository
 from app.models.base import DiagnosticInference
 
 

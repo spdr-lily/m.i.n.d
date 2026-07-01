@@ -1,10 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid } from 'antd'
 import { ExperimentOutlined, ThunderboltOutlined, SafetyOutlined, HistoryOutlined, InfoCircleOutlined } from '@ant-design/icons'
-import { inferencesApi } from '../../api/inferences'
-import { patientsApi } from '../../api/patients'
-import { consultationsApi } from '../../api/consultations'
-import { disordersApi } from '../../api/disorders'
+import { inferencesApi, patientsApi, consultationsApi, disordersApi } from '../../api/endpoints'
 import type { PatientListItem, Symptom, InferenceResult, Disorder } from '../../types'
 import dayjs from 'dayjs'
 

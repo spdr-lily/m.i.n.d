@@ -5,7 +5,7 @@ import {
   CalendarOutlined, UserOutlined, FileTextOutlined,
   MedicineBoxOutlined, ExperimentOutlined, WarningOutlined,
 } from '@ant-design/icons'
-import { timelineApi } from '../../api/timeline'
+import { timelineApi } from '../../api/endpoints'
 import type { TimelineResponse, TimelineEvent } from '../../types'
 
 const { Title, Text } = Typography

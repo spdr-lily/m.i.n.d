@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Form, Input, Select, Button, Typography, Breadcrumb, message, Space, Row, Col } from 'antd'
 import dayjs from 'dayjs'
-import { patientsApi } from '../../api/patients'
-import { referenceApi } from '../../api/reference'
+import { patientsApi, referenceApi } from '../../api/endpoints'
 import type { SexType, GenderIdentity, EducationLevel, Ethnicity } from '../../types'
 
 const { Title } = Typography
@@ -27,7 +26,7 @@ export default function PatientCreatePage() {
       referenceApi.ethnicities(),
     ]).then(([sexes, genders, educations, ethnicities]) => {
       setReferences({ sexes, genders, educations, ethnicities })
-    })
+    }).catch(() => message.error('Erro ao carregar dados de referência'))
   }, [])
 
   const handleSubmit = async (values: Record<string, unknown>) => {
@@ -55,11 +54,12 @@ export default function PatientCreatePage() {
           trans_status: (v.trans_status as string) || undefined,
         },
       }
-      await patientsApi.create(payload)
+      const result = await patientsApi.create(payload)
       message.success('Paciente cadastrado com sucesso')
-      navigate('/patients')
-    } catch {
-      message.error('Erro ao cadastrar paciente')
+      navigate(`/patients/${result.identity.patient_uuid}`)
+    } catch (err) {
+      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
+      message.error(detail || 'Erro ao cadastrar paciente')
     } finally {
       setLoading(false)
     }

@@ -1,17 +1,16 @@
-import { useEffect, useState } from 'react'
-import { Row, Col, Card, Statistic, Table, Tag, Spin, Typography, List, Badge, Tabs, Space, Select, Progress } from 'antd'
+import { useEffect, useState, useRef } from 'react'
+import { Row, Col, Card, Statistic, Table, Tag, Spin, Typography, List, Badge, Tabs, Space, Select, Progress, message, Button } from 'antd'
 import {
   UserOutlined, CalendarOutlined, BellOutlined, ExperimentOutlined,
-  ArrowUpOutlined, ArrowDownOutlined, TeamOutlined, MedicineBoxOutlined,
+  ArrowUpOutlined, ArrowDownOutlined, TeamOutlined, MedicineBoxOutlined, FileImageOutlined,
 } from '@ant-design/icons'
+import { toPng } from 'html-to-image'
 import { useNavigate } from 'react-router-dom'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend, PieChart, Pie, Cell, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from 'recharts'
-import { metricsApi } from '../../api/metrics'
-import { patientsApi } from '../../api/patients'
-import { alertsApi } from '../../api/alerts'
+import { metricsApi, patientsApi, alertsApi } from '../../api/endpoints'
 import type {
   MetricsOverview, PatientListItem, Alert,
   DemographicsResponse, ConsultationMetricsResponse, DisorderPrevalenceItem,
@@ -65,7 +64,29 @@ export default function DashboardPage() {
   const [mlData, setMlData] = useState<MLDashboardResponse | null>(null)
   const [mlLoading, setMlLoading] = useState(false)
   const [loading, setLoading] = useState(true)
+  const dashboardRef = useRef<HTMLDivElement>(null)
+  const [savingImage, setSavingImage] = useState(false)
   const navigate = useNavigate()
+
+  const handleSaveImage = async () => {
+    if (!dashboardRef.current) return
+    setSavingImage(true)
+    try {
+      const dataUrl = await toPng(dashboardRef.current, {
+        backgroundColor: '#fff',
+        pixelRatio: 2,
+      })
+      const link = document.createElement('a')
+      link.download = `dashboard-${new Date().toISOString().slice(0, 10)}.png`
+      link.href = dataUrl
+      link.click()
+      message.success('Dashboard salvo como imagem')
+    } catch {
+      message.error('Erro ao salvar dashboard como imagem')
+    } finally {
+      setSavingImage(false)
+    }
+  }
 
   useEffect(() => {
     if (!selectedScale) return
@@ -182,8 +203,13 @@ export default function DashboardPage() {
     .map((key) => ({ value: key, label: SCALE_OPTIONS[key].label }))
 
   return (
-    <>
-      <Title level={3}>Dashboard</Title>
+    <div ref={dashboardRef}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <Title level={3} style={{ margin: 0 }}>Dashboard</Title>
+        <Button icon={<FileImageOutlined />} onClick={handleSaveImage} loading={savingImage} type="default">
+          Salvar como PNG
+        </Button>
+      </div>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} lg={6}>
@@ -784,6 +810,6 @@ export default function DashboardPage() {
           </Card>
         </Col>
       </Row>
-    </>
+    </div>
   )
 }

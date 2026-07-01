@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Table, Button, Card, Typography, Breadcrumb, theme } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { consultationsApi } from '../../api/consultations'
+import { consultationsApi } from '../../api/endpoints'
 import type { ConsultationListItem } from '../../types'
 
 const { Title, Text } = Typography

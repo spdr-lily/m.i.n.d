@@ -92,7 +92,7 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
 @pytest.fixture
 def admin_token(client, db_session) -> str:
     """Create an admin user and return a valid JWT token."""
-    from app.repositories.auth_repository import AuthRepository
+    from app.repositories import AuthRepository
     from app.security.hashing import get_password_hash
     import uuid
     uname = f"admin_{uuid.uuid4().hex[:8]}"

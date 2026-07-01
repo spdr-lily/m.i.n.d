@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Card, Table, Tag, Typography, Breadcrumb, Spin, Select, Space } from 'antd'
-import { auditApi } from '../../api/audit'
+import { auditApi } from '../../api/endpoints'
 import type { AuditLog } from '../../types'
 
 const { Title } = Typography

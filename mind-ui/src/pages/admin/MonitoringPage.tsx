@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Row, Col, Statistic, Table, Tag, Typography, Breadcrumb, Spin, Alert } from 'antd'
 import { CheckCircleOutlined, CloseCircleOutlined, ClockCircleOutlined, ApiOutlined } from '@ant-design/icons'
-import { adminApi } from '../../api/admin'
+import { adminApi } from '../../api/endpoints'
 import type { MonitoringStats, HealthStatus, RequestLog } from '../../types'
 
 const { Title } = Typography

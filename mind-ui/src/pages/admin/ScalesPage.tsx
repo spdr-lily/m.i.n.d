@@ -4,7 +4,7 @@ import {
   InputNumber, message, Popconfirm, Tag, Tooltip,
 } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined, OrderedListOutlined } from '@ant-design/icons'
-import { scalesApi } from '../../api/scales'
+import { scalesApi } from '../../api/endpoints'
 import type { AssessmentScale, ScaleQuestion, ScaleCreateRequest, ScaleQuestionCreateRequest } from '../../types'
 
 const { Title, Text } = Typography

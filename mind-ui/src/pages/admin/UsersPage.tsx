@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Card, Table, Tag, Button, Typography, Breadcrumb, Space, Modal, Form, Input, Select, message } from 'antd'
 import { PlusOutlined, EditOutlined, KeyOutlined } from '@ant-design/icons'
-import { adminApi } from '../../api/admin'
+import { adminApi } from '../../api/endpoints'
 import type { User } from '../../types'
 import { ROLE_LABELS } from '../../utils/constants'
 

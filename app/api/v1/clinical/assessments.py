@@ -18,6 +18,7 @@ from app.services.assessment_service import (
     get_seeded_scale_data,
     get_assessment_history,
     get_scale_questions,
+    get_patient_personality_timeline,
 )
 from app.ml.models.assessment_scales import list_scales
 from app.api.v1.auth.auth import get_current_user, require_permission
@@ -103,3 +104,13 @@ def get_patient_personality_factors_endpoint(
     from app.services.assessment_service import get_patient_personality_factors
     factors = get_patient_personality_factors(db, patient_uuid)
     return factors
+
+
+@router.get("/patient/{patient_uuid}/personality-timeline")
+def get_patient_personality_timeline_endpoint(
+    patient_uuid: UUID,
+    db: Session = Depends(get_db),
+    _=Depends(require_permission(Permission.READ_CONSULTATION)),
+):
+    timeline = get_patient_personality_timeline(db, patient_uuid)
+    return timeline

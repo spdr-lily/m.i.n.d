@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.base import AssessmentScale, ScaleQuestion, ScaleResponse
 from app.ml.models.assessment_scales import get_scale, SCALES_REGISTRY
 from app.ml.predictors.personality_factors import get_patient_personality_factors as _get_factors
+from app.ml.predictors.personality_factors import get_patient_personality_timeline as _get_timeline
 from app.ml.predictors.scale_predictor import build_personality_feature_vector, predict_personality_from_scales
 from app.schemas.assessment import ScoreRequest, AssessmentApplyRequest, AssessmentResult, AssessmentHistoryResponse, QuestionResponse
 
@@ -242,6 +243,13 @@ def get_patient_personality_factors(
     result = _empty_personality()
     result["data_source"] = "unavailable"
     return result
+
+
+def get_patient_personality_timeline(
+    db: Session, patient_uuid: UUID
+) -> dict:
+    """Return per-consultation personality factor scores over time."""
+    return _get_timeline(db, patient_uuid)
 
 
 def get_scale_questions(db: Session, scale_name: str) -> Optional[List[QuestionResponse]]:

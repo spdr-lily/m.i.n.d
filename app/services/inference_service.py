@@ -2,9 +2,7 @@ from uuid import UUID
 from typing import Dict, Optional, List
 from sqlalchemy.orm import Session
 from app.models.base import DiagnosticInference, ScaleResponse, ScaleQuestion, AssessmentScale
-from app.repositories.inference_repository import InferenceRepository
-from app.repositories.consultation_repository import ConsultationRepository
-from app.repositories.disorder_repository import DisorderRepository
+from app.repositories import InferenceRepository, ConsultationRepository, DisorderRepository
 from app.ml.inference.inference_engine import InferenceEngine
 
 

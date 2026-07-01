@@ -2,12 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.analytics.metrics.service import ConsultationMetricsService
-from app.analytics.bi.service import BIService
-from app.analytics.dashboards.service import DashboardService
-from app.analytics.statistics.service import StatisticsService
-
-from app.analytics.ml_dashboard.service import MLDashboardService
+from app.analytics.service import ConsultationMetricsService, BIService, DashboardService, StatisticsService, MLDashboardService
 
 router = APIRouter(prefix="/api/v1/metrics", tags=["metrics"])
 

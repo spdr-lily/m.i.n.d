@@ -1,6 +1,6 @@
 from uuid import uuid4
 from unittest.mock import Mock, MagicMock
-from app.services.consent_service import ConsentService
+from app.services.crud_service import ConsentService
 from app.models.base import ConsentRecord
 
 

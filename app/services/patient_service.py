@@ -3,7 +3,7 @@ from datetime import date
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from app.models.base import PatientIdentity, PatientProfile, SexType
-from app.repositories.patient_repository import PatientRepository
+from app.repositories import PatientRepository
 from app.schemas.patient_identity import PatientIdentityCreate
 from app.schemas.patient_profile import PatientProfileCreate, PatientProfileUpdate
 from app.security.lgpd import encrypt_field, decrypt_pii

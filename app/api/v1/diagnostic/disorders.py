@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.services.disorder_service import DisorderService
+from app.services.crud_service import DisorderService
 from app.schemas.disorder import (
     SymptomCreate, SymptomUpdate, SymptomResponse,
     DisorderCreate, DisorderUpdate, DisorderResponse,

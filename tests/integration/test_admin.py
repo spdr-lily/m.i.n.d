@@ -3,7 +3,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 from app.security.hashing import get_password_hash
 from app.security.jwt import create_access_token
 from app.services.admin_service import AdminService

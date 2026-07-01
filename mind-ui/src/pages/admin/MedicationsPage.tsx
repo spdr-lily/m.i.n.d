@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Card, Table, Button, Modal, Form, Input, Select, Space, Typography, Breadcrumb, message, Popconfirm } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { medicationsApi } from '../../api/medications'
+import { medicationsApi } from '../../api/endpoints'
 import type { Medication } from '../../types'
 
 const { Title } = Typography

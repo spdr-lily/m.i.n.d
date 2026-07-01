@@ -2,7 +2,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.services.medication_service import MedicationService
+from app.services.crud_service import MedicationService
 from app.schemas.medication import (
     MedicationCreate, MedicationUpdate, MedicationResponse,
     PrescriptionCreate, PrescriptionResponse,

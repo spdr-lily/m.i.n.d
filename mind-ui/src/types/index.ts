@@ -798,6 +798,30 @@ export interface PersonalityScaleSet {
   total_max: number
 }
 
+export interface PersonalityTimelinePoint {
+  consultation_uuid: string
+  date: string
+  total_score: number
+  total_max: number
+  factors?: Record<string, FactorScore>
+  subscales?: Record<string, FactorScore>
+  dimensions?: Record<string, FactorScore>
+}
+
+export interface PersonalityTimelineItem {
+  timeline: PersonalityTimelinePoint[]
+  total_max: number
+}
+
+export interface PersonalityTimelineResponse {
+  bfp: PersonalityTimelineItem
+  dt12: PersonalityTimelineItem
+  hexaco: PersonalityTimelineItem
+  bis11: PersonalityTimelineItem
+  tas20: PersonalityTimelineItem
+  rses: PersonalityTimelineItem
+}
+
 export interface PersonalityFactorsResponse {
   bfp: PersonalityScaleSet
   dt12: PersonalityScaleSet

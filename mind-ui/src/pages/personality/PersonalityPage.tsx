@@ -1,10 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Card, Select, Typography, Breadcrumb, Tag, Space, Spin, Row, Col, Progress, Empty, Tooltip, Modal, message, Button, Divider } from 'antd'
-import { FormOutlined, CheckOutlined } from '@ant-design/icons'
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer } from 'recharts'
-import { patientsApi } from '../../api/patients'
-import { mlApi, scalesApi } from '../../api/scales'
-import type { PatientListItem, PersonalityFactorsResponse, FactorScore } from '../../types'
+import { Card, Select, Typography, Breadcrumb, Tag, Space, Spin, Row, Col, Progress, Empty, Tooltip, Modal, message, Button, Segmented, Table } from 'antd'
+import { FormOutlined, CheckOutlined, LineChartOutlined, ProfileOutlined } from '@ant-design/icons'
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend } from 'recharts'
+import { patientsApi, mlApi, scalesApi } from '../../api/endpoints'
+import type { PatientListItem, PersonalityFactorsResponse, PersonalityTimelinePoint, FactorScore } from '../../types'
 import { SCALE_OPTIONS } from '../../utils/constants'
 const { Title, Text } = Typography
 
@@ -167,11 +166,103 @@ function ScaleCard({ tagColor, tagLabel, title, factorType, factorNames, factors
   )
 }
 
+const TIMELINE_SCALES_CONFIG = [
+  { key: 'bfp', tagColor: 'blue', tagLabel: 'BFP', title: 'Big Five', factorType: 'factors' as const, names: BFP_FACTORS },
+  { key: 'dt12', tagColor: 'volcano', tagLabel: 'DT-12', title: 'Tríade Sombria', factorType: 'subscales' as const, names: DT12_SUBSCALES },
+  { key: 'hexaco', tagColor: 'cyan', tagLabel: 'HEXACO-60', title: 'HEXACO', factorType: 'factors' as const, names: HEXACO_FACTORS },
+  { key: 'bis11', tagColor: 'orange', tagLabel: 'BIS-11', title: 'Impulsividade Barratt', factorType: 'subscales' as const, names: BIS11_SUBSCALES },
+  { key: 'tas20', tagColor: 'red', tagLabel: 'TAS-20', title: 'Alexitimia Toronto', factorType: 'subscales' as const, names: TAS20_SUBSCALES },
+  { key: 'rses', tagColor: 'green', tagLabel: 'RSES', title: 'Autoestima Rosenberg', factorType: 'dimensions' as const, names: [RSES_LABEL] },
+]
+
+function TimelineView({ timeline }: { timeline: any }) {
+  return (
+    <Row gutter={16}>
+      {TIMELINE_SCALES_CONFIG.map((cfg) => {
+        const scaleData = timeline[cfg.key]
+        if (!scaleData?.timeline?.length) return null
+        const points: PersonalityTimelinePoint[] = scaleData.timeline
+        const chartData = points.map((p: PersonalityTimelinePoint) => {
+          const dateStr = p.date.slice(0, 10)
+          const row: Record<string, any> = { date: dateStr }
+          const factorMap = p[cfg.factorType === 'factors' ? 'factors' : cfg.factorType === 'subscales' ? 'subscales' : 'dimensions'] || {}
+          for (const name of cfg.names) {
+            if (factorMap[name]) {
+              row[name] = Math.round(((factorMap[name] as FactorScore).score || 0) / ((factorMap[name] as FactorScore).max_possible || 1) * 100)
+            }
+          }
+          return row
+        })
+
+        const hasData = chartData.length > 0 && cfg.names.some((n) => chartData.some((r: any) => r[n] !== undefined))
+
+        return (
+          <Col span={24} key={cfg.key} style={{ marginBottom: 16 }}>
+            <Card size="small" title={<Space><Tag color={cfg.tagColor}>{cfg.tagLabel}</Tag> {cfg.title}</Space>}>
+              {!hasData ? (
+                <Text type="secondary">Sem dados temporais para este paciente</Text>
+              ) : (
+                <>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="date" tick={{ fontSize: 11 }} />
+                      <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11 }} />
+                      <RechartsTooltip formatter={(value: string | number | (string | number)[]) => `${value}%`} />
+                      <Legend />
+                      {cfg.names.map((name) => (
+                        <Line key={name} type="monotone" dataKey={name}
+                          stroke={colorForFactor(name)}
+                          strokeWidth={2} dot={{ r: 4 }}
+                          connectNulls />
+                      ))}
+                    </LineChart>
+                  </ResponsiveContainer>
+                  <Table
+                    dataSource={points.map((p, i) => {
+                      const factorMap = p[cfg.factorType === 'factors' ? 'factors' : cfg.factorType === 'subscales' ? 'subscales' : 'dimensions'] || {}
+                      const row: Record<string, any> = { key: i, date: p.date.slice(0, 10) }
+                      for (const name of cfg.names) {
+                        if (factorMap[name]) {
+                          const fs = factorMap[name] as FactorScore
+                          row[name] = `${fs.score}/${fs.max_possible} (${fs.percentage}%)`
+                        }
+                      }
+                      row.total = `${p.total_score}/${p.total_max}`
+                      return row
+                    })}
+                    columns={[
+                      { title: 'Data', dataIndex: 'date', key: 'date', width: 110 },
+                      ...cfg.names.map((name) => ({
+                        title: <span style={{ color: colorForFactor(name) }}>{name}</span>,
+                        dataIndex: name, key: name,
+                      })),
+                      { title: 'Total', dataIndex: 'total', key: 'total', width: 120 },
+                    ]}
+                    pagination={false}
+                    size="small"
+                    bordered
+                  />
+                </>
+              )}
+            </Card>
+          </Col>
+        )
+      })}
+    </Row>
+  )
+}
+
 export default function PersonalityPage() {
   const [patients, setPatients] = useState<PatientListItem[]>([])
   const [patientUuid, setPatientUuid] = useState<string | undefined>()
   const [loading, setLoading] = useState(false)
   const [factors, setFactors] = useState<PersonalityFactorsResponse | null>(null)
+  const [viewMode, setViewMode] = useState<string>('atual')
+
+  // Timeline state
+  const [timeline, setTimeline] = useState<any>(null)
+  const [timelineLoading, setTimelineLoading] = useState(false)
 
   useEffect(() => {
     patientsApi.list(1, 100).then((r) => setPatients(r.patients))
@@ -187,12 +278,24 @@ export default function PersonalityPage() {
     }
   }, [])
 
+  const fetchTimeline = useCallback(async (uuid: string) => {
+    setTimelineLoading(true)
+    try {
+      const data = await mlApi.personalityTimeline(uuid)
+      setTimeline(data)
+    } finally {
+      setTimelineLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     if (patientUuid) {
       setFactors(null)
+      setTimeline(null)
       fetchFactors(patientUuid)
+      fetchTimeline(patientUuid)
     }
-  }, [patientUuid, fetchFactors])
+  }, [patientUuid, fetchFactors, fetchTimeline])
 
   const ds = factors?.data_source || 'unavailable'
   const dsInfo = DATA_SOURCE_LABELS[ds] || DATA_SOURCE_LABELS.unavailable
@@ -259,10 +362,22 @@ export default function PersonalityPage() {
               options={patients.map((p) => ({ value: p.patient_uuid, label: `${p.full_name} (${p.patient_uuid?.slice(0, 8)})` }))}
             />
           </Col>
-          <Col xs={12} md={7}>
+          <Col xs={12} md={5}>
             {patientUuid && <Tag color={dsInfo.color}>{dsInfo.label}</Tag>}
           </Col>
-          <Col xs={12} md={7} style={{ textAlign: 'right' }}>
+          <Col xs={12} md={4}>
+            {patientUuid && (
+              <Segmented
+                value={viewMode}
+                onChange={setViewMode}
+                options={[
+                  { value: 'atual', label: <Space><ProfileOutlined />Atual</Space> },
+                  { value: 'evolucao', label: <Space><LineChartOutlined />Evolução</Space> },
+                ]}
+              />
+            )}
+          </Col>
+          <Col xs={12} md={5} style={{ textAlign: 'right' }}>
             <Button type="primary" icon={<FormOutlined />} disabled={!patientUuid} onClick={openQModal}>
               Aplicar Questionário
             </Button>
@@ -270,9 +385,10 @@ export default function PersonalityPage() {
         </Row>
 
         {!patientUuid && <Empty description="Selecione um paciente para ver o perfil de personalidade" />}
-        {patientUuid && loading && <Spin style={{ display: 'block', margin: '40px auto' }} />}
+        {patientUuid && loading && viewMode === 'atual' && <Spin style={{ display: 'block', margin: '40px auto' }} />}
+        {patientUuid && timelineLoading && viewMode === 'evolucao' && <Spin style={{ display: 'block', margin: '40px auto' }} />}
 
-        {patientUuid && !loading && factors && (
+        {patientUuid && viewMode === 'atual' && !loading && factors && (
           <>
             {/* Row 1: BFP + DT-12 */}
             <Row gutter={16} style={{ marginBottom: 4 }}>
@@ -336,7 +452,11 @@ export default function PersonalityPage() {
           </>
         )}
 
-        {ds === 'ml_predicted' && patientUuid && factors?.feature_scales && (
+        {patientUuid && viewMode === 'evolucao' && !timelineLoading && timeline && (
+          <TimelineView timeline={timeline} />
+        )}
+
+        {ds === 'ml_predicted' && patientUuid && factors?.feature_scales && viewMode === 'atual' && (
           <Card size="small" title="Características usadas para predição de personalidade" style={{ marginTop: 16 }}>
             <Row gutter={[8, 8]}>
               {Object.entries(factors.feature_scales).map(([name, val]) => (

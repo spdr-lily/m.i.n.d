@@ -5,10 +5,7 @@ import { CalendarOutlined, EditOutlined, HistoryOutlined, DownloadOutlined, Push
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
-import { patientsApi } from '../../api/patients'
-import { consultationsApi } from '../../api/consultations'
-import { reportsApi } from '../../api/reports'
-import { scalesApi } from '../../api/scales'
+import { patientsApi, consultationsApi, reportsApi, scalesApi } from '../../api/endpoints'
 import type { PatientResponse, ConsultationListItem, MedicalReport, ScaleHistoryItem } from '../../types'
 import { SCALE_OPTIONS, NEURO_SCALES, CLINICAL_SCALES } from '../../utils/constants'
 
@@ -48,8 +45,9 @@ export default function PatientDetailPage() {
       .then(([p, c, r, h]) => {
         setPatient(p)
         setConsultations(c.consultations || [])
-        setReports(r.filter(rpt => rpt.is_pinned))
-        const scales = [...new Set(h.assessments.map((a: any) => a.scale_name))].sort()
+        setReports(r.filter((rpt: any) => rpt.is_pinned))
+        const assessments = h.assessments as any[];
+        const scales: string[] = [...new Set(assessments.map((a: any) => a.scale_name as string))].sort();
         setAvailableScales(scales)
         if (scales.length > 0) setSelectedScale(scales[0])
       })
@@ -155,7 +153,7 @@ export default function PatientDetailPage() {
                 <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="score" stroke="#1677ff" strokeWidth={2} dot={{ r: 4 }} name={SCALE_OPTIONS[selectedScale!]?.label || selectedScale} />
+                <Line type="monotone" dataKey="score" stroke="#1677ff" strokeWidth={2} dot={{ r: 4 }} name={selectedScale ?? ''} />
               </LineChart>
             </ResponsiveContainer>
           ) : (

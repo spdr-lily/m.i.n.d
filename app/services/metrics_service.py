@@ -9,7 +9,7 @@ from app.models.base import (
     DiagnosticInference, ScaleResponse, Disorder, Symptom,
     AssessmentScale, ScaleQuestion, EducationLevel, Ethnicity,
 )
-from app.repositories.patient_repository import PatientRepository
+from app.repositories import PatientRepository
 
 
 AGE_BINS = [0, 18, 35, 50, 65, 200]

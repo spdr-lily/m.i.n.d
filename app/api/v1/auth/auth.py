@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
 from app.core.database import get_db
-from app.repositories.auth_repository import AuthRepository
+from app.repositories import AuthRepository
 from app.security.hashing import verify_password, get_password_hash
 from app.security.jwt import create_access_token, decode_access_token
 from app.security.permissions import Role, has_permission, Permission

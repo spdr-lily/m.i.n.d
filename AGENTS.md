@@ -47,6 +47,7 @@
 - *(none)*
 
 ### Done (This Session)
+- **Personality timeline view**: Added `GET /api/v1/assessments/patient/{uuid}/personality-timeline` endpoint returning per-consultation personality factor scores ordered by date. Backend: `app/ml/predictors/personality_factors.py:get_patient_personality_timeline()`, service in `assessment_service.py`, route in `assessments.py`. Frontend: `PersonalityPage.tsx` — Segmented toggle "Atual" / "Evolução" switching between snapshot view and chronological line charts (Recharts LineChart) with per-scale factor evolution, data table below each chart. TypeScript types `PersonalityTimelinePoint`, `PersonalityTimelineItem`, `PersonalityTimelineResponse`. API method `mlApi.personalityTimeline()`.
 - **Therapeutic response label generator fixed**: `app/ml/training/label_builder.py` — replaced `next_phq9 < current_phq9` (24.5% positives, PHQ-9 max 7.0) with `generate_therapeutic_response()` — probabilistic model using PHQ-9 severity, days_since_last_consult, consult_num, and disorder type. Baseline ~30% + modifiers. Clipped to [0.10, 0.80]. **Result: 41.27% positives** (within 35-50% target). All 189 consultations receive labels (not only paired ones).
 - **scale_pos_weight for XGBoost**: `app/ml/training/trainer.py` — injects `scale_pos_weight = n_neg / n_pos` from y_train distribution dynamically into XGBoost params post-train-test-split.
 - **PR-AUC and Brier Score metrics**: Added to `trainer.py:_compute_metrics()` — PR-AUC (primary imbalance metric) and Brier score (calibration). Logged alongside existing ROC-AUC.

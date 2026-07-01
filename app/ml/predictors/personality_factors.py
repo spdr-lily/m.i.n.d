@@ -223,6 +223,120 @@ def _try_raw_responses(
     return result_dict
 
 
+def get_patient_personality_timeline(db: Session, patient_uuid: UUID) -> dict:
+    """Extract per-factor personality scores grouped by consultation (timeline).
+
+    Returns dict with each personality scale containing a list of chronological
+    snapshots with per-factor scores, date, and total.
+    """
+    results = (
+        db.query(
+            AssessmentScale.scale_name,
+            ScaleQuestion.question_text,
+            ScaleQuestion.question_order,
+            ClinicalConsultation.consultation_uuid,
+            ClinicalConsultation.consultation_date,
+            sa_func.sum(ScaleResponse.response_value).label("total_score"),
+        )
+        .select_from(ClinicalConsultation)
+        .join(PatientProfile, PatientProfile.profile_uuid == ClinicalConsultation.profile_uuid)
+        .join(PatientIdentity, PatientIdentity.patient_uuid == PatientProfile.patient_uuid)
+        .join(ScaleResponse, ScaleResponse.consultation_uuid == ClinicalConsultation.consultation_uuid)
+        .join(ScaleQuestion, ScaleQuestion.question_id == ScaleResponse.question_id)
+        .join(AssessmentScale, AssessmentScale.scale_id == ScaleQuestion.scale_id)
+        .filter(PatientIdentity.patient_uuid == patient_uuid)
+        .filter(AssessmentScale.scale_name.in_(SCALE_NAMES))
+        .group_by(
+            AssessmentScale.scale_name,
+            ScaleQuestion.question_text,
+            ScaleQuestion.question_order,
+            ClinicalConsultation.consultation_uuid,
+            ClinicalConsultation.consultation_date,
+        )
+        .order_by(ClinicalConsultation.consultation_date.asc())
+        .all()
+    )
+
+    scale_defs = {
+        "BFP": (BFP_FACTORS, {"total_max": 100.0, "max_per_factor": 20.0, "per_item_max": 4.0}),
+        "DT-12 (Tríade Sombria)": (DT12_SUBSCALES, {"total_max": 72.0, "max_per_factor": 24.0, "per_item_max": 6.0}),
+        "HEXACO-60": (HEXACO_FACTORS, {"total_max": 300.0, "max_per_factor": 50.0, "per_item_max": 5.0}),
+        "BIS-11": (BIS11_SUBSCALES, {"total_max": 120.0, "max_per_factor": 44.0, "per_item_max": 4.0}),
+        "TAS-20": (TAS20_SUBSCALES, {"total_max": 100.0, "max_per_factor": 40.0, "per_item_max": 5.0}),
+        "RSES": (RSES_DIMENSION, {"total_max": 40.0, "max_per_factor": 40.0, "per_item_max": 4.0}),
+    }
+    scale_keys = {
+        "BFP": "bfp", "DT-12 (Tríade Sombria)": "dt12",
+        "HEXACO-60": "hexaco", "BIS-11": "bis11",
+        "TAS-20": "tas20", "RSES": "rses",
+    }
+    scale_factor_type = {
+        "BFP": "factors", "DT-12 (Tríade Sombria)": "subscales",
+        "HEXACO-60": "factors", "BIS-11": "subscales",
+        "TAS-20": "subscales", "RSES": "dimensions",
+    }
+
+    if not results:
+        return {sk: {"timeline": [], "total_max": scale_defs[sn][1]["total_max"]}
+                for sn, sk in scale_keys.items()}
+
+    by_consultation: Dict[str, dict] = {}
+    for r in results:
+        cuuid = str(r.consultation_uuid)
+        if cuuid not in by_consultation:
+            by_consultation[cuuid] = {
+                "consultation_uuid": cuuid,
+                "date": r.consultation_date.isoformat(),
+                "data": {},
+            }
+        factor = _parse_factor_from_question(r.question_text)
+        score = float(r.total_score) if r.total_score is not None else 0.0
+        sn = r.scale_name
+        key = scale_keys.get(sn)
+        fmap = scale_defs.get(sn, ({}, {}))[0]
+        if key and factor in fmap:
+            by_consultation[cuuid]["data"].setdefault(sn, {}).setdefault(key, {}).setdefault("items", []).append(
+                (factor, score, fmap[factor])
+            )
+
+    output = {}
+    for sn in SCALE_NAMES:
+        key = scale_keys[sn]
+        ftype = scale_factor_type[sn]
+        fmap, cfg = scale_defs[sn]
+        timeline = []
+        for cuuid in sorted(by_consultation.keys()):
+            entry = by_consultation[cuuid]
+            scale_data = entry["data"].get(sn, {}).get(key, {})
+            items = scale_data.get("items", [])
+            if not items:
+                continue
+            factor_scores = {}
+            total = 0.0
+            seen: Dict[str, list] = {}
+            for fname, sc, _ in items:
+                seen.setdefault(fname, []).append(sc)
+            for fname, scores in seen.items():
+                f_total = sum(scores)
+                max_p = min(len(scores) * cfg["per_item_max"], cfg["max_per_factor"])
+                factor_scores[fname] = {
+                    "score": f_total,
+                    "max_possible": max_p,
+                    "percentage": round(f_total / max_p * 100, 1) if max_p > 0 else 0,
+                }
+                total += f_total
+            timeline.append({
+                "consultation_uuid": entry["consultation_uuid"],
+                "date": entry["date"],
+                ftype: factor_scores,
+                "total_score": round(total, 2),
+                "total_max": cfg["total_max"],
+            })
+        output[key] = {"timeline": timeline, "total_max": cfg["total_max"]}
+
+    return output
+
+
 FACTOR_QUESTION_INDICES: Dict[str, Dict[str, List[int]]] = {
     "BFP": {
         "Abertura": [0, 1, 2, 3, 4],

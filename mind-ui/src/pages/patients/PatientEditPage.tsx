@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Card, Form, Input, Select, Button, Typography, Breadcrumb, message, Space, Row, Col, Spin } from 'antd'
 import dayjs from 'dayjs'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
-import { patientsApi } from '../../api/patients'
-import { referenceApi } from '../../api/reference'
+import { patientsApi, referenceApi } from '../../api/endpoints'
 import type { SexType, GenderIdentity, EducationLevel, Ethnicity } from '../../types'
 
 dayjs.extend(customParseFormat)
@@ -51,7 +50,7 @@ export default function PatientEditPage() {
         occupation: profile.occupation,
         trans_status: profile.trans_status,
       })
-    }).finally(() => setLoading(false))
+    }).catch(() => message.error('Erro ao carregar dados do paciente')).finally(() => setLoading(false))
   }, [uuid, form])
 
   const handleSubmit = async (values: Record<string, unknown>) => {

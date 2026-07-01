@@ -1,6 +1,6 @@
 from datetime import date
 from app.core.database import SessionLocal
-from app.repositories.patient_repository import PatientRepository
+from app.repositories import PatientRepository
 
 db = SessionLocal()
 repo = PatientRepository(db)

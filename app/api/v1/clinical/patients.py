@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.services.patient_service import PatientService
-from app.services.medical_report_service import MedicalReportService
+from app.services.crud_service import MedicalReportService
 from app.services.timeline_service import TimelineService
 from app.services.export_service import ExportService
 from app.schemas.patient_identity import PatientIdentityCreate, PatientIdentityResponse

@@ -9,7 +9,7 @@ from starlette.types import ASGIApp
 
 from app.core.database import SessionLocal
 from app.services.audit_service import AuditService
-from app.services.access_log_service import AccessLogService
+from app.services.crud_service import AccessLogService
 from app.services.monitor_service import monitor
 from app.security.jwt import decode_access_token
 

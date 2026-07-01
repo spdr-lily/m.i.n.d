@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Card, Table, Button, Modal, Form, Input, DatePicker, Select, Space, Typography, Breadcrumb, message, Popconfirm, Tag } from 'antd'
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import { professionalsApi } from '../../api/professionals'
-import { patientsApi } from '../../api/patients'
+import { providersApi, patientsApi } from '../../api/endpoints'
 import type { HealthcareProfessionalResponse, PatientListItem } from '../../types'
 import dayjs from 'dayjs'
 
@@ -33,7 +32,7 @@ export default function ProfessionalsPage() {
     setLoading(true)
     try {
       const [profData, patientData] = await Promise.all([
-        professionalsApi.list(),
+        providersApi.list(),
         patientsApi.list().catch(() => ({ patients: [] })),
       ])
       setProfessionals(profData.professionals)
@@ -82,10 +81,10 @@ export default function ProfessionalsPage() {
         assigned_patient_uuids: values.assigned_patient_uuids || [],
       }
       if (editing) {
-        await professionalsApi.update(editing.professional_uuid, payload)
+        await providersApi.update(editing.professional_uuid, payload)
         message.success('Profissional atualizado com sucesso')
       } else {
-        await professionalsApi.create(payload)
+        await providersApi.create(payload)
         message.success('Profissional criado com sucesso')
       }
       setModalOpen(false)
@@ -99,7 +98,7 @@ export default function ProfessionalsPage() {
 
   const handleDelete = async (uuid: string) => {
     try {
-      await professionalsApi.delete(uuid)
+      await providersApi.delete(uuid)
       message.success('Profissional excluído com sucesso')
       fetchData()
     } catch {

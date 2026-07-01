@@ -5,11 +5,7 @@ import {
   DatePicker, Slider, InputNumber, Row, Col, Tag, Divider, Checkbox, Collapse,
 } from 'antd'
 import { PlusOutlined, DeleteOutlined, CheckSquareOutlined, FileTextOutlined } from '@ant-design/icons'
-import { consultationsApi } from '../../api/consultations'
-import { patientsApi } from '../../api/patients'
-import { professionalsApi } from '../../api/professionals'
-import { disordersApi } from '../../api/disorders'
-import { scalesApi } from '../../api/scales'
+import { consultationsApi, patientsApi, providersApi, disordersApi, scalesApi } from '../../api/endpoints'
 import { SCALE_OPTIONS } from '../../utils/constants'
 import type { PatientListItem, HealthcareProfessionalResponse, Symptom, AssessmentScale, ClinicalNote } from '../../types'
 
@@ -56,7 +52,7 @@ export default function ConsultationCreatePage() {
   useEffect(() => {
     Promise.all([
       patientsApi.list(1, 100),
-      professionalsApi.list(),
+      providersApi.list(),
       disordersApi.listSymptoms(),
       scalesApi.list(),
     ]).then(([p, prof, sym, sc]) => {
