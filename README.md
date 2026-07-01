@@ -12,9 +12,9 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 |---|---|
 | Frontend | React 18 + TypeScript + Vite 5 + Ant Design 5 + Recharts + Zustand |
 | API | FastAPI + Pydantic v2 + SQLAlchemy 2.0 |
-| Banco | PostgreSQL 16 + Alembic (12 revisões) |
-| Inferência | Rede Bayesiana (Naive Bayes) + Critérios DSM-5-TR |
-| Escalas | 20 escalas: PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY |
+| Banco | PostgreSQL 16 + Alembic (21 revisões) |
+| Inferência | Motor duplo (critérios DSM-5-TR + Naive Bayes + escalas + ML blending) |
+| Escalas | 21 escalas: PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10, BFP, DT-12, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY |
 | ML Pipeline | Logistic Regression, Random Forest, XGBoost (4 objetivos × 3 algoritmos = 12 modelos) |
 | MLOps | MLflow + DVC |
 | DW | Star schema (dim_fato), ETL via `dw_loader.py` |
@@ -34,7 +34,7 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 2. **Classificação Dual** — APA (DSM-5-TR) e WHO (CID-11) como autoridades de primeira classe
 3. **Motor de Critérios Diagnósticos** — Avaliação baseada em regras DSM-5-TR (contagem mínima, duração, exclusão, comorbidade)
 4. **Motor Bayesiano** — Naive Bayes com priors epidemiológicos (Kessler NCS-R, WHO WMHS)
-5. **10 Escalas Psicométricas** — Scoring completo com interpretação por gravidade
+5. **21 Escalas Psicométricas** — Scoring completo com interpretação por gravidade (inclui BFP 25 itens, DT-12, 10 neuropsicológicas)
 6. **Pipeline de ML** — 12 modelos treinados (diagnóstico, recaída, risco de suicídio, resposta terapêutica), registrados no MLflow
 7. **Gestão de Prescrições** — CRUD de prescrições por consulta com rastreabilidade (itens, notas, vínculo com medicações)
 8. **Gestão de Profissionais** — CRM/CRP, especialidade, atribuição de pacientes
@@ -42,7 +42,7 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 10. **Data Warehouse** — Star schema com ETL dedicado
 11. **Segurança em Camadas** — CSP, HSTS, Rate Limit (100 req/min), proteção SQL injection, Bandit zero
 12. **LGPD Compliance** — UUID, pseudonimização, criptografia Fernet AES, auditoria, retenção configurável (5 anos, implementado via `is_within_retention`)
-13. **Frontend Web** — 12 páginas React com sidebar responsiva por role
+13. **Frontend Web** — 27 páginas React com sidebar responsiva por role
 
 ---
 

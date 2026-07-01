@@ -184,11 +184,12 @@ POST /api/v1/inferences/bayesian
 | ASRS | `POST /api/v1/assessments/score` | 18 (0-4) | 0-72 | Parte A ≥4 = screening positivo para TDAH |
 | AQ-10 | `POST /api/v1/assessments/score` | 10 (1-4) | 10-40 | ≥6 = screening positivo para TEA |
 
-#### Escalas Neuropsicológicas (10)
+#### Escalas de Personalidade e Neuropsicológicas (11)
 
 | Escala | Endpoint | Itens | Pontuação | Interpretação |
 |---|---|---|---|---|
-| BFP | `POST /api/v1/assessments/score` | 6 (0-4) | 0-24 | 0-9: baixo, 10-15: médio, 16-19: alto, 20+: muito alto |
+| BFP | `POST /api/v1/assessments/score` | 25 (0-4) | 0-100 | Média por fator: 0-1.5: baixo, 1.6-2.5: médio, 2.6-4.0: alto (5 fatores: Abertura, Conscienciosidade, Extroversão, Amabilidade, Neuroticismo) |
+| DT-12 | `POST /api/v1/assessments/score` | 12 (0-6) | 0-72 | Média por subescala: 0-2: baixo, 2.1-3.5: moderado, 3.6-6.0: alto (Maquiavelismo, Narcisismo, Psicopatia) |
 | MEMÓRIA | `POST /api/v1/assessments/score` | 8 (0-2) | 0-16 | 0-4: déficit grave, 5-8: moderado, 9-12: leve, 13-15: normal, 16: normal superior |
 | QI - RASTREIO | `POST /api/v1/assessments/score` | 10 (0-3) | 0-30 | 0-7: muito abaixo, 8-14: abaixo, 15-19: médio-inf, 20-24: média, 25-27: médio-sup, 28+: superior |
 | RECONHECIMENTO DE ROSTOS | `POST /api/v1/assessments/score` | 6 (0-2) | 0-12 | 0-3: déficit grave, 4-6: moderado, 7-9: leve, 10+: normal |

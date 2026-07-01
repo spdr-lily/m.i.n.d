@@ -2,7 +2,7 @@
 
 ## Motivação
 
-Os priors epidemiológicos da rede bayesiana (`app/ml/models/network_definition.py`) usavam exclusivamente estimativas do **NCS-R (National Comorbidity Survey Replication)** — Kessler et al. (2005) — baseadas na população adulta dos EUA (n=9.282). Para um CDSS voltado à população brasileira, calibrar os priors com dados locais melhora a acurácia do diagnóstico probabilístico.
+Os priors epidemiológicos da rede bayesiana (`app/ml/inference/`) usavam exclusivamente estimativas do **NCS-R (National Comorbidity Survey Replication)** — Kessler et al. (2005) — baseadas na população adulta dos EUA (n=9.282). Para um CDSS voltado à população brasileira, calibrar os priors com dados locais melhora a acurácia do diagnóstico probabilístico.
 
 ## Fonte alternativa
 

@@ -27,27 +27,26 @@
 
 ### Banco de Dados
 - **PostgreSQL 16** — Relacional com schemas (`core`, `clinical`, `diagnostic`, `audit`, `admin`)
-- **Alembic** — 12 revisões lineares
+- **Alembic** — 21 revisões lineares
 - **30+ tabelas** — Pacientes, profissionais, consultas, episódios, sintomas, transtornos, inferências, escalas, notas clínicas, medicações, prescrições, relatórios, auditoria, permissões, consentimento, autoridades de classificação, atribuições profissional-paciente, DW
 
 ### Inferência & ML
-- **Rede Bayesiana (Naive Bayes)** — `app/ml/bayesian_network.py`
-- **CriteriaEvaluator** — Lógica DSM-5-TR (contagem mínima, duração, exclusão, comorbidade)
-- **DSM-ICD Mapper** — Mapeamento bidirecional DSM-5-TR ↔ CID-11
-- **20 escalas psicométricas** — 10 clínicas (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10) + 10 neuropsicológicas (BFP, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY)
+- **Motor de inferência dupla** — `app/ml/inference/`: critérios DSM-5-TR + Naive Bayes + ajuste por escalas + ML blending
+- **21 escalas psicométricas** — 10 clínicas (PHQ-9, GAD-7, MADRS, MDQ, PCL-5, Y-BOCS, AUDIT, ASRM, ASRS, AQ-10) + 11 neuropsicológicas/personalidade (BFP 25 itens, DT-12, MEMÓRIA, QI-RASTREIO, RECONHECIMENTO DE ROSTOS, FLUÊNCIA VERBAL, TESTE DO RELÓGIO, TRILHAS, STROOP, CANCELAMENTO, FIGURA COMPLEXA DE REY)
 - **ML Pipeline** — 12 modelos (4 objetivos × 3 algoritmos: Logistic Regression, Random Forest, XGBoost)
 - **MLflow** — Experiment tracking e model registry
 - **DVC** — Versionamento de datasets
 
 ### Métricas & Analytics
-- **Pandas** — `metrics_service.py`: faixas etárias, moving averages, correlação de Pearson
+- **Analytics consolidado** — `app/analytics/service.py`: demographics, BI, dashboards, métricas, ML dashboard
+- **Pandas** — `app/services/metrics_service.py`: faixas etárias, moving averages, correlação de Pearson
 - **Apache Airflow** — 4 DAGs (inferência em lote, qualidade, métricas, alertas)
 - **PySpark 3.5** — 3 jobs (batch inference, population metrics, data import CSV)
 - **Data Warehouse** — Star schema (`dim_disorder`, `dim_patient`, `dim_date`, `fact_diagnosis`, `fact_symptom`, `fact_consultation`, `fact_scale_response`)
 
 ### Segurança
 - **JWT** — Login, refresh, verificação de token
-- **RBAC** — Roles: `admin`, `clinician`, `viewer`
+- **RBAC** — 7 roles: `admin`, `clinician`, `viewer`, `psychiatrist`, `psychologist`, `researcher`, `clinical_supervisor`
 - **Fernet AES** — Criptografia de campos sensíveis (LGPD)
 - **Audit Middleware** — Log de todas as requisições a entidades clínicas
 - **Security Middleware Stack** — CSP, HSTS (1 ano), Rate Limit (100 req/min), Proteção SQL Injection
@@ -56,7 +55,7 @@
 - **Pre-commit hooks** — Security checks automatizados
 
 ### Administração
-- **RolePermission** — Permissões granulares por role
+- **RolePermission** — Permissões granulares por role (7 roles: admin, clinician, viewer, psychiatrist, psychologist, researcher, clinical_supervisor)
 - **RoutePermission** — Controle de acesso por rota
 - **MonitorService** — Métricas de desempenho em tempo real (in-memory)
 - **12+ endpoints** `/api/v1/admin/`
@@ -208,9 +207,9 @@
 ### Estrutura
 ```
 mind-ui/src/
-├── api/           # 16 módulos (client.ts + Axios)
+├── api/           # 4 módulos (client.ts, endpoints.ts, auth.ts, chatbot.ts)
 ├── components/    # MainLayout, MindLogo
-├── pages/         # 10 páginas por domínio
+├── pages/         # 27 .tsx em 11 domínios
 ├── store/         # Zustand (auth, theme)
 ├── types/         # Interfaces TypeScript
 └── utils/         # Constantes
@@ -283,28 +282,27 @@ Uso: `python spark/submit.py <job_name> [--csv path]`
 
 ## Testes
 
-**548 testes** (unitários + integração + API + ML + segurança):
+**548 testes** (API + ML + segurança + integração):
 
 ```
 tests/
-├── unit/                          # 7 testes unitários legado
-├── integration/                   # 6 testes de integração
 ├── api/
 │   └── v1/
 │       ├── clinical/              # Escalas, consultas, profissionais, etc.
 │       ├── diagnostic/            # Chatbot MIA
 │       └── auth/                  # Admin, auditoria
 ├── ml/
-│   ├── inference/                 # Bayesian network, inference engine
-│   ├── evaluation/                # Criteria evaluator
-│   └── models/                    # Assessment scales, DSM-ICD mapper
+│   ├── inference/                 # Motor de inferência dupla
+│   ├── evaluation/                # Avaliação de critérios
+│   └── models/                    # Modelos de escalas
 ├── security/                      # Auth, LGPD, consent, encryption
-└── analytics/                     # Métricas
+├── analytics/                     # Métricas
+└── integration/                   # Testes de integração
 ```
 
 ```bash
 pytest tests/ -v           # Todos
-pytest tests/unit/ -v      # Unitários
+pytest tests/api/ -v       # API
 pytest tests/integration/ -v  # Integração
 pytest --cov=app --cov-report=html  # Cobertura
 ```

@@ -163,7 +163,7 @@ Retreinamento em dados reais → estudo prospectivo com SCID-5-CV (padrão ouro)
 │              │     │  ├─ Consultation (decrypt on response)   │
 │  /login      │     │  ├─ Inference (dual pipeline)            │
 │  /dashboard  │     │  │   ├─ Rules (DSM-5-TR criteria)       │
-│  /patients   │     │  │   ├─ Naive Bayes (priors Brasil)     │
+│  /patients   │     │   │   ├─ Naive Bayes (priors NCS-R)      │
 │  /consultas  │     │  │   ├─ Scale boost (threshold match)   │
 │  /inferences │     │  │   └─ ML blend (0.15 weight)          │
 │  /mia        │     │  ├─ Scales (21, scoring + interpretação) │
@@ -173,7 +173,7 @@ Retreinamento em dados reais → estudo prospectivo com SCID-5-CV (padrão ouro)
 │              │     │  └─ Chatbot MIA (regras + busca textual) │
 │              │     │                                          │
 │              │     ├── PostgreSQL 16 (clinical, diagnostic,   │
-│              │     │     dw schemas) + 12 migrations Alembic  │
+│              │     │     dw schemas) + 21 migrations Alembic  │
 │              │     ├── Redis (cache — sessão, filas, MLflow)  │
 │              │     ├── Airflow (4 DAGs: treino, etl, backup,  │
 │              │     │     monitoria)                           │
@@ -189,8 +189,8 @@ Retreinamento em dados reais → estudo prospectivo com SCID-5-CV (padrão ouro)
 | O que procurar | Caminho |
 |---|---|
 | Motor de inferência dupla (regras + bayes) | [`app/ml/inference/`](./app/ml/inference/) |
-| 21 escalas psicométricas + SCALE_DISORDER_MAP | [`app/ml/models/assessment_scales.py`](./app/ml/models/assessment_scales.py) |
-| LGPD: separação de identidade, criptografia, consentimento | [`app/security/lgpd.py`](./app/security/lgpd.py) |
+| 21 escalas psicométricas + SCALE_DISORDER_MAP | [`app/ml/models/`](./app/ml/models/) |
+| LGPD: separação de identidade, criptografia, consentimento | [`app/security/`](./app/security/) |
 | Validação clínica em 3 camadas | [`app/services/integrity_service.py`](./app/services/integrity_service.py) |
 | Pipeline ML: treino, registro, predição | [`app/ml/training/`](./app/ml/training/) |
 | Personalidade: fatores BFP (Big Five) + Dark Triad | [`app/ml/predictors/personality_factors.py`](./app/ml/predictors/personality_factors.py) |

@@ -35,7 +35,7 @@ docker compose up -d
 .venv\Scripts\python.exe scripts/seed_icd11.py
 .venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_diagnostic_data.py
-.venv\Scripts\python.exe scripts/seed_clinical_data.py     # 50 pacientes, 20 escalas, 3k+ respostas
+.venv\Scripts\python.exe scripts/seed_clinical_data.py     # 50 pacientes, 21 escalas, 34k+ respostas
 
 # 7. Servidor
 .venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
@@ -58,7 +58,7 @@ npm run dev
 ### Dados de Exemplo
 
 ```bash
-.venv\Scripts\python.exe scripts/seed_clinical_data.py          # 50 pacientes, 20 escalas
+.venv\Scripts\python.exe scripts/seed_clinical_data.py          # 50 pacientes, 21 escalas
 .venv\Scripts\python.exe scripts/check_integrity.py             # Verificar qualidade dos dados
 ```
 
@@ -75,7 +75,7 @@ Usuários padrão: `admin` / `admin` — senha definida via seed (`db/seed.py`)
 
 ## Escalas
 
-Todas as 20 escalas estão traduzidas para português (itens, gravidade e interpretação):
+Todas as 21 escalas estão traduzidas para português (itens, gravidade e interpretação):
 
 ### Escalas Clínicas
 
@@ -96,7 +96,8 @@ Todas as 20 escalas estão traduzidas para português (itens, gravidade e interp
 
 | Escala | Itens | Português |
 |---|---|---|
-| BFP | 6 (0-4) | Bateria Fatorial da Personalidade (Big Five) |
+| BFP | 25 (0-4) | Bateria Fatorial da Personalidade — Big Five (5 fatores × 5 itens) |
+| DT-12 | 12 (0-6) | Tríade Sombria — Dark Triad (Maquiavelismo, Narcisismo, Psicopatia) |
 | MEMÓRIA | 8 (0-2) | Teste de Rastreio de Funções Mnêmicas |
 | QI - RASTREIO | 10 (0-3) | Teste de Rastreio Cognitivo |
 | RECONHECIMENTO DE ROSTOS | 6 (0-2) | Teste de Reconhecimento de Rostos |
@@ -160,9 +161,9 @@ pip install pyspark==3.5.0
 
 ## Documentação
 
-- `CLINICAL_MANUAL.md` — Manual clínico completo (19 transtornos, 20 escalas em português)
+- `CLINICAL_MANUAL.md` — Manual clínico completo (19 transtornos, 21 escalas em português)
 - `STRUCTURE.md` — Estrutura detalhada do projeto
 - `DESENVOLVIMENTO.md` — Documentação de desenvolvimento
 - `SECURITY.md` — Política de segurança
 
-**Status:** CDSS completo — ~192 transtornos DSM-5-TR (19 com pipeline clínico completo), 20 escalas em português, 12 modelos ML, 3 camadas de validação clínica.
+**Status:** CDSS completo — ~192 transtornos DSM-5-TR (19 com pipeline clínico completo), 21 escalas em português, 12 modelos ML, 3 camadas de validação clínica.

@@ -201,7 +201,8 @@ docker run --rm --network mind_mind-network `
 - `mind-ui/src/components/MainLayout.tsx`: `FloatButton` chat icon on all pages + nav item `/mia`
 
 ### Core Backend
-- `app/analytics/statistics/service.py`: `StatisticsService.get_patient_demographics()` — returns education_level_distribution and ethnicity_distribution
+- `app/analytics/service.py`: `AnalyticsService` — analytics consolidado (demographics, BI, dashboards, métricas, ML dashboard)
+- `app/services/crud_service.py`: CRUD genérico consolidado (repositórios + serviços)
 - `app/services/metrics_service.py`: alternative metrics implementation
 - `app/services/inference_service.py`: `run_inference()` fetches scale responses, passes to engine; `get_explanation()` with scale_scores
 - `app/ml/inference/inference_engine.py`: `InferenceEngine.calculate()` with `_apply_scale_adjustments()` via SCALE_DISORDER_MAP + `_apply_ml_scale_prediction()` via heuristic risk blending

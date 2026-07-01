@@ -32,58 +32,41 @@ m.i.n.d/
 │   │   ├── professional.py        # Schemas de profissional (CRM/CRP, atribuições)
 │   │   └── scale.py               # Schemas de escalas
 │   │
-│   ├── services/                  # 24 serviços de negócio
+│   ├── services/                  # 16 serviços de negócio
 │   │   ├── admin_service.py       # Permissões e monitoramento
 │   │   ├── alerts_service.py      # Geração de alertas clínicos
 │   │   ├── assessment_service.py  # Scoring de escalas + histórico
 │   │   ├── audit_service.py       # Logs de auditoria
-│   │   ├── consent_service.py     # Consentimento LGPD
+│   │   ├── chatbot_service.py     # Chatbot MIA
 │   │   ├── consultation_service.py
-│   │   ├── disorder_service.py
-│   │   ├── episode_service.py
+│   │   ├── crud_service.py        # CRUD genérico (consolidado)
 │   │   ├── export_service.py      # Exportação CSV/PDF
 │   │   ├── inference_service.py   # Orquestração de inferência
-│   │   ├── inference_log_service.py
 │   │   ├── integrity_service.py   # Validação clínica em 3 camadas
-│   │   ├── medical_report_service.py
-│   │   ├── medication_service.py
 │   │   ├── metrics_service.py     # Pandas: trends, correlações
 │   │   ├── monitor_service.py     # Monitoramento em tempo real
 │   │   ├── patient_service.py
-│   │   ├── professional_service.py
-│   │   ├── reference_service.py
-│   │   ├── scale_service.py
-│   │   ├── access_log_service.py
-│   │   └── timeline_service.py
+│   │   ├── timeline_service.py
+│   │   └── treatment_service.py
 │   │
-│   ├── repositories/             # Data access layer
-│   │   ├── base.py                # Base CRUD genérico
-│   │   ├── auth_repository.py
-│   │   ├── consultation_repository.py
-│   │   ├── disorder_repository.py
-│   │   ├── episode_repository.py
-│   │   ├── inference_repository.py
-│   │   ├── patient_repository.py
-│   │   ├── professional_repository.py
-│   │   └── scale_repository.py
+│   ├── repositories/             # Data access layer (consolidado)
+│   │   ├── __init__.py            # Re-exporta todos os repositórios
+│   │   └── service.py             # Repositórios unificados (BaseRepository, PatientRepository, ...)
 │   │
 │   ├── ml/                       # Machine Learning & Inferência
-│   │   ├── assessment_scales.py   # 20 escalas psicométricas (10 clínicas + 10 neuro)
-│   │   ├── bayesian_inference_service.py
-│   │   ├── bayesian_network.py    # Naive Bayes classifier
-│   │   ├── criteria_evaluator.py  # Regras DSM-5-TR
-│   │   ├── dsm_icd_mapper.py      # Mapeamento DSM-5 ↔ CID-11
-│   │   ├── inference_engine.py    # Cálculo probabilístico
-│   │   ├── network_definition.py  # Estrutura da rede
+│   │   ├── inference/             # Motor de inferência dupla (regras + bayes)
+│   │   ├── models/                # Modelos de escalas (AssessmentScales, SCALE_DISORDER_MAP)
+│   │   ├── predictors/            # Preditores (personalidade, risco por escalas)
+│   │   ├── evaluation/            # Avaliação de modelos
+│   │   ├── registry/              # MLflow registry wrapper
 │   │   └── training/              # Pipeline de ML
 │   │       ├── trainer.py         # Treinador (4 objetivos × 3 algoritmos)
 │   │       ├── label_builder.py   # Construtor de labels
 │   │       └── estimators.py      # Estimadores (LR, RF, XGB)
 │   │
-│   ├── api/                      # FastAPI routes (legado, prefixo /api/)
-│   │   ├── health.py
-│   │   ├── admin.py, auth.py, audit.py, ...
-│   │   └── v1/                   # Rotas atuais (prefixo /api/v1/)
+│   ├── api/                      # FastAPI routes
+│   │   ├── health.py             # Health check
+│   │   └── v1/                   # Todas as rotas (prefixo /api/v1/)
 │   │       ├── auth/
 │   │       │   ├── auth.py       # POST /api/v1/auth/login, register, me
 │   │       │   ├── admin.py      # /api/v1/admin/*
@@ -96,6 +79,7 @@ m.i.n.d/
 │   │       │   ├── episodes.py       # /api/v1/episodes/*
 │   │       │   ├── scales.py         # /api/v1/scales/*
 │   │       │   ├── assessments.py    # /api/v1/assessments/*
+│   │       │   ├── analytics.py      # /api/v1/analytics/*
 │   │       │   ├── metrics.py        # /api/v1/metrics/*
 │   │       │   ├── alerts.py         # /api/v1/alerts/*
 │   │       │   ├── medications.py    # /api/v1/medications/*
@@ -104,7 +88,8 @@ m.i.n.d/
 │   │       │   ├── disorders.py  # /api/v1/disorders/*
 │   │       │   └── inferences.py # /api/v1/inferences/*
 │   │       └── ml/
-│   │           └── training.py   # /training/*
+│   │           ├── training.py       # /training/*
+│   │           └── scale_predictions.py  # /api/v1/ml/scales/*
 │   │
 │   ├── middleware/
 │   │   ├── audit_middleware.py    # Auditoria de requisições
@@ -119,21 +104,15 @@ m.i.n.d/
 │   │   └── dw_loader.py          # ETL para Data Warehouse (star schema)
 │   │
 │   └── analytics/
-│       ├── aggregations/
-│       ├── bi/
-│       ├── dashboards/
-│       ├── metrics/
-│       └── statistics/
+│       └── service.py             # Serviço consolidado de analytics
 │
 ├── mind-ui/                      # Frontend (React + TypeScript + Vite)
 │   ├── src/
-│   │   ├── api/                  # 16 módulos Axios
+│   │   ├── api/                  # Módulos Axios (consolidados)
 │   │   │   ├── client.ts         # Axios instance com interceptor JWT
-│   │   │   ├── auth.ts, patients.ts, consultations.ts, ...
-│   │   │   ├── inferences.ts, scales.ts, disorders.ts
-│   │   │   ├── professionals.ts, medications.ts, reports.ts
-│   │   │   ├── alerts.ts, audit.ts, metrics.ts
-│   │   │   ├── admin.ts, reference.ts, timeline.ts
+│   │   │   ├── endpoints.ts      # Todos os endpoints (CRUD, métricas, escalas, etc.)
+│   │   │   ├── auth.ts           # Autenticação (login, register, me)
+│   │   │   └── chatbot.ts        # MIA chatbot API
 │   │   ├── components/
 │   │   │   ├── MainLayout.tsx    # Sidebar + Header (Ant Design)
 │   │   │   └── MindLogo.tsx      # Logo componente
@@ -214,7 +193,7 @@ m.i.n.d/
 ├── migrations/                 # Alembic
 │   ├── env.py
 │   ├── script.py.mako
-│   └── versions/               # 12 revisões lineares
+│   └── versions/               # 21 revisões lineares
 │       ├── 05ecbb7b2bc1_initial_schema.py
 │       ├── 005f85846e88_admin_permissions_routes.py
 │       ├── 9e4c2f8a1b3d_add_trans_status.py
@@ -232,18 +211,18 @@ m.i.n.d/
 │
 ├── tests/                        # 548 testes
 │   ├── conftest.py
-│   ├── unit/                     # 7 unitários (legado)
-│   ├── integration/              # 6 integração
-│   ├── api/v1/
-│   │   ├── clinical/             # Escalas, consultas, profissionais
-│   │   ├── diagnostic/           # Chatbot MIA
-│   │   └── auth/                 # Admin, auditoria
+│   ├── api/
+│   │   └── v1/
+│   │       ├── clinical/         # Escalas, consultas, profissionais
+│   │       ├── diagnostic/       # Chatbot MIA
+│   │       └── auth/             # Admin, auditoria
 │   ├── ml/
-│   │   ├── inference/            # Bayesian network, engine
-│   │   ├── evaluation/           # Criteria evaluator
-│   │   └── models/               # Assessment scales, mapper
+│   │   ├── inference/            # Motor de inferência
+│   │   ├── evaluation/           # Avaliação de critérios
+│   │   └── models/               # Modelos de escalas
 │   ├── security/                 # Auth, LGPD, consent
-│   └── analytics/                # Métricas
+│   ├── analytics/                # Métricas
+│   └── integration/              # Testes de integração
 │
 ├── .certs/                     # Certificados SSL (desenvolvimento)
 │
