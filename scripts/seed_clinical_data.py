@@ -24,6 +24,10 @@ from app.security.lgpd import encrypt_field
 
 random.seed(42)
 
+# Target number of synthetic patients. The seed keeps adding patients on every
+# re-run until this target is reached (incremental, idempotent growth).
+NUM_PATIENTS = 200
+
 # Brazilian names
 FIRST_NAMES = [
     "Ana", "Beatriz", "Carlos", "Daniel", "Eduarda", "Felipe", "Gabriela",
@@ -1980,6 +1984,174 @@ def _seed_reports(session, patient_data, consultation_records, profs):
         print(f"OK - {count} reports gerados para exemplos clinicos")
 
 
+def _create_patients(session, num_patients, sex_types, genders, edu_levels, ethnicities,
+                     symptom_map, disorder_map, scale_map, professionals, generate_scales=True):
+    """Create `num_patients` synthetic patients with clinical profiles, disorder
+    assignments, professional assignments, consultations, and symptoms.
+
+    When `generate_scales` is False, scale responses/inferences are skipped so the
+    caller can regenerate them afterwards (used by incremental re-seed to avoid
+    double-generation).
+
+    Returns (patient_data, consultation_records, patient_disorders).
+    """
+    marital_options = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"]
+    occupations = [
+        "Professor(a)", "Engenheiro(a)", "Advogado(a)", "Médico(a)",
+        "Comerciante", "Estudante", "Aposentado(a)", "Autônomo(a)",
+        "Desenvolvedor(a)", "Analista de Sistemas",
+    ]
+
+    patient_data = []
+    for _ in range(num_patients):
+        first = random.choice(FIRST_NAMES)
+        last = random.choice(LAST_NAMES)
+        full_name = f"{first} {last}"
+        patient_uuid = uuid4()
+
+        sex = random.choice(sex_types)
+        gender = random.choice(genders)
+        edu = random.choice(edu_levels)
+        eth = random.choice(ethnicities)
+        birth = date.today() - timedelta(days=random.randint(6570, 29200))
+
+        marital = random.choice(marital_options)
+        occupation = random.choice(occupations)
+
+        # Encrypt PII
+        encrypted_name = encrypt_field(full_name)
+        pi = PatientIdentity(
+            patient_uuid=patient_uuid,
+            full_name=encrypted_name,
+        )
+        session.add(pi)
+        session.flush()
+
+        pp = PatientProfile(
+            patient_uuid=patient_uuid,
+            birth_date=birth,
+            sex_type_id=sex.sex_type_id,
+            gender_identity_id=gender.gender_identity_id,
+            education_level_id=edu.education_level_id,
+            ethnicity_id=eth.ethnicity_id,
+            marital_status=marital,
+            occupation=occupation,
+        )
+        session.add(pp)
+        session.flush()
+
+        age = (date.today() - birth).days // 365
+        patient_data.append({
+            "patient_uuid": patient_uuid,
+            "profile_uuid": pp.profile_uuid,
+            "full_name": full_name,
+            "age": age,
+            "sex": sex.description,
+            "education": edu.description,
+            "ethnicity": eth.description,
+            "marital": marital,
+            "occupation": occupation,
+        })
+
+    # Assign disorders to patients (comorbidity patterns)
+    disorder_names = [dd["name"] for dd in DISORDER_DEFS]
+    patient_disorders = {}
+    for pd_item in patient_data:
+        # Primary disorder
+        primary = random.choice(disorder_names)
+        assigned = [primary]
+        # Comorbidity: 40% chance of secondary, 15% chance of tertiary
+        others = [d for d in disorder_names if d != primary]
+        if random.random() < 0.40:
+            secondary = random.choice(others)
+            assigned.append(secondary)
+            others.remove(secondary)
+        if random.random() < 0.15:
+            tertiary = random.choice(others)
+            assigned.append(tertiary)
+        patient_disorders[pd_item["patient_uuid"]] = assigned
+
+    # Professional-patient assignments (each patient has 1 primary prof)
+    for i, pd_item in enumerate(patient_data):
+        primary_prof = professionals[i % len(professionals)]
+        existing_assign = session.query(ProfessionalPatientAssignment).filter_by(
+            patient_uuid=pd_item["patient_uuid"]
+        ).first()
+        if not existing_assign:
+            session.add(ProfessionalPatientAssignment(
+                professional_uuid=primary_prof.professional_uuid,
+                patient_uuid=pd_item["patient_uuid"],
+                is_active=True,
+            ))
+        # 20% chance of secondary assignment (shared patient)
+        if random.random() < 0.20:
+            secondary = random.choice([p for p in professionals if p.professional_uuid != primary_prof.professional_uuid])
+            existing_sec = session.query(ProfessionalPatientAssignment).filter_by(
+                patient_uuid=pd_item["patient_uuid"],
+                professional_uuid=secondary.professional_uuid,
+            ).first()
+            if not existing_sec:
+                session.add(ProfessionalPatientAssignment(
+                    professional_uuid=secondary.professional_uuid,
+                    patient_uuid=pd_item["patient_uuid"],
+                    is_active=True,
+                ))
+
+    # Generate consultations with symptoms and scale responses
+    consultation_records = []
+    for i, pd_item in enumerate(patient_data):
+        disorders = patient_disorders[pd_item["patient_uuid"]]
+        num_consultations = random.randint(2, 6)
+
+        # Primary professional for this patient (same distribution as assignments)
+        primary_prof = professionals[i % len(professionals)]
+
+        for ci in range(num_consultations):
+            days_ago = random.randint(1, 365)
+            consult_date = datetime.now() - timedelta(days=days_ago)
+            # Most consultations with primary prof, some with others
+            if ci == 0 or random.random() < 0.7:
+                prof = primary_prof
+            else:
+                prof = random.choice(professionals)
+
+            consult = ClinicalConsultation(
+                consultation_uuid=uuid4(),
+                profile_uuid=pd_item["profile_uuid"],
+                professional_uuid=prof.professional_uuid,
+                consultation_date=consult_date,
+                consultation_notes=f"Consulta de acompanhamento #{ci + 1}",
+            )
+            session.add(consult)
+            session.flush()
+            consultation_records.append(consult)
+
+            # Add symptoms for assigned disorders
+            for dd in DISORDER_DEFS:
+                if dd["name"] in disorders:
+                    # Each symptom has a probability of being present
+                    for sname, sdesc, p_given, p_not, required, min_dur in dd["symptoms"]:
+                        if random.random() < p_given * 0.85:
+                            intensity = round(random.uniform(3.0, 9.0), 2)
+                            freq_options = ["daily", "several_times_week", "weekly", "several_times_month"]
+                            freq = random.choice(freq_options)
+                            duration = random.randint(min_dur if min_dur > 0 else 1, max(min_dur + 60, 90))
+                            obs = SymptomObservation(
+                                consultation_uuid=consult.consultation_uuid,
+                                symptom_id=symptom_map[sname],
+                                intensity=intensity,
+                                frequency=freq,
+                                duration_days=duration,
+                                clinical_notes=sdesc,
+                            )
+                            session.add(obs)
+
+            if generate_scales:
+                _generate_scale_responses(session, consult, disorders, scale_map, symptom_map, disorder_map)
+
+    return patient_data, consultation_records, patient_disorders
+
+
 def seed():
     engine = create_engine(settings.database_url, echo=False)
     Base.metadata.create_all(bind=engine)
@@ -2084,8 +2256,27 @@ def seed():
                 "profile_uuid": pp.profile_uuid,
             })
 
+        # Incremental growth: add more synthetic patients until the target is reached
         patient_disorders = {}
+        to_add = NUM_PATIENTS - len(patient_data)
+        if to_add > 0:
+            print(f"[RE-SEED] {len(patient_data)} pacientes < alvo {NUM_PATIENTS}. Criando mais {to_add}...")
+            all_profs = session.query(HealthcareProfessional).all()
+            new_data, new_consults, new_disorders = _create_patients(
+                session, to_add, sex_types, genders, edu_levels, ethnicities,
+                symptom_map, disorder_map, scale_map, all_profs,
+                generate_scales=False,
+            )
+            patient_data.extend(new_data)
+            consultation_records.extend(new_consults)
+            patient_disorders.update(new_disorders)
+            session.flush()
+            print(f"OK - {to_add} pacientes adicionados no re-seed")
+
         for pd_item in patient_data:
+            # New patients keep the disorder assignment used to create their symptoms
+            if pd_item["patient_uuid"] in patient_disorders:
+                continue
             disorder_names = [dd["name"] for dd in DISORDER_DEFS]
             primary = random.choice(disorder_names)
             assigned = [primary]
@@ -2310,173 +2501,16 @@ def seed():
         professionals.append(prof)
 
     # ========================================================================
-    # 6. Patients with clinical profiles
+    # 6. Patients with clinical profiles, disorder assignments, professional
+    #    assignments, consultations, symptoms, scale responses and inferences
     # ========================================================================
-    patient_data = []
-    num_patients = 50
+    patient_data, consultation_records, patient_disorders = _create_patients(
+        session, NUM_PATIENTS, sex_types, genders, edu_levels, ethnicities,
+        symptom_map, disorder_map, scale_map, professionals,
+        generate_scales=True,
+    )
 
-    for i in range(num_patients):
-        first = random.choice(FIRST_NAMES)
-        last = random.choice(LAST_NAMES)
-        full_name = f"{first} {last}"
-        patient_uuid = uuid4()
-
-        sex = random.choice(sex_types)
-        gender = random.choice(genders)
-        edu = random.choice(edu_levels)
-        eth = random.choice(ethnicities)
-        birth = date.today() - timedelta(days=random.randint(6570, 29200))
-
-        marital_options = ["Solteiro(a)", "Casado(a)", "Divorciado(a)", "Viúvo(a)", "União Estável"]
-        marital = random.choice(marital_options)
-        occupations = [
-            "Professor(a)", "Engenheiro(a)", "Advogado(a)", "Médico(a)",
-            "Comerciante", "Estudante", "Aposentado(a)", "Autônomo(a)",
-            "Desenvolvedor(a)", "Analista de Sistemas",
-        ]
-        occupation = random.choice(occupations)
-
-        # Encrypt PII
-        encrypted_name = encrypt_field(full_name)
-        pi = PatientIdentity(
-            patient_uuid=patient_uuid,
-            full_name=encrypted_name,
-        )
-        session.add(pi)
-        session.flush()
-
-        pp = PatientProfile(
-            patient_uuid=patient_uuid,
-            birth_date=birth,
-            sex_type_id=sex.sex_type_id,
-            gender_identity_id=gender.gender_identity_id,
-            education_level_id=edu.education_level_id,
-            ethnicity_id=eth.ethnicity_id,
-            marital_status=marital,
-            occupation=occupation,
-        )
-        session.add(pp)
-        session.flush()
-
-        age = (date.today() - birth).days // 365
-        patient_data.append({
-            "patient_uuid": patient_uuid,
-            "profile_uuid": pp.profile_uuid,
-            "full_name": full_name,
-            "age": age,
-            "sex": sex.description,
-            "education": edu.description,
-            "ethnicity": eth.description,
-            "marital": marital,
-            "occupation": occupation,
-        })
-
-    # ========================================================================
-    # 7. Assign disorders to patients (comorbidity patterns)
-    # ========================================================================
-    # Each patient gets 1-3 disorders with realistic comorbidity
-    disorder_names = [dd["name"] for dd in DISORDER_DEFS]
-    patient_disorders = {}
-    for pd_item in patient_data:
-        # Primary disorder
-        primary = random.choice(disorder_names)
-        assigned = [primary]
-        # Comorbidity: 40% chance of secondary, 15% chance of tertiary
-        others = [d for d in disorder_names if d != primary]
-        if random.random() < 0.40:
-            secondary = random.choice(others)
-            assigned.append(secondary)
-            others.remove(secondary)
-        if random.random() < 0.15:
-            tertiary = random.choice(others)
-            assigned.append(tertiary)
-        patient_disorders[pd_item["patient_uuid"]] = assigned
-
-    # ========================================================================
-    # 8. Professional-patient assignments
-    # ========================================================================
-    # Distribute patients across professionals (each patient has 1 primary prof)
-    for i, pd_item in enumerate(patient_data):
-        primary_prof = professionals[i % len(professionals)]
-        existing_assign = session.query(ProfessionalPatientAssignment).filter_by(
-            patient_uuid=pd_item["patient_uuid"]
-        ).first()
-        if not existing_assign:
-            session.add(ProfessionalPatientAssignment(
-                professional_uuid=primary_prof.professional_uuid,
-                patient_uuid=pd_item["patient_uuid"],
-                is_active=True,
-            ))
-        # 20% chance of secondary assignment (shared patient)
-        if random.random() < 0.20:
-            secondary = random.choice([p for p in professionals if p.professional_uuid != primary_prof.professional_uuid])
-            existing_sec = session.query(ProfessionalPatientAssignment).filter_by(
-                patient_uuid=pd_item["patient_uuid"],
-                professional_uuid=secondary.professional_uuid,
-            ).first()
-            if not existing_sec:
-                session.add(ProfessionalPatientAssignment(
-                    professional_uuid=secondary.professional_uuid,
-                    patient_uuid=pd_item["patient_uuid"],
-                    is_active=True,
-                ))
-
-    # ========================================================================
-    # 9. Generate consultations with symptoms and scale responses
-    # ========================================================================
-    consultation_records = []
-
-    for i, pd_item in enumerate(patient_data):
-        disorders = patient_disorders[pd_item["patient_uuid"]]
-        num_consultations = random.randint(2, 6)
-
-        # Primary professional for this patient (same distribution as assignments)
-        primary_prof = professionals[i % len(professionals)]
-
-        for ci in range(num_consultations):
-            days_ago = random.randint(1, 365)
-            consult_date = datetime.now() - timedelta(days=days_ago)
-            # Most consultations with primary prof, some with others
-            if ci == 0 or random.random() < 0.7:
-                prof = primary_prof
-            else:
-                prof = random.choice(professionals)
-
-            consult = ClinicalConsultation(
-                consultation_uuid=uuid4(),
-                profile_uuid=pd_item["profile_uuid"],
-                professional_uuid=prof.professional_uuid,
-                consultation_date=consult_date,
-                consultation_notes=f"Consulta de acompanhamento #{ci + 1}",
-            )
-            session.add(consult)
-            session.flush()
-            consultation_records.append(consult)
-
-            # Add symptoms for assigned disorders
-            for dd in DISORDER_DEFS:
-                if dd["name"] in disorders:
-                    # Each symptom has a probability of being present
-                    for sname, sdesc, p_given, p_not, required, min_dur in dd["symptoms"]:
-                        if random.random() < p_given * 0.85:
-                            intensity = round(random.uniform(3.0, 9.0), 2)
-                            freq_options = ["daily", "several_times_week", "weekly", "several_times_month"]
-                            freq = random.choice(freq_options)
-                            duration = random.randint(min_dur if min_dur > 0 else 1, max(min_dur + 60, 90))
-                            obs = SymptomObservation(
-                                consultation_uuid=consult.consultation_uuid,
-                                symptom_id=symptom_map[sname],
-                                intensity=intensity,
-                                frequency=freq,
-                                duration_days=duration,
-                                clinical_notes=sdesc,
-                            )
-                            session.add(obs)
-
-            # Add scale responses and run inference via shared helper
-            _generate_scale_responses(session, consult, disorders, scale_map, symptom_map, disorder_map)
-
-    # 10. Seed example medical reports for sample patients
+    # 7. Seed example medical reports for sample patients
     _seed_reports(session, patient_data, consultation_records, professionals)
 
     session.commit()

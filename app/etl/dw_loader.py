@@ -359,6 +359,9 @@ def load_fact_scale_response(session: Session):
 
 def run_full_etl():
     engine = create_engine(settings.database_url, echo=False)
+    with engine.connect() as conn:
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS dw"))
+        conn.commit()
     DWBase.metadata.create_all(bind=engine)
     session = Session(bind=engine)
 

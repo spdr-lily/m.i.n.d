@@ -8,6 +8,7 @@ import {
 } from 'recharts'
 import { analyticsApi } from '../../api/endpoints'
 import { useChartTheme } from '../../utils/chartTheme'
+import ChartSaver from '../../components/ChartSaver'
 import type {
   PrevalenceTrendResponse, ComorbidityResponse, ScoreDistributionResponse,
   ScaleSeverityResponse, ProfessionalWorkloadResponse, DemographicSummaryResponse,
@@ -79,18 +80,20 @@ export default function AnalyticsPage() {
             </Col>
           ))}
         </Row>
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={grouped}>
-            <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
-            <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
-            <YAxis tick={{ fill: chart.tickColor }} />
-            <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
-            <Legend wrapperStyle={{ color: chart.tickColor }} />
-            {prevalence.disorders.map((d, i) => (
-              <Line key={d.disorder_name} type="monotone" dataKey={d.disorder_name} stroke={colors[i % colors.length]} strokeWidth={2} />
-            ))}
-          </LineChart>
-        </ResponsiveContainer>
+        <ChartSaver filename="prevalencia-transtornos.png">
+          <ResponsiveContainer width="100%" height={350}>
+            <LineChart data={grouped}>
+              <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+              <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
+              <YAxis tick={{ fill: chart.tickColor }} />
+              <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+              <Legend wrapperStyle={{ color: chart.tickColor }} />
+              {prevalence.disorders.map((d, i) => (
+                <Line key={d.disorder_name} type="monotone" dataKey={d.disorder_name} stroke={colors[i % colors.length]} strokeWidth={2} />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </ChartSaver>
       </>
     )
   }
@@ -103,15 +106,17 @@ export default function AnalyticsPage() {
       pct: p.prevalence_pct,
     }))
     return (
-      <ResponsiveContainer width="100%" height={450}>
-        <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
-          <XAxis type="number" tick={{ fill: chart.tickColor }} />
-          <YAxis type="category" dataKey="pair" width={280} tick={{ fontSize: 11, fill: chart.tickColor }} />
-          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
-          <Bar dataKey="count" fill="#1890ff" name="Co-ocorrências" />
-        </BarChart>
-      </ResponsiveContainer>
+      <ChartSaver filename="comorbidade-pares.png">
+        <ResponsiveContainer width="100%" height={450}>
+          <BarChart data={data} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+            <XAxis type="number" tick={{ fill: chart.tickColor }} />
+            <YAxis type="category" dataKey="pair" width={280} tick={{ fontSize: 11, fill: chart.tickColor }} />
+            <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+            <Bar dataKey="count" fill="#1890ff" name="Co-ocorrências" />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartSaver>
     )
   }
 
@@ -165,20 +170,22 @@ export default function AnalyticsPage() {
     ]
 
     return (
-      <div>
-        <Typography.Text type="secondary" style={{ marginBottom: 12, display: 'block' }}>
-          Matriz de comorbidade (top {allDisorders.length} transtornos) — células mais escuras indicam maior co-ocorrência
-        </Typography.Text>
-        <Table
-          dataSource={matrixData}
-          columns={heatColumns}
-          rowKey="disorder"
-          pagination={false}
-          size="small"
-          scroll={{ x: allDisorders.length * 70 + 140 }}
-          bordered
-        />
-      </div>
+      <ChartSaver filename="comorbidade-matriz-calor.png">
+        <div>
+          <Typography.Text type="secondary" style={{ marginBottom: 12, display: 'block' }}>
+            Matriz de comorbidade (top {allDisorders.length} transtornos) — células mais escuras indicam maior co-ocorrência
+          </Typography.Text>
+          <Table
+            dataSource={matrixData}
+            columns={heatColumns}
+            rowKey="disorder"
+            pagination={false}
+            size="small"
+            scroll={{ x: allDisorders.length * 70 + 140 }}
+            bordered
+          />
+        </div>
+      </ChartSaver>
     )
   }
 
@@ -191,17 +198,19 @@ export default function AnalyticsPage() {
       max: s.max_score,
     }))
     return (
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
-          <XAxis dataKey="name" tick={{ fontSize: 10, fill: chart.tickColor }} />
-          <YAxis tick={{ fill: chart.tickColor }} />
-          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
-          <Legend wrapperStyle={{ color: chart.tickColor }} />
-          <Bar dataKey="mean" fill="#1890ff" name="Média" />
-          <Bar dataKey="median" fill="#52c41a" name="Mediana" />
-        </BarChart>
-      </ResponsiveContainer>
+      <ChartSaver filename="distribuicao-scores.png">
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+            <XAxis dataKey="name" tick={{ fontSize: 10, fill: chart.tickColor }} />
+            <YAxis tick={{ fill: chart.tickColor }} />
+            <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+            <Legend wrapperStyle={{ color: chart.tickColor }} />
+            <Bar dataKey="mean" fill="#1890ff" name="Média" />
+            <Bar dataKey="median" fill="#52c41a" name="Mediana" />
+          </BarChart>
+        </ResponsiveContainer>
+      </ChartSaver>
     )
   }
 
@@ -218,18 +227,20 @@ export default function AnalyticsPage() {
           return (
             <Col span={8} key={s.scale_name}>
               <Card size="small" title={s.scale_name}>
-                <ResponsiveContainer width="100%" height={150}>
-                  <BarChart data={chartData}>
-                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: chart.tickColor }} />
-                    <YAxis tick={{ fill: chart.tickColor }} />
-                    <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
-                    <Bar dataKey="count" fill="#1890ff">
-                      {chartData.map((entry, i) => (
-                        <rect key={i} fill={severityColors[entry.name] || '#1890ff'} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <ChartSaver filename={`severidade-${s.scale_name.replace(/[^a-zA-Z0-9]+/g, '-')}.png`}>
+                  <ResponsiveContainer width="100%" height={150}>
+                    <BarChart data={chartData}>
+                      <XAxis dataKey="name" tick={{ fontSize: 9, fill: chart.tickColor }} />
+                      <YAxis tick={{ fill: chart.tickColor }} />
+                      <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                      <Bar dataKey="count" fill="#1890ff">
+                        {chartData.map((entry, i) => (
+                          <rect key={i} fill={severityColors[entry.name] || '#1890ff'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartSaver>
               </Card>
             </Col>
           )
@@ -261,18 +272,20 @@ export default function AnalyticsPage() {
       com_inferencia: m.consultations_with_inference,
     }))
     return (
-      <ResponsiveContainer width="100%" height={350}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
-          <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
-          <YAxis tick={{ fill: chart.tickColor }} />
-          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
-          <Legend wrapperStyle={{ color: chart.tickColor }} />
-          <Line type="monotone" dataKey="consultations" stroke="#1890ff" strokeWidth={2} name="Consultas" />
-          <Line type="monotone" dataKey="pacientes" stroke="#52c41a" strokeWidth={2} name="Pacientes" />
-          <Line type="monotone" dataKey="com_inferencia" stroke="#faad14" strokeWidth={2} name="C/ Inferência" />
-        </LineChart>
-      </ResponsiveContainer>
+      <ChartSaver filename="consultas-mensais.png">
+        <ResponsiveContainer width="100%" height={350}>
+          <LineChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+            <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
+            <YAxis tick={{ fill: chart.tickColor }} />
+            <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+            <Legend wrapperStyle={{ color: chart.tickColor }} />
+            <Line type="monotone" dataKey="consultations" stroke="#1890ff" strokeWidth={2} name="Consultas" />
+            <Line type="monotone" dataKey="pacientes" stroke="#52c41a" strokeWidth={2} name="Pacientes" />
+            <Line type="monotone" dataKey="com_inferencia" stroke="#faad14" strokeWidth={2} name="C/ Inferência" />
+          </LineChart>
+        </ResponsiveContainer>
+      </ChartSaver>
     )
   }
 
