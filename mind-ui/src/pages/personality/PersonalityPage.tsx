@@ -1,10 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
-import { Card, Select, Typography, Breadcrumb, Tag, Space, Spin, Row, Col, Progress, Empty, Tooltip, Modal, message, Button, Segmented, Table } from 'antd'
+import { Card, Select, Typography, Breadcrumb, Tag, Space, Spin, Row, Col, Progress, Empty, Tooltip, Modal, message, Button, Segmented, Table, theme } from 'antd'
 import { FormOutlined, CheckOutlined, LineChartOutlined, ProfileOutlined } from '@ant-design/icons'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend } from 'recharts'
 import { patientsApi, mlApi, scalesApi } from '../../api/endpoints'
 import type { PatientListItem, PersonalityFactorsResponse, PersonalityTimelinePoint, FactorScore } from '../../types'
 import { SCALE_OPTIONS } from '../../utils/constants'
+import { useChartTheme } from '../../utils/chartTheme'
 const { Title, Text } = Typography
 
 const BFP_FACTORS = ['Abertura', 'Conscienciosidade', 'Extroversão', 'Amabilidade', 'Neuroticismo']
@@ -123,6 +124,7 @@ interface ScaleCardProps {
 
 function ScaleCard({ tagColor, tagLabel, title, factorType, factorNames, factors, totalScore, totalMax, levelFn, showRadar, ds }: ScaleCardProps) {
   const rd = showRadar && ds === 'real' && Object.keys(factors).length > 0 ? radarTransform(factors, totalMax) : null
+  const chart = useChartTheme()
   return (
     <Card title={<Space><Tag color={tagColor}>{tagLabel}</Tag> {title}</Space>} size="small" style={{ marginBottom: 16, height: '100%' }}>
       <Row gutter={[8, 16]}>
@@ -154,8 +156,8 @@ function ScaleCard({ tagColor, tagLabel, title, factorType, factorNames, factors
         <div style={{ marginTop: 12, height: 200 }}>
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={rd}>
-              <PolarGrid />
-              <PolarAngleAxis dataKey="factor" fontSize={10} />
+              <PolarGrid stroke={chart.gridStroke} />
+              <PolarAngleAxis dataKey="factor" fontSize={10} tick={{ fill: chart.tickColor }} />
               <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} />
               <Radar name={tagLabel} dataKey="score" stroke={tagColor === 'blue' ? '#1677ff' : tagColor === 'volcano' ? '#f5222d' : '#722ed1'} fill={tagColor === 'blue' ? '#1677ff' : tagColor === 'volcano' ? '#f5222d' : '#722ed1'} fillOpacity={0.3} />
             </RadarChart>
@@ -176,6 +178,7 @@ const TIMELINE_SCALES_CONFIG = [
 ]
 
 function TimelineView({ timeline }: { timeline: any }) {
+  const chart = useChartTheme()
   return (
     <Row gutter={16}>
       {TIMELINE_SCALES_CONFIG.map((cfg) => {
@@ -205,11 +208,11 @@ function TimelineView({ timeline }: { timeline: any }) {
                 <>
                   <ResponsiveContainer width="100%" height={250}>
                     <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                      <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11 }} />
-                      <RechartsTooltip formatter={(value: string | number | (string | number)[]) => `${value}%`} />
-                      <Legend />
+                      <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                      <XAxis dataKey="date" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                      <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11, fill: chart.tickColor }} />
+                      <RechartsTooltip formatter={(value: string | number | (string | number)[]) => `${value}%`} contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                      <Legend wrapperStyle={{ color: chart.tickColor }} />
                       {cfg.names.map((name) => (
                         <Line key={name} type="monotone" dataKey={name}
                           stroke={colorForFactor(name)}

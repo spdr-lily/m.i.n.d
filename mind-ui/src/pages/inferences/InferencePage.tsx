@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid } from 'antd'
+import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid, theme } from 'antd'
 import { ExperimentOutlined, ThunderboltOutlined, SafetyOutlined, HistoryOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { inferencesApi, patientsApi, consultationsApi, disordersApi } from '../../api/endpoints'
 import type { PatientListItem, Symptom, InferenceResult, Disorder } from '../../types'
@@ -242,6 +242,7 @@ interface InferenceHistoryItem {
 export default function InferencePage() {
   const screens = useBreakpoint()
   const isMobile = !screens.md
+  const { token } = theme.useToken()
   const [patients, setPatients] = useState<PatientListItem[]>([])
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [selectedPatient, setSelectedPatient] = useState<string>('')
@@ -395,8 +396,8 @@ export default function InferencePage() {
                     style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                       padding: '6px 8px', cursor: 'pointer', borderRadius: 4,
-                      background: presentCount(group) > 0 ? '#f0f5ff' : '#fafafa',
-                      border: '1px solid #f0f0f0',
+                      background: presentCount(group) > 0 ? token.colorPrimaryBg : token.colorFillTertiary,
+                      border: `1px solid ${token.colorBorderSecondary}`,
                     }}
                     onClick={() => toggleGroup(group)}
                   >
@@ -419,7 +420,7 @@ export default function InferencePage() {
                       key={s.symptom_id}
                       style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        padding: '4px 8px 4px 20px', borderBottom: '1px solid #f5f5f5',
+                        padding: '4px 8px 4px 20px', borderBottom: `1px solid ${token.colorSplit}`,
                       }}
                     >
                       <Text style={{ fontSize: 13 }}>{s.symptom_description || s.symptom_name}</Text>

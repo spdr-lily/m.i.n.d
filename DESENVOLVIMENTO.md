@@ -8,6 +8,23 @@
 
 ---
 
+## Diário de Desenvolvimento
+
+### 2026-08-10 — Tema escuro (dark mode) no frontend
+- **Novidade:** Implementado tema claro/escuro em toda a UI com toggle persistente entre sessões.
+- **Arquivos novos:**
+  - `mind-ui/src/store/themeStore.ts` — Zustand store com persistência em `localStorage` (chave `mind-theme`); aplica `data-theme` no `<html>`, `color-scheme` e cor de fundo do `<body>`.
+  - `mind-ui/src/utils/chartTheme.ts` — hook `useChartTheme()` que mapeia tokens do Ant Design para gráficos Recharts (grid, ticks, tooltip).
+- **Integrações:**
+  - `App.tsx` — `ConfigProvider` alterna entre `theme.darkAlgorithm` e `theme.defaultAlgorithm` conforme `darkMode`.
+  - `MainLayout.tsx` — botão lua/sol no header (toggle) + Sider com `theme="dark"`/`"light"` e bordas via token.
+  - `LoginPage.tsx` — toggle de tema no canto superior direito.
+  - `index.css` — estilos `html[data-theme='dark']` (fundo `#0f1115`, scrollbar escuro, transição de cores).
+- **Páginas adaptadas:** Dashboard, Analytics, PatientDetail, PatientTimeline, Personality, Inference, Disorders e Mia (bubbles do bot) — cores via tokens (`colorBorderSecondary`, `colorFillSecondary`, `colorBgElevated`, `colorPrimaryBg`, `colorSplit`) e gráficos Recharts via `useChartTheme()`.
+- **Build:** `npm run build` + `npx tsc --noEmit` sem erros.
+
+---
+
 ## Stack Tecnológico
 
 ### Backend

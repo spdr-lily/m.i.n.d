@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider, theme } from 'antd'
 import ptBR from 'antd/locale/pt_BR'
+import { useThemeStore } from './store/themeStore'
 import MainLayout from './components/MainLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import ErrorBoundary from './components/ErrorBoundary'
@@ -33,11 +34,12 @@ import MiaPage from './pages/chatbot/MiaPage'
 import AuditLogPage from './pages/audit/AuditLogPage'
 
 export default function App() {
+  const darkMode = useThemeStore((s) => s.darkMode)
   return (
     <ConfigProvider
       locale={ptBR}
       theme={{
-        algorithm: theme.defaultAlgorithm,
+        algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
         token: {
           colorPrimary: '#1677ff',
           borderRadius: 6,

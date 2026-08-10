@@ -22,8 +22,11 @@ import {
   ToolOutlined,
   SafetyOutlined,
   ProfileOutlined,
+  MoonOutlined,
+  SunOutlined,
 } from '@ant-design/icons'
 import { useAuthStore } from '../store/authStore'
+import { useThemeStore } from '../store/themeStore'
 import { ROLE_LABELS } from '../utils/constants'
 import MindLogo from './MindLogo'
 
@@ -77,6 +80,7 @@ export default function MainLayout() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuthStore()
+  const { darkMode, toggleDarkMode } = useThemeStore()
   const { token: themeToken } = theme.useToken()
   const screens = useBreakpoint()
   const isMobile = !screens.md
@@ -144,8 +148,8 @@ export default function MainLayout() {
   return (
     <AntLayout style={{ minHeight: '100vh' }}>
       {!isMobile && (
-        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ borderRight: '1px solid #f0f0f0' }}>
-          <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: '1px solid #f0f0f0' }}>
+        <Sider trigger={null} collapsible collapsed={collapsed} theme={darkMode ? 'dark' : 'light'} style={{ borderRight: `1px solid ${themeToken.colorBorderSecondary}` }}>
+          <div style={{ height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottom: `1px solid ${themeToken.colorBorderSecondary}` }}>
             <div style={{ cursor: 'pointer' }} onClick={() => navigate('/')}>
               <MindLogo size={collapsed ? 40 : 180} collapsed={collapsed} />
             </div>
@@ -177,20 +181,28 @@ export default function MainLayout() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #f0f0f0',
+            borderBottom: `1px solid ${themeToken.colorBorderSecondary}`,
             height: isMobile ? 56 : 64,
             lineHeight: isMobile ? '56px' : '64px',
           }}
         >
-          {isMobile ? (
-            <Button type="text" icon={<MenuOutlined />} onClick={() => setMobileDrawerOpen(true)} />
-          ) : (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            {isMobile ? (
+              <Button type="text" icon={<MenuOutlined />} onClick={() => setMobileDrawerOpen(true)} />
+            ) : (
+              <Button
+                type="text"
+                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setCollapsed(!collapsed)}
+              />
+            )}
             <Button
               type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
+              icon={darkMode ? <SunOutlined /> : <MoonOutlined />}
+              onClick={toggleDarkMode}
+              title={darkMode ? 'Tema claro' : 'Tema escuro'}
             />
-          )}
+          </div>
           {isMobile && (
             <Text strong style={{ fontSize: 16, flex: 1, textAlign: 'center' }}>M.I.N.D</Text>
           )}

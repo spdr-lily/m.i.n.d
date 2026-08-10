@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import {
-  Card, Col, Row, Spin, Statistic, Table, Select, Typography, Tag, Segmented,
+  Card, Col, Row, Spin, Statistic, Table, Select, Typography, Tag, Segmented, theme,
 } from 'antd'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend,
 } from 'recharts'
 import { analyticsApi } from '../../api/endpoints'
+import { useChartTheme } from '../../utils/chartTheme'
 import type {
   PrevalenceTrendResponse, ComorbidityResponse, ScoreDistributionResponse,
   ScaleSeverityResponse, ProfessionalWorkloadResponse, DemographicSummaryResponse,
@@ -28,6 +29,8 @@ export default function AnalyticsPage() {
   const [workload, setWorkload] = useState<ProfessionalWorkloadResponse | null>(null)
   const [demographics, setDemographics] = useState<DemographicSummaryResponse | null>(null)
   const [monthly, setMonthly] = useState<MonthlyConsultationResponse | null>(null)
+  const { token } = theme.useToken()
+  const chart = useChartTheme()
 
   useEffect(() => { fetchData() }, [view])
 
@@ -78,11 +81,11 @@ export default function AnalyticsPage() {
         </Row>
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={grouped}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
+            <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+            <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
+            <YAxis tick={{ fill: chart.tickColor }} />
+            <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+            <Legend wrapperStyle={{ color: chart.tickColor }} />
             {prevalence.disorders.map((d, i) => (
               <Line key={d.disorder_name} type="monotone" dataKey={d.disorder_name} stroke={colors[i % colors.length]} strokeWidth={2} />
             ))}
@@ -102,10 +105,10 @@ export default function AnalyticsPage() {
     return (
       <ResponsiveContainer width="100%" height={450}>
         <BarChart data={data} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" />
-          <YAxis type="category" dataKey="pair" width={280} tick={{ fontSize: 11 }} />
-          <Tooltip />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+          <XAxis type="number" tick={{ fill: chart.tickColor }} />
+          <YAxis type="category" dataKey="pair" width={280} tick={{ fontSize: 11, fill: chart.tickColor }} />
+          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
           <Bar dataKey="count" fill="#1890ff" name="Co-ocorrências" />
         </BarChart>
       </ResponsiveContainer>
@@ -139,7 +142,7 @@ export default function AnalyticsPage() {
         key: name,
         width: 70,
         render: (val: number | null) => {
-          if (val === null) return <div style={{ background: '#f5f5f5', textAlign: 'center', height: 28 }}>-</div>
+          if (val === null) return <div style={{ background: token.colorFillTertiary, textAlign: 'center', height: 28 }}>-</div>
           const intensity = Math.min(val / maxCount, 1)
           const r = Math.round(255 - intensity * 230)
           const g = Math.round(255 - intensity * 100)
@@ -190,11 +193,11 @@ export default function AnalyticsPage() {
     return (
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-          <YAxis />
-          <Tooltip />
-          <Legend />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+          <XAxis dataKey="name" tick={{ fontSize: 10, fill: chart.tickColor }} />
+          <YAxis tick={{ fill: chart.tickColor }} />
+          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+          <Legend wrapperStyle={{ color: chart.tickColor }} />
           <Bar dataKey="mean" fill="#1890ff" name="Média" />
           <Bar dataKey="median" fill="#52c41a" name="Mediana" />
         </BarChart>
@@ -217,9 +220,9 @@ export default function AnalyticsPage() {
               <Card size="small" title={s.scale_name}>
                 <ResponsiveContainer width="100%" height={150}>
                   <BarChart data={chartData}>
-                    <XAxis dataKey="name" tick={{ fontSize: 9 }} />
-                    <YAxis />
-                    <Tooltip />
+                    <XAxis dataKey="name" tick={{ fontSize: 9, fill: chart.tickColor }} />
+                    <YAxis tick={{ fill: chart.tickColor }} />
+                    <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                     <Bar dataKey="count" fill="#1890ff">
                       {chartData.map((entry, i) => (
                         <rect key={i} fill={severityColors[entry.name] || '#1890ff'} />
@@ -260,11 +263,11 @@ export default function AnalyticsPage() {
     return (
       <ResponsiveContainer width="100%" height={350}>
         <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
+          <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+          <XAxis dataKey="month" tick={{ fill: chart.tickColor }} />
+          <YAxis tick={{ fill: chart.tickColor }} />
+          <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+          <Legend wrapperStyle={{ color: chart.tickColor }} />
           <Line type="monotone" dataKey="consultations" stroke="#1890ff" strokeWidth={2} name="Consultas" />
           <Line type="monotone" dataKey="pacientes" stroke="#52c41a" strokeWidth={2} name="Pacientes" />
           <Line type="monotone" dataKey="com_inferencia" stroke="#faad14" strokeWidth={2} name="C/ Inferência" />

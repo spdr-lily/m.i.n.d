@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Descriptions, Tag, Button, Space, Typography, Breadcrumb, Spin, Table, List, Select, Row, Col } from 'antd'
+import { Card, Descriptions, Tag, Button, Space, Typography, Breadcrumb, Spin, Table, List, Select, Row, Col, theme } from 'antd'
 import { CalendarOutlined, EditOutlined, HistoryOutlined, DownloadOutlined, PushpinFilled, FileTextOutlined, LineChartOutlined } from '@ant-design/icons'
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -8,6 +8,7 @@ import {
 import { patientsApi, consultationsApi, reportsApi, scalesApi } from '../../api/endpoints'
 import type { PatientResponse, ConsultationListItem, MedicalReport, ScaleHistoryItem } from '../../types'
 import { SCALE_OPTIONS, NEURO_SCALES, CLINICAL_SCALES } from '../../utils/constants'
+import { useChartTheme } from '../../utils/chartTheme'
 
 const API_BASE = import.meta.env.VITE_API_URL
 
@@ -33,6 +34,7 @@ export default function PatientDetailPage() {
   const [scaleHistory, setScaleHistory] = useState<ScaleHistoryItem[]>([])
   const [scaleLoading, setScaleLoading] = useState(false)
   const navigate = useNavigate()
+  const chart = useChartTheme()
 
   useEffect(() => {
     if (!uuid) return
@@ -148,11 +150,11 @@ export default function PatientDetailPage() {
           ) : scaleHistory.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={scaleHistory.map((s) => ({ date: s.date.slice(5, 10), score: s.score }))}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
+                <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                <XAxis dataKey="date" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                <YAxis allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                <Legend wrapperStyle={{ color: chart.tickColor }} />
                 <Line type="monotone" dataKey="score" stroke="#1677ff" strokeWidth={2} dot={{ r: 4 }} name={selectedScale ?? ''} />
               </LineChart>
             </ResponsiveContainer>

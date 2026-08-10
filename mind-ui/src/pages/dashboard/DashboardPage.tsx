@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Row, Col, Card, Statistic, Table, Tag, Spin, Typography, List, Badge, Tabs, Space, Select, Progress, message, Button } from 'antd'
+import { Row, Col, Card, Statistic, Table, Tag, Spin, Typography, List, Badge, Tabs, Space, Select, Progress, message, Button, theme } from 'antd'
 import {
   UserOutlined, CalendarOutlined, BellOutlined, ExperimentOutlined,
   ArrowUpOutlined, ArrowDownOutlined, TeamOutlined, MedicineBoxOutlined, FileImageOutlined,
@@ -17,6 +17,7 @@ import type {
   PrevalenceTrendItem, ScaleTrendItem, MLDashboardResponse,
 } from '../../types'
 import { SEVERITY_COLORS, SEVERITY_LABELS, ALERT_TYPE_LABELS, SCALE_OPTIONS, NEURO_SCALES, CLINICAL_SCALES } from '../../utils/constants'
+import { useChartTheme } from '../../utils/chartTheme'
 
 const { Title } = Typography
 
@@ -67,13 +68,15 @@ export default function DashboardPage() {
   const dashboardRef = useRef<HTMLDivElement>(null)
   const [savingImage, setSavingImage] = useState(false)
   const navigate = useNavigate()
+  const { token } = theme.useToken()
+  const chart = useChartTheme()
 
   const handleSaveImage = async () => {
     if (!dashboardRef.current) return
     setSavingImage(true)
     try {
       const dataUrl = await toPng(dashboardRef.current, {
-        backgroundColor: '#fff',
+        backgroundColor: token.colorBgContainer,
         pixelRatio: 2,
       })
       const link = document.createElement('a')
@@ -254,11 +257,11 @@ export default function DashboardPage() {
             {consultChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={consultChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                  <YAxis allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                  <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                  <Legend wrapperStyle={{ color: chart.tickColor }} />
                   <Line type="monotone" dataKey="Consultas" stroke="#1677ff" strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="Média" stroke="#52c41a" strokeWidth={2} strokeDasharray="5 5" dot={false} />
                 </LineChart>
@@ -286,7 +289,7 @@ export default function DashboardPage() {
                             <Cell key={i} fill={sexPieData[i].color} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
@@ -306,7 +309,7 @@ export default function DashboardPage() {
                             <Cell key={i} fill={getGenderColor(genderPieData[i].name)} />
                           ))}
                         </Pie>
-                        <Tooltip />
+                        <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                       </PieChart>
                     </ResponsiveContainer>
                   ) : (
@@ -321,10 +324,10 @@ export default function DashboardPage() {
                   children: ageBarData.some((d) => d.value > 0) ? (
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={ageBarData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" tick={{ fontSize: 11 }} />
-                        <YAxis allowDecimals={false} />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                        <XAxis dataKey="name" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                        <YAxis allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                        <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                         <Bar dataKey="value" fill="#1677ff" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
@@ -340,10 +343,10 @@ export default function DashboardPage() {
                   children: eduBarData.some((d) => d.value > 0) ? (
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={eduBarData} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" allowDecimals={false} />
-                        <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 11 }} />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                        <XAxis type="number" allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                        <YAxis type="category" dataKey="name" width={150} tick={{ fontSize: 11, fill: chart.tickColor }} />
+                        <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                           {eduBarData.map((_, i) => (
                             <Cell key={i} fill={eduBarData[i].name === 'Não informado' ? '#778899' : EDU_COLORS[i % EDU_COLORS.length]} />
@@ -363,10 +366,10 @@ export default function DashboardPage() {
                   children: ethnicityBarData.length > 0 ? (
                     <ResponsiveContainer width="100%" height={220}>
                       <BarChart data={ethnicityBarData} layout="vertical">
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" allowDecimals={false} />
-                        <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11 }} />
-                        <Tooltip />
+                        <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                        <XAxis type="number" allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                        <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 11, fill: chart.tickColor }} />
+                        <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                         <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                           {ethnicityBarData.map((_, i) => (
                             <Cell key={i} fill={ethnicityBarData[i].name === 'Não informado' ? '#778899' : ETHNICITY_COLORS[i % ETHNICITY_COLORS.length]} />
@@ -392,10 +395,10 @@ export default function DashboardPage() {
             {disorderChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={280}>
                 <BarChart data={disorderChartData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" allowDecimals={false} />
-                  <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11 }} />
-                  <Tooltip />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                  <XAxis type="number" allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                  <YAxis type="category" dataKey="name" width={120} tick={{ fontSize: 11, fill: chart.tickColor }} />
+                  <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
                   <Bar dataKey="Inferências" radius={[0, 4, 4, 0]}>
                     {disorderChartData.map((_, i) => {
                       let color = '#1677ff'
@@ -442,11 +445,11 @@ export default function DashboardPage() {
             {prevalenceLineData.length > 0 && prevalenceTrends.length <= 10 ? (
               <ResponsiveContainer width="100%" height={280}>
                 <LineChart data={prevalenceLineData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                  <YAxis allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                  <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                  <Legend wrapperStyle={{ fontSize: 11, color: chart.tickColor }} />
                   {prevalenceTrends.map((t, i) => (
                     <Line key={t.disorder_name} type="monotone" dataKey={t.disorder_name} stroke={prevalenceColors[i % prevalenceColors.length]} strokeWidth={2} dot={false} connectNulls />
                   ))}
@@ -537,11 +540,11 @@ export default function DashboardPage() {
             ) : scaleTrendChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={220}>
                 <LineChart data={scaleTrendChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tick={{ fontSize: 11 }} />
-                  <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Legend />
+                  <CartesianGrid strokeDasharray="3 3" stroke={chart.gridStroke} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: chart.tickColor }} />
+                  <YAxis allowDecimals={false} tick={{ fill: chart.tickColor }} />
+                  <Tooltip contentStyle={chart.tooltipContentStyle} labelStyle={chart.tooltipLabelStyle} itemStyle={chart.tooltipItemStyle} />
+                  <Legend wrapperStyle={{ color: chart.tickColor }} />
                   <Line type="monotone" dataKey="Média Diária" stroke="#1677ff" strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="Média Móvel (3)" stroke="#52c41a" strokeWidth={2} strokeDasharray="5 5" dot={false} />
                 </LineChart>
@@ -579,8 +582,8 @@ export default function DashboardPage() {
                   <>
                     <ResponsiveContainer width="100%" height={240}>
                       <RadarChart data={radarData}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="factor" tick={{ fontSize: 10 }} />
+                        <PolarGrid stroke={chart.gridStroke} />
+                        <PolarAngleAxis dataKey="factor" tick={{ fontSize: 10, fill: chart.tickColor }} />
                         <PolarRadiusAxis angle={90} domain={[0, 20]} tick={false} axisLine={false} />
                         <Radar name="Média" dataKey="score" stroke="#1677ff" fill="#1677ff" fillOpacity={0.3} />
                       </RadarChart>
@@ -610,8 +613,8 @@ export default function DashboardPage() {
                 return (
                   <ResponsiveContainer width="100%" height={240}>
                     <RadarChart data={radarData}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="factor" tick={{ fontSize: 9 }} />
+                      <PolarGrid stroke={chart.gridStroke} />
+                      <PolarAngleAxis dataKey="factor" tick={{ fontSize: 9, fill: chart.tickColor }} />
                       <PolarRadiusAxis angle={90} domain={[0, 50]} tick={false} axisLine={false} />
                       <Radar name="Média" dataKey="score" stroke="#08979c" fill="#08979c" fillOpacity={0.3} />
                     </RadarChart>
@@ -638,8 +641,8 @@ export default function DashboardPage() {
                   <>
                     <ResponsiveContainer width="100%" height={240}>
                       <RadarChart data={radarDT}>
-                        <PolarGrid />
-                        <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10 }} />
+                        <PolarGrid stroke={chart.gridStroke} />
+                        <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10, fill: chart.tickColor }} />
                         <PolarRadiusAxis angle={90} domain={[0, 24]} tick={false} axisLine={false} />
                         <Radar name="Média" dataKey="score" stroke="#722ed1" fill="#722ed1" fillOpacity={0.3} />
                       </RadarChart>
@@ -671,8 +674,8 @@ export default function DashboardPage() {
                 return (
                   <ResponsiveContainer width="100%" height={240}>
                     <RadarChart data={radarData}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10 }} />
+                      <PolarGrid stroke={chart.gridStroke} />
+                      <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10, fill: chart.tickColor }} />
                       <PolarRadiusAxis angle={90} domain={[0, 40]} tick={false} axisLine={false} />
                       <Radar name="Média" dataKey="score" stroke="#fa8c16" fill="#fa8c16" fillOpacity={0.3} />
                     </RadarChart>
@@ -698,8 +701,8 @@ export default function DashboardPage() {
                 return (
                   <ResponsiveContainer width="100%" height={240}>
                     <RadarChart data={radarData}>
-                      <PolarGrid />
-                      <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10 }} />
+                      <PolarGrid stroke={chart.gridStroke} />
+                      <PolarAngleAxis dataKey="subscale" tick={{ fontSize: 10, fill: chart.tickColor }} />
                       <PolarRadiusAxis angle={90} domain={[0, 33]} tick={false} axisLine={false} />
                       <Radar name="Média" dataKey="score" stroke="#d4380d" fill="#d4380d" fillOpacity={0.3} />
                     </RadarChart>

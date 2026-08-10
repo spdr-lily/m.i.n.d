@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import {
-  Card, Input, Button, Typography, Breadcrumb, Spin, Space, Tag, Collapse, Tooltip, Progress, Grid,
+  Card, Input, Button, Typography, Breadcrumb, Spin, Space, Tag, Collapse, Tooltip, Progress, Grid, theme,
 } from 'antd'
 import {
   SendOutlined, RobotOutlined, UserOutlined,
@@ -142,6 +142,9 @@ function TranstornoCard({ t }: { t: TranstornoResultado }) {
 
 function MensagemBubble({ msg, onFeedback }: { msg: Mensagem; onFeedback?: (message_id: number, rating: 'positive' | 'negative') => void }) {
   const isUser = msg.tipo === 'user'
+  const { token } = theme.useToken()
+  const botBubbleColor = isUser ? '#1677ff' : token.colorFillSecondary
+  const botTextColor = isUser ? '#fff' : token.colorText
   return (
     <div
       style={{
@@ -170,8 +173,8 @@ function MensagemBubble({ msg, onFeedback }: { msg: Mensagem; onFeedback?: (mess
           maxWidth: '80%',
           padding: '10px 14px',
           borderRadius: 12,
-          background: isUser ? '#1677ff' : '#f0f0f0',
-          color: isUser ? '#fff' : '#000',
+          background: botBubbleColor,
+          color: botTextColor,
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         }}
@@ -181,7 +184,7 @@ function MensagemBubble({ msg, onFeedback }: { msg: Mensagem; onFeedback?: (mess
             <SentimentoTag rotulo={msg.dados.sentimento.rotulo} score={msg.dados.sentimento.score} />
           </div>
         )}
-        <Text style={{ color: isUser ? '#fff' : '#000' }}>{msg.texto}</Text>
+        <Text style={{ color: isUser ? '#fff' : token.colorText }}>{msg.texto}</Text>
         {msg.dados?.resultados && msg.dados.resultados.length > 0 && (
           <div style={{ marginTop: 12 }}>
             {msg.dados.resultados.map((t) => (

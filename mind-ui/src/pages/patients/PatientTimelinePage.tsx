@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Card, Typography, Breadcrumb, Spin, Tag, Collapse, Descriptions, Empty } from 'antd'
+import { Card, Typography, Breadcrumb, Spin, Tag, Collapse, Descriptions, Empty, theme } from 'antd'
 import {
   CalendarOutlined, UserOutlined, FileTextOutlined,
   MedicineBoxOutlined, ExperimentOutlined, WarningOutlined,
@@ -25,6 +25,7 @@ export default function PatientTimelinePage() {
   const [data, setData] = useState<TimelineResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { token } = theme.useToken()
 
   useEffect(() => {
     if (!uuid) return
@@ -54,14 +55,14 @@ export default function PatientTimelinePage() {
         {data.events.length === 0 ? (
           <Empty description="Nenhum evento clínico registrado" />
         ) : (
-          <TimelineList events={data.events} navigate={navigate} />
+          <TimelineList events={data.events} navigate={navigate} token={token} />
         )}
       </Card>
     </>
   )
 }
 
-function TimelineList({ events, navigate }: { events: TimelineEvent[]; navigate: ReturnType<typeof useNavigate> }) {
+function TimelineList({ events, navigate, token }: { events: TimelineEvent[]; navigate: ReturnType<typeof useNavigate>; token: any }) {
   return (
     <div style={{ position: 'relative' }}>
       {events.map((ev, idx) => {
@@ -91,7 +92,7 @@ function TimelineList({ events, navigate }: { events: TimelineEvent[]; navigate:
                   </a>
                 </div>
 
-                <Card size="small" style={{ background: '#fafafa' }}>
+                <Card size="small" style={{ background: token.colorFillTertiary }}>
                   {c.professional_name && (
                     <Text type="secondary"><UserOutlined /> {c.professional_name}</Text>
                   )}
@@ -175,7 +176,7 @@ function TimelineList({ events, navigate }: { events: TimelineEvent[]; navigate:
                   {e.episode_start ? new Date(e.episode_start).toLocaleDateString('pt-BR') : '?'}
                   {e.episode_end ? ` → ${new Date(e.episode_end).toLocaleDateString('pt-BR')}` : ''}
                 </Tag>
-                <Card size="small" style={{ background: '#fafafa', marginTop: 8 }}>
+                <Card size="small" style={{ background: token.colorFillTertiary, marginTop: 8 }}>
                   {e.episode_type && <Tag color="orange">{e.episode_type}</Tag>}
                   {e.clinical_description && <Text style={{ display: 'block' }}>{e.clinical_description}</Text>}
                 </Card>

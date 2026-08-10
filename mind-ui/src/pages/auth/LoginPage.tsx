@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { Form, Input, Button, Card, Typography, message, Alert, Checkbox } from 'antd'
-import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import { UserOutlined, LockOutlined, MoonOutlined, SunOutlined } from '@ant-design/icons'
 import { useAuthStore } from '../../store/authStore'
+import { useThemeStore } from '../../store/themeStore'
 import MindLogo from '../../components/MindLogo'
 
 const { Title, Text } = Typography
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, token, login } = useAuthStore()
+  const { darkMode, toggleDarkMode } = useThemeStore()
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
 
@@ -48,6 +50,13 @@ export default function LoginPage() {
         padding: 16,
       }}
     >
+      <Button
+        type="text"
+        icon={darkMode ? <SunOutlined /> : <MoonOutlined />}
+        onClick={toggleDarkMode}
+        title={darkMode ? 'Tema claro' : 'Tema escuro'}
+        style={{ position: 'absolute', top: 16, right: 16, color: '#fff' }}
+      />
       <Card
         style={{
           width: '100%',

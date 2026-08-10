@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
-import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input } from 'antd'
+import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input, theme } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 import { disordersApi } from '../../api/endpoints'
 import type { Disorder, Symptom, DiagnosticCriteria, ICD11Code } from '../../types'
@@ -43,6 +43,7 @@ export default function DisordersPage() {
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [loading, setLoading] = useState(true)
   const [searchText, setSearchText] = useState('')
+  const { token } = theme.useToken()
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -230,7 +231,7 @@ export default function DisordersPage() {
               {record.criteria ? (
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                   <thead>
-                    <tr style={{ borderBottom: '1px solid #f0f0f0' }}>
+                    <tr style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
                       <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600 }}>Sintoma</th>
                       <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600 }}>Obrigatório</th>
                       <th style={{ padding: '8px 12px', textAlign: 'left', fontWeight: 600 }}>Duração Mínima</th>
@@ -239,7 +240,7 @@ export default function DisordersPage() {
                   </thead>
                   <tbody>
                     {record.criteria.map((c) => (
-                      <tr key={c.criteria_id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                      <tr key={c.criteria_id} style={{ borderBottom: `1px solid ${token.colorBorderSecondary}` }}>
                         <td style={{ padding: '8px 12px' }}>{c.symptom_name}</td>
                         <td style={{ padding: '8px 12px' }}>
                           {c.required_presence ? <Tag color="red">Sim</Tag> : <Tag color="default">Não</Tag>}
