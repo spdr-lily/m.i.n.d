@@ -8,8 +8,9 @@ class Settings(BaseSettings):
     port: int = 8000
     database_url: str = "postgresql://postgres:137_Cmspelo@localhost:5432/mind"
     database_echo: bool = False
+    project_name: str = "M.I.N.D"
     api_title: str = "M.I.N.D - Mental Intelligence & Network Data"
-    api_version: str = "0.1.0"
+    api_version: str = "0.2.0"
     debug: bool = True
     secret_key: str = "change-me-in-production"
     algorithm: str = "HS256"

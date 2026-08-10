@@ -6,6 +6,7 @@ Create Date: 2026-06-18 12:00:00.000000
 """
 from typing import Sequence, Union
 from alembic import op
+from sqlalchemy import text
 
 revision: str = "a2b3c4d5e6f7"
 down_revision: Union[str, None] = "031c8a8ec7b8"
@@ -73,9 +74,32 @@ VIEWS = {
 
 
 def upgrade() -> None:
+    conn = op.get_bind()
+    schema_exists = conn.execute(text("SELECT to_regnamespace('dw') IS NOT NULL")).scalar()
+    if not schema_exists:
+        print("  DW schema not present yet; skipping advanced DW analytics view creation")
+        return
+
+    required_tables = [
+        "dw.fact_diagnosis",
+        "dw.dim_disorder",
+        "dw.fact_symptom",
+        "dw.fact_scale_response",
+        "dw.dim_scale",
+        "dw.dim_patient",
+    ]
+    for table_name in required_tables:
+        exists = conn.execute(text(f"SELECT to_regclass('{table_name}') IS NOT NULL")).scalar()
+        if not exists:
+            print(f"  Required DW table {table_name} not present yet; skipping advanced DW analytics view creation")
+            return
+
     for view_name, ddl in VIEWS.items():
-        op.execute(ddl)
-        print(f"  Created/replaced view: dw.{view_name}")
+        try:
+            op.execute(ddl)
+            print(f"  Created/replaced view: dw.{view_name}")
+        except Exception as exc:  # pragma: no cover - migration safety fallback
+            print(f"  Skipping view dw.{view_name}: {exc}")
 
 
 def downgrade() -> None:

@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 from app.models.dw import DWBase, DimDate, DimPatient, DimDisorder, DimScale
 from app.models.dw import DimProfessional, FactConsultation, FactSymptom, FactDiagnosis, FactScaleResponse
+from app.etl.dw_views import create_dw_views
 
 
 def create_date_key(d: date) -> int:
@@ -382,6 +383,9 @@ def run_full_etl():
         load_fact_symptom(session)
         load_fact_diagnosis(session)
         load_fact_scale_response(session)
+
+        # Analytics views
+        create_dw_views(session)
 
         print(f"ETL complete: {p_count} patients, {c_count} consultations loaded to DW")
     except Exception as e:

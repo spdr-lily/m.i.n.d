@@ -47,6 +47,10 @@
 - *(none)*
 
 ### Done (This Session)
+- **DW analytics views resilientes em DB fresco (E26)**: Migrations `d7e8f9a0b1c2` e `a2b3c4d5e6f7` agora verificam `to_regnamespace('dw')` + `to_regclass` antes de criar as views; pulam com log se schema/tabelas ausentes. Definições centralizadas em `app/etl/dw_views.py` (`VIEWS` + `create_dw_views()`), chamado ao final de `run_full_etl()` em `app/etl/dw_loader.py`. Migrations mantidas em sincronia como histórico/fallback.
+- **`project_name` no settings**: `app/core/config.py` adicionou `project_name: str = "M.I.N.D"`.
+- **Disclaimer no login**: `LoginPage.tsx` substituiu "Sistema autorizado para uso clínico" por `Alert` de aviso "Projeto de portfólio — não autorizado para uso clínico".
+- **Novos docs**: `GUIA_INSTALACAO.md` (guia passo a passo Cenário A — PostgreSQL nativo / Cenário B — Docker) e `docs/git-copy-directory.md`.
 - **Personality timeline view**: Added `GET /api/v1/assessments/patient/{uuid}/personality-timeline` endpoint returning per-consultation personality factor scores ordered by date. Backend: `app/ml/predictors/personality_factors.py:get_patient_personality_timeline()`, service in `assessment_service.py`, route in `assessments.py`. Frontend: `PersonalityPage.tsx` — Segmented toggle "Atual" / "Evolução" switching between snapshot view and chronological line charts (Recharts LineChart) with per-scale factor evolution, data table below each chart. TypeScript types `PersonalityTimelinePoint`, `PersonalityTimelineItem`, `PersonalityTimelineResponse`. API method `mlApi.personalityTimeline()`.
 - **Therapeutic response label generator fixed**: `app/ml/training/label_builder.py` — replaced `next_phq9 < current_phq9` (24.5% positives, PHQ-9 max 7.0) with `generate_therapeutic_response()` — probabilistic model using PHQ-9 severity, days_since_last_consult, consult_num, and disorder type. Baseline ~30% + modifiers. Clipped to [0.10, 0.80]. **Result: 41.27% positives** (within 35-50% target). All 189 consultations receive labels (not only paired ones).
 - **scale_pos_weight for XGBoost**: `app/ml/training/trainer.py` — injects `scale_pos_weight = n_neg / n_pos` from y_train distribution dynamically into XGBoost params post-train-test-split.
@@ -395,3 +399,9 @@ docker run --rm --network mind_mind-network `
 **Sintoma**: Após `npm run build`, alterações no frontend não apareciam no navegador.
 **Causa**: O container Docker `mind-api` tem sua própria cópia dos arquivos em `/app/mind-ui/dist/`. O build local gera novos hashes nos nomes dos assets, mas o container continua servindo os arquivos antigos.
 **Solução**: Copiar os novos arquivos com `docker cp mind-ui/dist/. mind-api:/app/mind-ui/dist/`. Requer hard refresh (Ctrl+F5) no navegador para limpar cache.
+
+### E26 — Migrations DW analytics views falham em DB fresco (schema `dw` inexistente)
+**Sintoma**: `alembic upgrade head` em banco recém-criado falha (ou roda sem efeito) nas migrations `d7e8f9a0b1c2` e `a2b3c4d5e6f7` — `CREATE OR REPLACE VIEW dw.*` falha porque o schema `dw` e as tabelas só são criados pelo ETL, que roda depois das migrations.
+**Causa**: As migrations criavam as views `dw.*` de forma incondicional, assumindo que o schema `dw` e as tabelas `fact_*`/`dim_*` já existiam.
+**Solução**: Ambas as migrations agora verificam `to_regnamespace('dw')` e a existência das tabelas requeridas (`to_regclass`) antes de criar as views; se ausentes, pulam com mensagem no log (o ETL é a fonte de verdade). As definições das views foram centralizadas em `app/etl/dw_views.py` (dicionário `VIEWS` + `create_dw_views()`), chamado ao final de `run_full_etl()` em `app/etl/dw_loader.py` — as migrations ficam como histórico/fallback, mantidas em sincronia com o módulo.
+**Correções relacionadas**: `app/core/config.py` ganhou `project_name: str = "M.I.N.D"`. LoginPage.tsx substituiu o texto "Sistema autorizado para uso clínico" por um `Alert` de aviso "Projeto de portfólio — não autorizado para uso clínico". Novo `GUIA_INSTALACAO.md` (guia passo a passo Cenário A/B) e `docs/git-copy-directory.md`.

@@ -132,9 +132,12 @@ export default function LoginPage() {
         </Form>
 
         <div style={{ textAlign: 'center', marginTop: 24 }}>
-          <Text type="secondary" style={{ fontSize: 12 }}>
-            Sistema autorizado para uso clínico
-          </Text>
+          <Alert
+            message="Projeto de portifólio — não autorizado para uso clínico"
+            type="warning"
+            showIcon
+            style={{ marginBottom: 20, borderRadius: 8 }}
+          />
         </div>
       </Card>
     </div>
