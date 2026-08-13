@@ -28,7 +28,7 @@ class InferenceService:
         self,
         consultation_uuid: UUID,
         generated_by_model: str = "criteria-engine-v1",
-        model_version: str = "0.2.1"
+        model_version: str = "0.2.2"
     ) -> List[DiagnosticInference]:
         consultation_repo = ConsultationRepository(self.session)
         disorder_repo = DisorderRepository(self.session)

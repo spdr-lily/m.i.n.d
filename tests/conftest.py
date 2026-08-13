@@ -14,7 +14,10 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.models.base import Base, SexType, GenderIdentity, EducationLevel, Ethnicity
 from app.core.database import get_db
 
-TEST_DATABASE_URL = "postgresql://postgres:02051310VMCmspelo@localhost:5433/mind_test"
+TEST_DATABASE_URL = os.environ.get(
+    "TEST_DATABASE_URL",
+    "postgresql://postgres:137_Cmspelo@localhost:5433/mind_test",
+)
 
 test_engine = create_engine(TEST_DATABASE_URL, echo=False)
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)

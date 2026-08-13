@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     database_echo: bool = False
     project_name: str = "M.I.N.D"
     api_title: str = "M.I.N.D - Mental Intelligence & Network Data"
-    api_version: str = "0.2.1"
+    api_version: str = "0.2.2"
     debug: bool = True
     secret_key: str = "change-me-in-production"
     algorithm: str = "HS256"

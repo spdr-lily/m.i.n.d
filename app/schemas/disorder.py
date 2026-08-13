@@ -17,9 +17,20 @@ class SymptomUpdate(BaseModel):
     symptom_description: Optional[str] = None
 
 
+class SymptomDisorderLink(BaseModel):
+    disorder_id: int
+    disorder_name: str
+    dsm_chapter: Optional[str] = None
+    cid_code: Optional[str] = None
+    required_presence: Optional[bool] = True
+    minimum_duration_days: Optional[int] = None
+    clinical_notes: Optional[str] = None
+
+
 class SymptomResponse(SymptomBase):
     symptom_id: int
     created_at: Optional[datetime] = None
+    disorders: Optional[List[SymptomDisorderLink]] = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -49,11 +49,11 @@ export default function DisordersPage() {
     setLoading(true)
     try {
       const [disorderList, symptomList] = await Promise.all([
-        disordersApi.listDisorders(),
-        disordersApi.listSymptoms(),
+        disordersApi.listDisorders({ limit: 300 }),
+        disordersApi.listSymptoms({ limit: 600 }),
       ])
-      setDisorders(disorderList)
-      setSymptoms(symptomList)
+      setDisorders(disorderList.disorders || disorderList)
+      setSymptoms(symptomList.symptoms || symptomList)
     } finally {
       setLoading(false)
     }

@@ -43,6 +43,7 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 11. **Segurança em Camadas** — CSP, HSTS, Rate Limit (100 req/min), proteção SQL injection, Bandit zero
 12. **LGPD Compliance** — UUID, pseudonimização, criptografia Fernet AES, auditoria, retenção configurável (5 anos, implementado via `is_within_retention`)
 13. **Frontend Web** — 27 páginas React com sidebar responsiva por role
+14. **Vínculo Sintoma ↔ Transtorno** — `SymptomResponse.disorders` expõe os transtornos vinculados a cada sintoma (capítulo DSM, CID-11, presença requerida, duração mínima) via `DisorderService.list_symptom_criteria()`
 
 ---
 
@@ -57,40 +58,66 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 - `POST /api/v1/patients/` — Criar paciente
 - `GET /api/v1/patients/{uuid}` — Obter paciente (dados de identidade + perfil)
 - `GET /api/v1/patients/` — Listar pacientes (com profile join)
-- `PUT /api/v1/patients/{uuid}/profile` — Atualizar perfil do paciente
+- `PATCH /api/v1/patients/{uuid}/profile` — Atualizar perfil do paciente
 - `GET /api/v1/patients/{uuid}/export?format=csv|pdf` — Exportar dados
 - `GET /api/v1/patients/{uuid}/timeline` — Timeline de eventos
-- `GET /api/v1/patients/{uuid}/reports` — Relatórios médicos
+- `GET/POST /api/v1/patients/{uuid}/reports` — Relatórios médicos (listar/criar)
+- `GET/PATCH/DELETE /api/v1/patients/reports/{uuid}` — Obter/atualizar/excluir relatório
+- `POST /api/v1/patients/reports/{uuid}/toggle-pin` — Fixar relatório
 
 ### Consultas
 - `POST /api/v1/consultations/` — Criar consulta
+- `POST /api/v1/consultations/with-data` — Criar consulta com sintomas + respostas de escalas
 - `GET /api/v1/consultations/{uuid}` — Obter consulta
-- `GET /api/v1/consultations/?patient_uuid={uuid}` — Listar consultas por paciente
+- `GET /api/v1/consultations/patient/{profile_uuid}` — Consultas do paciente
+- `GET /api/v1/consultations/` — Listar consultas
+- `GET /api/v1/consultations/{uuid}/completeness` — Completude dos dados clínicos
+- `PUT /api/v1/consultations/{uuid}/clinical-note` — Nota clínica
+- `DELETE /api/v1/consultations/{uuid}` — Excluir consulta
 
 ### Inferência
 - `POST /api/v1/inferences/run` — Inferência por critérios DSM-5-TR
 - `POST /api/v1/inferences/bayesian` — Inferência Bayesiana
-- `GET /api/v1/inferences/{uuid}/by-consultation` — Histórico de inferências por consulta
+- `GET /api/v1/inferences/{uuid}` — Histórico de inferências por consulta
+- `GET /api/v1/inferences/{uuid}/explanation` — Explicação step-by-step (PII redigida)
+- `GET /api/v1/inferences/{uuid}/bayesian-explanation` — Explicação bayesiana
 
 ### Escalas
-- `GET /api/v1/scales/` — Listar escalas
-- `GET /api/v1/scales/{name}` — Detalhes da escala
-- `POST /api/v1/scales/{name}/apply` — Aplicar escala
-- `POST /api/v1/assessments/` — Submeter avaliação
+- `GET/POST /api/v1/scales/` — Listar/criar escalas
+- `GET/PATCH/DELETE /api/v1/scales/{id}` — Obter/atualizar/excluir escala
+- `GET/POST /api/v1/scales/{id}/questions` — Questões da escala
+- `POST /api/v1/assessments/score` — Calcular score
+- `POST /api/v1/assessments/apply` — Aplicar escala a um paciente
+- `GET /api/v1/assessments/detail/{scale_name}` — Questões por nome da escala
 - `GET /api/v1/assessments/patient/{patient_uuid}/history` — Histórico de scores do paciente
+- `GET /api/v1/assessments/patient/{patient_uuid}/scale/{scale_name}` — Histórico por escala
+- `GET /api/v1/assessments/patient/{patient_uuid}/personality-factors` — Fatores de personalidade
+- `GET /api/v1/assessments/patient/{patient_uuid}/personality-timeline` — Evolução dos fatores
 
-### Transtornos
-- `GET /api/v1/disorders/` — Listar transtornos (com DSM-5-TR criteria, exclusões, diferenciais)
-- `GET /api/v1/disorders/{uuid}` — Detalhes do transtorno
+### Transtornos e Sintomas
+- `GET/POST /api/v1/disorders/` — Listar/criar transtornos (com DSM-5-TR criteria, exclusões, diferenciais)
+- `GET/PATCH/DELETE /api/v1/disorders/{id}` — Detalhes do transtorno
+- `GET /api/v1/disorders/{id}/criteria` — Critérios DSM-5-TR do transtorno
+- `GET/POST /api/v1/symptoms` — Sintomas (com vínculos a transtornos)
+- `GET/PATCH/DELETE /api/v1/symptoms/{id}` — Obter/atualizar/excluir sintoma
+
+### Prescrições e Tratamento
+- `GET/POST /api/v1/consultations/{uuid}/prescriptions` — Prescrições por consulta
+- `GET/DELETE /api/v1/prescriptions/{uuid}` — Obter/excluir prescrição
+- `GET/POST /api/v1/treatment/associations` — Associações medicação–transtorno
+- `POST /api/v1/treatment/predict` — Predição de eficácia terapêutica
+- `GET /api/v1/treatment/stats/{disorder_id}` — Estatísticas por transtorno
 
 ### Profissionais
 - `GET/POST /api/v1/professionals/` — CRUD com atribuição de pacientes
 - `PUT/DELETE /api/v1/professionals/{uuid}` — Atualizar/excluir profissional
 
-### Métricas
+### Métricas e Alertas
 - `GET /api/v1/metrics/overview` — Visão geral
 - `GET /api/v1/metrics/scales/{name}/trends` — Tendências temporais
 - `GET /api/v1/metrics/correlations` — Correlações entre escalas
+- `GET /api/v1/alerts/` — Listar alertas clínicos
+- `PATCH /api/v1/alerts/{id}/resolve` — Resolver alerta
 
 ### Auditoria
 - `GET /api/v1/audit/logs` — Logs de auditoria (filtros: entidade, operação, data)
@@ -99,7 +126,8 @@ Motor probabilístico de inferência diagnóstica baseado em DSM-5-TR e CID-11, 
 - `GET/POST /api/v1/admin/roles` — Gerenciar roles
 - `GET/POST /api/v1/admin/permissions` — Gerenciar permissões
 - `GET/POST/DELETE /api/v1/admin/route-permissions` — Gerenciar permissões de rota
-- `GET /api/v1/admin/monitoring` — Métricas de desempenho em tempo real
+- `PATCH /api/v1/admin/users/{uuid}/password` — Alterar senha do usuário
+- `GET /api/v1/admin/monitoring/*` — Métricas de desempenho em tempo real
 
 ### Consentimento
 - `POST /api/v1/consent/` — Registro de consentimento LGPD

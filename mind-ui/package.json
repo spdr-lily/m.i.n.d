@@ -1,7 +1,7 @@
 {
   "name": "mind-ui",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "description": "M.I.N.D CDSS - Clinical Decision Support System UI",
   "scripts": {
@@ -26,6 +26,8 @@
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
     "@types/recharts": "^1.8.29",
+    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/parser": "^8.67.0",
     "@vitejs/plugin-react": "^4.2.1",
     "eslint": "^8.56.0",
     "eslint-plugin-react-hooks": "^4.6.0",

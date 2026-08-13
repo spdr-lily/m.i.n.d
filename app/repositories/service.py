@@ -243,6 +243,13 @@ class DisorderRepository:
     def list_criteria_by_disorder(self, disorder_id: int) -> List[DiagnosticCriteria]:
         return self.session.query(DiagnosticCriteria).filter(DiagnosticCriteria.disorder_id == disorder_id).all()
 
+    def list_symptom_criteria(self) -> List[tuple]:
+        return (
+            self.session.query(DiagnosticCriteria, Disorder)
+            .join(Disorder, Disorder.disorder_id == DiagnosticCriteria.disorder_id)
+            .all()
+        )
+
     def delete_criteria(self, criteria_id: int) -> bool:
         obj = self.session.query(DiagnosticCriteria).filter(DiagnosticCriteria.criteria_id == criteria_id).first()
         if obj: self.session.delete(obj); self.session.flush(); return True

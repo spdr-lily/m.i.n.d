@@ -152,6 +152,8 @@ class DisorderService:
         return self.repository.create_criteria(disorder_id, symptom_id, required_presence, minimum_duration_days, clinical_notes)
     def list_criteria_by_disorder(self, disorder_id: int) -> List[DiagnosticCriteria]:
         return self.repository.list_criteria_by_disorder(disorder_id)
+    def list_symptom_criteria(self) -> List[tuple]:
+        return self.repository.list_symptom_criteria()
     def delete_criteria(self, criteria_id: int) -> bool:
         return self.repository.delete_criteria(criteria_id)
     def create_relationship(self, source_disorder_id: int, target_disorder_id: int, relationship_type: Optional[str] = None, relationship_weight: Optional[float] = None, clinical_description: Optional[str] = None) -> DiagnosisRelationship:

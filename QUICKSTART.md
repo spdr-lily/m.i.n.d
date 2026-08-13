@@ -35,7 +35,7 @@ docker compose up -d
 .venv\Scripts\python.exe scripts/seed_icd11.py
 .venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_diagnostic_data.py
-.venv\Scripts\python.exe scripts/seed_clinical_data.py     # 50 pacientes, 21 escalas, 34k+ respostas
+.venv\Scripts\python.exe scripts/seed_clinical_data.py     # 200 pacientes, 21 escalas, 272k+ respostas
 
 # 7. Servidor
 .venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
@@ -58,7 +58,7 @@ npm run dev
 ### Dados de Exemplo
 
 ```bash
-.venv\Scripts\python.exe scripts/seed_clinical_data.py          # 50 pacientes, 21 escalas
+.venv\Scripts\python.exe scripts/seed_clinical_data.py          # 200 pacientes, 21 escalas
 .venv\Scripts\python.exe scripts/check_integrity.py             # Verificar qualidade dos dados
 ```
 

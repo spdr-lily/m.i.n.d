@@ -118,7 +118,7 @@ Se o banco já existir, ignore o aviso de erro "já existe".
 .venv\Scripts\python.exe scripts/seed_icd11.py
 .venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_diagnostic_data.py
-.venv\Scripts\python.exe scripts/seed_clinical_data.py   # 50 pacientes, 21 escalas, 34k+ respostas
+.venv\Scripts\python.exe scripts/seed_clinical_data.py   # 200 pacientes, 21 escalas, 272k+ respostas
 ```
 
 ### Passo A6 — Subir o backend (API)

@@ -1,7 +1,7 @@
 # M.I.N.D — Documentação de Desenvolvimento
 
 **Data:** Junho 2026
-**Versão:** 1.0.0
+**Versão:** 0.2.2
 **Status:** CDSS Completo — 12 fases implementadas
 **Testes:** 548 (unitários + integração)
 **Stack:** FastAPI + PostgreSQL 16 + React + Pandas + Airflow + PySpark + MLflow
@@ -9,6 +9,15 @@
 ---
 
 ## Diário de Desenvolvimento
+
+### 2026-08-13 — API RESTful no frontend, vínculo sintoma–transtorno e versionamento
+- **Versão 0.2.2** — bump de `0.2.1 → 0.2.2` em `pyproject.toml`, `app/core/config.py`, `app/api/v1/diagnostic/inferences.py`, `app/services/inference_service.py`, `.env.example` e `mind-ui/package.json`/`package-lock.json`.
+- **Normalização da API no frontend:** `mind-ui/src/api/endpoints.ts` realinhado às rotas reais do backend — update de paciente via `PATCH /patients/{uuid}/profile`, consultas por perfil via `GET /consultations/patient/{profileUuid}`, detalhe de escala via `GET /assessments/detail/{name}`, scoring via `POST /assessments/score` e `POST /assessments/apply`, histórico via `GET /assessments/patient/{uuid}/history` e `/scale/{scaleName}`, inferências via `GET /inferences/{uuid}`, `POST /inferences/run` e `POST /inferences/bayesian`, senha de usuário via `PATCH /admin/users/{uuid}/password`, sintomas sob `/symptoms`, prescrições sob `/consultations/{uuid}/prescriptions` e `/prescriptions/{id}`, treatment/reports/timeline/alerts/audit com rotas aninhadas reais. Métodos mortos removidos (`updatePermission`, `listRoles`, `monitoring`, `search`). `DisordersPage` usa paginação (`limit: 300/600`); `ConsultationDetailPage` normaliza `rx?.prescriptions`.
+- **Vínculo sintoma ↔ transtorno:** novo schema `SymptomDisorderLink` e campo `disorders` em `SymptomResponse`; `DisorderRepository.list_symptom_criteria()` (JOIN `DiagnosticCriteria` × `Disorder`) exposto via `DisorderService`.
+- **ESLint + TypeScript:** `@typescript-eslint/eslint-plugin` + `parser` (devDependencies) e novo `.eslintrc.cjs`.
+- **Test DB configurável:** `tests/conftest.py` lê `TEST_DATABASE_URL` do ambiente (com default) em vez de URL hardcoded.
+
+---
 
 ### 2026-08-10 — Tema escuro (dark mode) no frontend
 - **Novidade:** Implementado tema claro/escuro em toda a UI com toggle persistente entre sessões.
@@ -138,39 +147,79 @@
 | POST | `/api/v1/patients/` | Criar paciente |
 | GET | `/api/v1/patients/{uuid}` | Obter paciente (profile com refs aninhadas) |
 | GET | `/api/v1/patients/` | Listar pacientes |
-| PUT | `/api/v1/patients/{uuid}/profile` | Atualizar perfil |
+| PATCH | `/api/v1/patients/{uuid}/profile` | Atualizar perfil |
+| DELETE | `/api/v1/patients/{uuid}` | Excluir paciente |
 | GET | `/api/v1/patients/{uuid}/export?format=csv\|pdf` | Exportar dados |
 | GET | `/api/v1/patients/{uuid}/timeline` | Timeline de eventos |
-| GET | `/api/v1/patients/{uuid}/reports` | Relatórios médicos |
+| GET | `/api/v1/patients/{uuid}/reports` | Listar relatórios médicos |
+| POST | `/api/v1/patients/{uuid}/reports` | Criar relatório médico |
+| GET/PATCH/DELETE | `/api/v1/patients/reports/{uuid}` | Obter/atualizar/excluir relatório |
+| POST | `/api/v1/patients/reports/{uuid}/toggle-pin` | Fixar/desafixar relatório |
 
 ### Consultas (`/api/v1/consultations`)
 | Método | Rota | Descrição |
 |---|---|---|
 | POST | `/api/v1/consultations/` | Criar consulta |
+| POST | `/api/v1/consultations/with-data` | Criar consulta com sintomas e respostas de escalas |
 | GET | `/api/v1/consultations/{uuid}` | Obter consulta |
-| GET | `/api/v1/consultations/?patient_uuid={uuid}` | Listar por paciente |
+| GET | `/api/v1/consultations/patient/{profile_uuid}` | Listar por paciente |
+| GET | `/api/v1/consultations/` | Listar consultas |
+| GET | `/api/v1/consultations/{uuid}/completeness` | Completude dos dados clínicos |
+| GET | `/api/v1/consultations/{uuid}/symptoms` | Sintomas da consulta |
+| GET | `/api/v1/consultations/{uuid}/scale-responses` | Respostas de escalas da consulta |
+| PUT | `/api/v1/consultations/{uuid}/clinical-note` | Nota clínica |
+| DELETE | `/api/v1/consultations/{uuid}` | Excluir consulta |
 
 ### Inferência (`/api/v1/inferences`)
 | Método | Rota | Descrição |
 |---|---|---|
 | POST | `/api/v1/inferences/run` | Inferência por critérios DSM-5-TR |
 | POST | `/api/v1/inferences/bayesian` | Inferência Bayesiana |
-| GET | `/api/v1/inferences/{uuid}/by-consultation` | Histórico de inferências |
+| GET | `/api/v1/inferences/{uuid}` | Histórico de inferências por consulta |
+| GET | `/api/v1/inferences/{uuid}/explanation` | Explicação step-by-step (PII redigida) |
+| GET | `/api/v1/inferences/{uuid}/bayesian-explanation` | Explicação bayesiana |
+| POST | `/api/v1/inferences/list` | Busca avançada de inferências |
 
 ### Escalas (`/api/v1/scales`, `/api/v1/assessments`)
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/api/v1/scales/` | Listar escalas |
-| GET | `/api/v1/scales/{name}` | Detalhes da escala |
-| POST | `/api/v1/scales/{name}/apply` | Aplicar escala |
-| POST | `/api/v1/assessments/` | Submeter avaliação |
-| GET | `/api/v1/assessments/patient/{uuid}/history` | Histórico de scores |
+| GET/POST | `/api/v1/scales/` | Listar/criar escalas |
+| GET/PATCH/DELETE | `/api/v1/scales/{id}` | Obter/atualizar/excluir escala |
+| GET/POST | `/api/v1/scales/{id}/questions` | Listar/adicionar questões |
+| PATCH/DELETE | `/api/v1/scales/questions/{id}` | Atualizar/excluir questão |
+| POST | `/api/v1/assessments/score` | Calcular score |
+| POST | `/api/v1/assessments/apply` | Aplicar escala a um paciente |
+| GET | `/api/v1/assessments/detail/{scale_name}` | Questões da escala por nome |
+| GET | `/api/v1/assessments/patient/{uuid}/history` | Histórico de scores do paciente |
+| GET | `/api/v1/assessments/patient/{uuid}/scale/{scale_name}` | Histórico por escala |
+| GET | `/api/v1/assessments/patient/{uuid}/personality-factors` | Fatores de personalidade |
+| GET | `/api/v1/assessments/patient/{uuid}/personality-timeline` | Evolução dos fatores por consulta |
 
-### Transtornos (`/api/v1/disorders`)
+### Transtornos (`/api/v1/disorders`) e Sintomas (`/api/v1/symptoms`)
 | Método | Rota | Descrição |
 |---|---|---|
-| GET | `/api/v1/disorders/` | Listar (DSM-5 criteria, exclusões, diferenciais) |
-| GET | `/api/v1/disorders/{uuid}` | Detalhes |
+| GET/POST | `/api/v1/disorders/` | Listar/criar transtornos |
+| GET/PATCH/DELETE | `/api/v1/disorders/{id}` | Detalhes/atualizar/excluir |
+| GET | `/api/v1/disorders/{id}/criteria` | Critérios DSM-5-TR do transtorno |
+| GET/POST | `/api/v1/symptoms` | Listar/criar sintomas (com vínculos a transtornos) |
+| GET/PATCH/DELETE | `/api/v1/symptoms/{id}` | Obter/atualizar/excluir sintoma |
+| GET/POST | `/api/v1/diagnosis-relationships` | Relações entre transtornos |
+
+### Prescrições (`/api/v1/consultations/{uuid}/prescriptions`, `/api/v1/prescriptions`)
+| Método | Rota | Descrição |
+|---|---|---|
+| GET/POST | `/api/v1/consultations/{uuid}/prescriptions` | Listar/criar prescrição por consulta |
+| GET | `/api/v1/prescriptions/{uuid}` | Obter prescrição |
+| DELETE | `/api/v1/prescriptions/{uuid}` | Excluir prescrição |
+
+### Tratamento (`/api/v1/treatment`)
+| Método | Rota | Descrição |
+|---|---|---|
+| GET/POST | `/api/v1/treatment/associations` | Associações medicação–transtorno |
+| PATCH/DELETE | `/api/v1/treatment/associations/{id}` | Atualizar/excluir associação |
+| POST | `/api/v1/treatment/predict` | Predição de eficácia terapêutica |
+| GET | `/api/v1/treatment/stats/{disorder_id}` | Estatísticas por transtorno |
+| GET/POST | `/api/v1/treatment/outcomes` | Desfechos terapêuticos |
 
 ### Profissionais (`/api/v1/professionals`)
 | Método | Rota | Descrição |
@@ -184,6 +233,17 @@
 | GET | `/api/v1/metrics/scales/{name}/trends` | Tendência temporal |
 | GET | `/api/v1/metrics/correlations` | Correlações |
 
+### Alertas (`/api/v1/alerts`)
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/api/v1/alerts/` | Listar alertas |
+| GET | `/api/v1/alerts/check-all` | Disparar verificação de alertas |
+| GET | `/api/v1/alerts/scale-thresholds` | Alertas de thresholds de escala |
+| GET | `/api/v1/alerts/suicidal-ideation` | Alertas de ideação suicida |
+| GET | `/api/v1/alerts/missed-follow-up` | Alertas de follow-up perdido |
+| GET | `/api/v1/alerts/high-confidence` | Alertas de alta confiança diagnóstica |
+| PATCH | `/api/v1/alerts/{id}/resolve` | Resolver alerta |
+
 ### Auditoria (`/api/v1/audit`)
 | Método | Rota | Descrição |
 |---|---|---|
@@ -193,9 +253,12 @@
 | Método | Rota | Descrição |
 |---|---|---|
 | GET/POST | `/api/v1/admin/roles/` | Gerenciar roles |
-| GET/POST | `/api/v1/admin/permissions/` | Gerenciar permissões |
-| GET/POST/DELETE | `/api/v1/admin/route-permissions/` | Gerenciar permissões de rota |
-| GET | `/api/v1/admin/monitoring/` | Métricas de desempenho |
+| GET/POST/DELETE | `/api/v1/admin/permissions/` | Gerenciar permissões |
+| GET/POST/PATCH/DELETE | `/api/v1/admin/route-permissions/` | Gerenciar permissões de rota |
+| PATCH | `/api/v1/admin/users/{uuid}/password` | Alterar senha do usuário |
+| GET | `/api/v1/admin/monitoring/stats` | Métricas de desempenho |
+| GET | `/api/v1/admin/monitoring/health` | Health check |
+| GET | `/api/v1/admin/monitoring/requests` | Requisições recentes |
 
 ### Consentimento (`/api/v1/consent`)
 | Método | Rota | Descrição |

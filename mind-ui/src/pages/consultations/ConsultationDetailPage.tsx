@@ -78,7 +78,7 @@ export default function ConsultationDetailPage() {
       setScales(sc.scales)
       computeScaleScores(c.scale_responses || [], sc.scales)
       setCompleteness(comp)
-      setPrescriptions(rx)
+      setPrescriptions(rx?.prescriptions || rx || [])
       const map: Record<string, number> = {}
       for (const d of allDisorders) {
         map[d.disorder_name] = d.disorder_id
