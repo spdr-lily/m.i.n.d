@@ -389,6 +389,8 @@ class ClinicalAlert(Base):
     scale_name = Column(String(255)); actual_score = Column(Numeric(10, 2)); threshold_score = Column(Numeric(10, 2))
     intensity = Column(Numeric(5, 2)); disorder_name = Column(String(255)); probability = Column(Numeric(8, 6))
     resolved = Column(Boolean, default=False, nullable=False, server_default="false"); resolved_at = Column(DateTime)
+    resolved_by = Column(PostgresUUID(as_uuid=True), ForeignKey("security.users.user_uuid"))
+    resolution_notes = Column(Text)
     created_at = Column(DateTime, server_default=func.now())
 
 

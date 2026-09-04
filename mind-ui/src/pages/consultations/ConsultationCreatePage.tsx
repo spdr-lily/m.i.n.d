@@ -86,10 +86,10 @@ export default function ConsultationCreatePage() {
     setLoading(true)
     try {
       const patient = patients.find((p) => p.patient_uuid === values.patient_uuid)
-      if (!patient) throw new Error('Paciente nao encontrado')
+      if (!patient) throw new Error('Paciente não encontrado')
       const patientDetail = await patientsApi.get(values.patient_uuid)
       const puid = patientDetail.profile.profile_uuid
-      if (!puid) throw new Error('Perfil do paciente nao encontrado')
+      if (!puid) throw new Error('Perfil do paciente não encontrado')
 
       const dateValue = values.consultation_date
       const consultationDate = dateValue

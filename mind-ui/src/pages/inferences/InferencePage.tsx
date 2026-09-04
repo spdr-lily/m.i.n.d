@@ -321,7 +321,7 @@ export default function InferencePage() {
     try {
       const patientDetail = await patientsApi.get(selectedPatient)
       const puid = patientDetail.profile.profile_uuid
-      if (!puid) throw new Error('Perfil do paciente nao encontrado')
+      if (!puid) throw new Error('Perfil do paciente não encontrado')
       const created = await consultationsApi.createWithData({
         profile_uuid: puid,
         consultation_date: new Date().toISOString(),

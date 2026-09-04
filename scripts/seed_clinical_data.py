@@ -8,7 +8,7 @@
 
 import random
 import math
-from datetime import datetime, timedelta, date
+from datetime import datetime, timedelta, date, time
 from uuid import uuid4
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
@@ -1484,6 +1484,30 @@ def create_date_key(d: date) -> int:
     return d.year * 10000 + d.month * 100 + d.day
 
 
+# Window das consultas periódicas sintéticas (01/01/2026 a 30/08/2026)
+PERIOD_START = date(2026, 1, 1)
+PERIOD_END = date(2026, 8, 30)
+
+
+def _periodic_consult_dates(num_consults):
+    """Return `num_consults` datetimes evenly spaced across the period window.
+
+    Pequeno jitter (±2 dias) mantém o caráter periódico sem datas exatas
+    repetidas; todas permanecem dentro de PERIOD_START..PERIOD_END.
+    """
+    span = (PERIOD_END - PERIOD_START).days
+    dates = []
+    for ci in range(num_consults):
+        frac = 0.5 if num_consults == 1 else ci / (num_consults - 1)
+        base = PERIOD_START + timedelta(days=int(round(frac * span)))
+        base += timedelta(days=random.randint(-2, 2))
+        base = max(PERIOD_START, min(PERIOD_END, base))
+        hh = random.randint(8, 18)
+        mm = random.choice([0, 15, 30, 45])
+        dates.append(datetime.combine(base, time(hh, mm)))
+    return dates
+
+
 def get_severity(score: float, thresholds: list) -> str:
     for threshold, label in reversed(thresholds):
         if score >= threshold:
@@ -2106,9 +2130,11 @@ def _create_patients(session, num_patients, sex_types, genders, edu_levels, ethn
         # Primary professional for this patient (same distribution as assignments)
         primary_prof = professionals[i % len(professionals)]
 
+        # Consultas periódicas distribuídas uniformemente no período alvo
+        periodic_dates = _periodic_consult_dates(num_consultations)
+
         for ci in range(num_consultations):
-            days_ago = random.randint(1, 365)
-            consult_date = datetime.now() - timedelta(days=days_ago)
+            consult_date = periodic_dates[ci]
             # Most consultations with primary prof, some with others
             if ci == 0 or random.random() < 0.7:
                 prof = primary_prof

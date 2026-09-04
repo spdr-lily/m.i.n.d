@@ -1,5 +1,5 @@
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, date, time
 from typing import Optional, List
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
@@ -194,30 +194,39 @@ class ConsultationService:
         self,
         patient_uuid: Optional[str] = None,
         page: int = 1,
-        size: int = 20
+        size: int = 20,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None,
     ) -> tuple:
-        """List consultations with optional patient filter and pagination."""
+        """List consultations with optional patient / date-range filters and pagination."""
+        filters = []
         if patient_uuid:
             profile = self.session.query(PatientProfile).filter_by(patient_uuid=patient_uuid).first()
             if not profile:
                 return 0, []
-            consults = (
-                self.session.query(ClinicalConsultation)
-                .filter_by(profile_uuid=profile.profile_uuid)
-                .order_by(ClinicalConsultation.consultation_date.desc())
-                .all()
-            )
+            filters.append(ClinicalConsultation.profile_uuid == profile.profile_uuid)
+        if start_date is not None:
+            filters.append(ClinicalConsultation.consultation_date >= datetime.combine(start_date, time.min))
+        if end_date is not None:
+            filters.append(ClinicalConsultation.consultation_date <= datetime.combine(end_date, time.max))
+
+        query = self.session.query(ClinicalConsultation)
+        if filters:
+            query = query.filter(*filters)
+
+        total = query.count()
+
+        if patient_uuid:
+            consults = query.order_by(ClinicalConsultation.consultation_date.desc()).all()
         else:
             skip = (page - 1) * size
             consults = (
-                self.session.query(ClinicalConsultation)
-                .order_by(ClinicalConsultation.consultation_date.desc())
+                query.order_by(ClinicalConsultation.consultation_date.desc())
                 .offset(skip)
                 .limit(size)
                 .all()
             )
 
-        total = len(consults)
         items = []
         for c in consults:
             prof_name = c.healthcare_professional.full_name if c.healthcare_professional else None

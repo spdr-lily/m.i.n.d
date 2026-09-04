@@ -1,4 +1,5 @@
 from uuid import UUID
+from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from app.core.database import get_db
@@ -91,12 +92,14 @@ async def list_consultations(
     patient_uuid: str | None = Query(None),
     page: int = Query(1, ge=1),
     size: int = Query(20, ge=1, le=500),
+    start_date: date | None = Query(None, description="Filtra consultas a partir desta data (inclusive)"),
+    end_date: date | None = Query(None, description="Filtra consultas até esta data (inclusive)"),
     db: Session = Depends(get_db),
     _=Depends(require_permission(Permission.READ_CONSULTATION)),
 ):
-    """List consultations, optionally filtered by patient UUID."""
+    """List consultations, optionally filtered by patient UUID and date range."""
     service = ConsultationService(db)
-    total, items = service.list_all_consultations(patient_uuid, page, size)
+    total, items = service.list_all_consultations(patient_uuid, page, size, start_date, end_date)
     return {"total": total, "consultations": items}
 
 

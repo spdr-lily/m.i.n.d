@@ -181,7 +181,7 @@ export const timelineApi = {
 
 export const alertsApi = {
   list: (params?: any) => apiClient.get('/alerts', { params }).then((r: ApiResponse) => r.data),
-  resolve: (id: number) => apiClient.patch(`/alerts/${id}/resolve`).then((r: ApiResponse) => r.data),
+  resolve: (id: number, notes?: string) => apiClient.patch(`/alerts/${id}/resolve`, notes ? { notes } : undefined).then((r: ApiResponse) => r.data),
 };
 
 export const auditApi = {

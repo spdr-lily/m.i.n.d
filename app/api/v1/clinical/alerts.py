@@ -4,7 +4,7 @@ from app.core.database import get_db
 from app.services.alerts_service import AlertsService
 from app.api.v1.auth.auth import get_current_user, require_permission
 from app.security.permissions import Permission
-from app.schemas.alert import AlertResponse, AlertResolveResponse
+from app.schemas.alert import AlertResponse, AlertResolveRequest, AlertResolveResponse
 
 router = APIRouter(prefix="/api/v1/alerts", tags=["alerts"])
 
@@ -77,12 +77,16 @@ def check_high_confidence(
 @router.patch("/{alert_id}/resolve", response_model=AlertResolveResponse)
 def resolve_alert(
     alert_id: int,
+    body: AlertResolveRequest = None,
     db: Session = Depends(get_db),
+    current_user=Depends(get_current_user),
     _=Depends(require_permission(Permission.READ_CONSULTATION)),
 ):
-    """Mark an alert as resolved."""
+    """Mark an alert as resolved, with optional notes."""
     service = AlertsService(db)
-    alert = service.resolve_alert(alert_id)
+    notes = body.notes if body else None
+    user_uuid = current_user.user_uuid if current_user else None
+    alert = service.resolve_alert(alert_id, notes=notes, user_uuid=user_uuid)
     if not alert:
         raise HTTPException(status_code=404, detail="Alerta não encontrado")
     return AlertResolveResponse(

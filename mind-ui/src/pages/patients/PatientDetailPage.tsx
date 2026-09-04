@@ -38,22 +38,25 @@ export default function PatientDetailPage() {
 
   useEffect(() => {
     if (!uuid) return
-    Promise.all([
-      patientsApi.get(uuid),
-      consultationsApi.list(uuid),
-      reportsApi.list(uuid),
-      scalesApi.patientHistory(uuid).catch(() => ({ total: 0, assessments: [] })),
-    ])
-      .then(([p, c, r, h]) => {
-        setPatient(p)
-        setConsultations(c.consultations || [])
-        setReports(r.filter((rpt: any) => rpt.is_pinned))
-        const assessments = h.assessments as any[];
-        const scales: string[] = [...new Set(assessments.map((a: any) => a.scale_name as string))].sort();
-        setAvailableScales(scales)
-        if (scales.length > 0) setSelectedScale(scales[0])
+    setLoading(true)
+    patientsApi.get(uuid).then((p) => {
+      setPatient(p)
+
+      Promise.allSettled([
+        consultationsApi.list(uuid),
+        reportsApi.list(uuid),
+        scalesApi.patientHistory(uuid).catch(() => ({ total: 0, assessments: [] })),
+      ]).then(([cRes, rRes, hRes]) => {
+        if (cRes.status === 'fulfilled') setConsultations(cRes.value?.consultations || [])
+        if (rRes.status === 'fulfilled') setReports((rRes.value as any[]).filter((rpt: any) => rpt.is_pinned))
+        if (hRes.status === 'fulfilled') {
+          const assessments = (hRes.value as any).assessments as any[];
+          const scales: string[] = [...new Set(assessments.map((a: any) => a.scale_name as string))].sort();
+          setAvailableScales(scales)
+          if (scales.length > 0) setSelectedScale(scales[0])
+        }
       })
-      .finally(() => setLoading(false))
+    }).catch(() => setPatient(null)).finally(() => setLoading(false))
   }, [uuid])
 
   useEffect(() => {
@@ -66,7 +69,7 @@ export default function PatientDetailPage() {
   }, [uuid, selectedScale])
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
-  if (!patient) return <Typography.Text type="danger">Paciente nao encontrado</Typography.Text>
+  if (!patient) return <Typography.Text type="danger">Paciente não encontrado</Typography.Text>
 
   const { identity, profile } = patient
   const sexo = profile.sex_type?.description || (profile.sex_type_id === 1 ? 'Masculino' : 'Feminino')

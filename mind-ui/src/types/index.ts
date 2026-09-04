@@ -333,10 +333,23 @@ export interface Alert {
   alert_id: number
   alert_type: string
   severity: string
+  severity_order?: number
   message: string
   patient_uuid?: string
+  patient_name?: string
+  profile_uuid?: string
+  consultation_uuid?: string
+  scale_name?: string
+  actual_score?: number
+  threshold_score?: number
+  intensity?: number
+  disorder_name?: string
+  probability?: number
   created_at: string
   resolved: boolean
+  resolved_at?: string
+  resolved_by?: string
+  resolution_notes?: string
 }
 
 // --- Metrics ---

@@ -7,7 +7,9 @@ from app.models.base import (
     ClinicalConsultation, ScaleResponse, ScaleQuestion,
     AssessmentScale, SymptomObservation, Symptom,
     DiagnosticInference, Disorder, ClinicalAlert,
+    PatientProfile, PatientIdentity,
 )
+from app.security.lgpd import decrypt_pii
 
 
 SEVERITY_ORDER = {"low": 0, "medium": 1, "high": 2, "critical": 3}
@@ -51,13 +53,31 @@ class AlertsService:
         return alert
 
     def _to_dict(self, alert: ClinicalAlert) -> dict:
+        patient_name = None
+        patient_uuid = None
+        if alert.profile_uuid:
+            profile = self.session.query(PatientProfile).filter_by(
+                profile_uuid=alert.profile_uuid
+            ).first()
+            if profile:
+                patient_uuid = str(profile.patient_uuid) if profile.patient_uuid else None
+                if profile.patient_identity:
+                    try:
+                        patient_name = decrypt_pii(profile.patient_identity.full_name)
+                    except Exception:
+                        patient_name = profile.patient_identity.full_name
+
+        severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
         return {
             "alert_id": alert.alert_id,
             "type": alert.alert_type,
             "alert_type": alert.alert_type,
             "severity": alert.severity,
+            "severity_order": severity_order.get(alert.severity, 9),
             "message": alert.message,
             "profile_uuid": str(alert.profile_uuid) if alert.profile_uuid else None,
+            "patient_uuid": patient_uuid,
+            "patient_name": patient_name,
             "consultation_uuid": str(alert.consultation_uuid) if alert.consultation_uuid else None,
             "scale_name": alert.scale_name,
             "actual_score": float(alert.actual_score) if alert.actual_score else None,
@@ -67,6 +87,8 @@ class AlertsService:
             "probability": float(alert.probability) if alert.probability else None,
             "resolved": alert.resolved,
             "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
+            "resolved_by": str(alert.resolved_by) if alert.resolved_by else None,
+            "resolution_notes": alert.resolution_notes,
             "created_at": alert.created_at.isoformat() if alert.created_at else datetime.now(timezone.utc).isoformat(),
         }
 
@@ -282,10 +304,14 @@ class AlertsService:
         query = self.session.query(ClinicalAlert)
         if not resolved:
             query = query.filter(ClinicalAlert.resolved == False)
-        alerts = query.order_by(ClinicalAlert.created_at.desc()).all()
-        return [self._to_dict(a) for a in alerts]
+        alerts = query.all()
+        result = [self._to_dict(a) for a in alerts]
+        severity_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
+        result.sort(key=lambda x: (severity_order.get(x["severity"], 9), x.get("created_at", ""), x.get("alert_id", 0)))
+        return result
 
-    def resolve_alert(self, alert_id: int) -> Optional[ClinicalAlert]:
+    def resolve_alert(self, alert_id: int, notes: Optional[str] = None,
+                      user_uuid: Optional[UUID] = None) -> Optional[ClinicalAlert]:
         alert = self.session.query(ClinicalAlert).filter(
             ClinicalAlert.alert_id == alert_id
         ).first()
@@ -293,5 +319,9 @@ class AlertsService:
             return None
         alert.resolved = True
         alert.resolved_at = datetime.now(timezone.utc)
+        if user_uuid:
+            alert.resolved_by = user_uuid
+        if notes:
+            alert.resolution_notes = notes
         self.session.commit()
         return alert

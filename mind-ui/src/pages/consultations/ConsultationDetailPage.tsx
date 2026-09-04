@@ -64,27 +64,43 @@ export default function ConsultationDetailPage() {
   const [predLoading, setPredLoading] = useState(false)
   const navigate = useNavigate()
 
-  const fetchConsultation = useCallback(() => {
+  const fetchConsultation = useCallback(async () => {
     if (!uuid) return
     setLoading(true)
-    Promise.all([
-      consultationsApi.get(uuid),
-      scalesApi.list(0, 100),
-      consultationsApi.getCompleteness(uuid),
-      medicationsApi.listPrescriptions(uuid),
-      disordersApi.listDisorders(),
-    ]).then(([c, sc, comp, rx, allDisorders]) => {
+    try {
+      const c = await consultationsApi.get(uuid)
       setConsultation(c)
-      setScales(sc.scales)
-      computeScaleScores(c.scale_responses || [], sc.scales)
-      setCompleteness(comp)
-      setPrescriptions(rx?.prescriptions || rx || [])
-      const map: Record<string, number> = {}
-      for (const d of allDisorders) {
-        map[d.disorder_name] = d.disorder_id
+
+      const [scRes, compRes, rxRes, disRes] = await Promise.allSettled([
+        scalesApi.list(0, 100),
+        consultationsApi.getCompleteness(uuid),
+        medicationsApi.listPrescriptions(uuid),
+        disordersApi.listDisorders(),
+      ])
+
+      const sc = scRes.status === 'fulfilled' ? scRes.value : null
+      if (sc) {
+        setScales(sc.scales)
+        computeScaleScores(c.scale_responses || [], sc.scales)
       }
-      setDisorderIdMap(map)
-    }).finally(() => setLoading(false))
+
+      if (compRes.status === 'fulfilled') setCompleteness(compRes.value)
+
+      const rx = rxRes.status === 'fulfilled' ? rxRes.value : null
+      setPrescriptions(rx?.prescriptions || rx || [])
+
+      if (disRes.status === 'fulfilled') {
+        const map: Record<string, number> = {}
+        for (const d of disRes.value) {
+          map[d.disorder_name] = d.disorder_id
+        }
+        setDisorderIdMap(map)
+      }
+    } catch {
+      setConsultation(null)
+    } finally {
+      setLoading(false)
+    }
   }, [uuid])
 
   useEffect(() => { fetchConsultation() }, [fetchConsultation])
@@ -240,7 +256,17 @@ export default function ConsultationDetailPage() {
     val >= 0.7 ? 'success' : val >= 0.4 ? 'active' : 'exception'
 
   if (loading) return <Spin size="large" style={{ display: 'block', margin: '100px auto' }} />
-  if (!consultation) return <Typography.Text type="danger">Consulta nao encontrada</Typography.Text>
+  if (!consultation) return (
+    <Card style={{ textAlign: 'center', marginTop: 80 }}>
+      <Typography.Text type="danger" style={{ fontSize: 16 }}>
+        Consulta não encontrada
+      </Typography.Text>
+      <br />
+      <Typography.Text type="secondary">
+        Verifique se o UUID está correto ou se a consulta foi removida.
+      </Typography.Text>
+    </Card>
+  )
 
   const professional = consultation.healthcare_professional
   const symptoms = consultation.symptom_observations || []
