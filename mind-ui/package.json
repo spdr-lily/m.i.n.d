@@ -1,7 +1,7 @@
 {
   "name": "mind-ui",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "description": "M.I.N.D CDSS - Clinical Decision Support System UI",
   "scripts": {

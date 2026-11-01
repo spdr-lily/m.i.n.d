@@ -1,7 +1,7 @@
 # M.I.N.D — Documentação de Desenvolvimento
 
 **Data:** Junho 2026
-**Versão:** 0.3.0
+**Versão:** 0.3.1
 **Status:** CDSS Completo — 12 fases implementadas
 **Testes:** 548 (unitários + integração)
 **Stack:** FastAPI + PostgreSQL 16 + React + Pandas + Airflow + PySpark + MLflow
@@ -9,6 +9,12 @@
 ---
 
 ## Diário de Desenvolvimento
+
+### 2026-11-01 — Versão 0.3.1 e limite de comorbidades no dashboard
+- **Versão 0.3.1** — bump `0.3.0 → 0.3.1` em `pyproject.toml`, `app/core/config.py` (`api_version`), `app/api/v1/diagnostic/inferences.py` e `app/services/inference_service.py` (`model_version`), `.env.example` (`API_VERSION`), `mind-ui/package.json`/`package-lock.json`.
+- **Dashboard "Comorbidades mais frequentes":** o card agora lista apenas os 5 pares com maior número de co-ocorrências. `comorbidityPairsSorted` em `DashboardPage.tsx` passou de `.slice(0, 20)` para `.slice(0, 5)` — a tabela continua com `pagination={false}`, exibindo no máximo 5 linhas.
+
+---
 
 ### 2026-11-01 — Versão 0.3.0 consolidada e dashboard de pacientes recentes
 - **Versão 0.3.0** — consolida o bump `0.2.2 → 0.3.0` em `pyproject.toml`, `app/core/config.py` (`api_version`), `app/api/v1/diagnostic/inferences.py` e `app/services/inference_service.py` (`model_version`), `.env.example` (`API_VERSION`), `mind-ui/package.json`/`package-lock.json`. `app/main.py` passou a ler `settings.api_version` no `FastAPI(version=...)` e no `GET /` (antes `0.1.0` hardcoded). Docs sincronizados: `AGENTS.md`, `GUIA_INSTALACAO.md` e `SECURITY.md`.
