@@ -13,6 +13,7 @@
 ### 2026-11-01 — Versão 0.3.1 e limite de comorbidades no dashboard
 - **Versão 0.3.1** — bump `0.3.0 → 0.3.1` em `pyproject.toml`, `app/core/config.py` (`api_version`), `app/api/v1/diagnostic/inferences.py` e `app/services/inference_service.py` (`model_version`), `.env.example` (`API_VERSION`), `mind-ui/package.json`/`package-lock.json`.
 - **Dashboard "Comorbidades mais frequentes":** o card agora lista apenas os 5 pares com maior número de co-ocorrências. `comorbidityPairsSorted` em `DashboardPage.tsx` passou de `.slice(0, 20)` para `.slice(0, 5)` — a tabela continua com `pagination={false}`, exibindo no máximo 5 linhas.
+- **Dependências fixadas para rebuild estável:** `sqlalchemy>=2.0.23,<2.1`, `fastapi>=0.109.0,<0.116` e `pandas>=2.1.3,<3` em `requirements.txt`, `requirements-prod.txt` e `pyproject.toml`. Sem os limites superiores, o rebuild do container `api` resolvia SQLAlchemy 2.1 (DBAPI `psycopg` v3, não instalado) e FastAPI 0.162/Starlette 1.10 (assets estáticos servidos com 0 bytes). Ver `E27` no `AGENTS.md`.
 
 ---
 
