@@ -67,9 +67,9 @@ class PatientService:
         except Exception:
             return encrypted
 
-    def list_patients_with_details(self, skip: int = 0, limit: int = 100) -> tuple:
+    def list_patients_with_details(self, skip: int = 0, limit: int = 100, order_by: str = "name") -> tuple:
         """List all patients with computed details (age, sex description)."""
-        identities = self.repository.list_patients(skip=skip, limit=limit)
+        identities = self.repository.list_patients(skip=skip, limit=limit, order_by=order_by)
         total = self.repository.count_patients()
         today = date.today()
 

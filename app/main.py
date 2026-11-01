@@ -30,7 +30,7 @@ logger = setup_logging()
 app = FastAPI(
     title="M.I.N.D - Mental Intelligence & Network Data",
     description="Clinical Decision Support System for Mental Health Diagnosis",
-    version="0.1.0",
+    version=settings.api_version,
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -117,7 +117,7 @@ async def root():
         return FileResponse(os.path.join(frontend_dir, "index.html"))
     return {
         "service": "M.I.N.D CDSS",
-        "version": "0.1.0",
+        "version": settings.api_version,
         "docs": "/docs",
         "health": "/health"
     }

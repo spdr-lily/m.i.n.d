@@ -103,7 +103,7 @@ export default function DashboardPage() {
       try {
         const [m, p, a, demo, cons, dis, pt, com] = await Promise.all([
           metricsApi.overview().catch(() => null),
-          patientsApi.list(1, 5).catch(() => ({ patients: [] as PatientListItem[] })),
+          patientsApi.list({ limit: 5, order_by: 'recent' }).catch(() => ({ patients: [] as PatientListItem[] })),
           alertsApi.list(false).catch(() => [] as Alert[]),
           metricsApi.demographics().catch(() => null),
           metricsApi.consultationMetrics(30).catch(() => null),

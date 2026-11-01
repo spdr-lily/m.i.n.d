@@ -55,7 +55,7 @@ async def run_inference(
             consultation_uuid=request.consultation_uuid,
             inferences=results,
             generated_by_model="criteria-engine-v1",
-            model_version="0.2.2",
+            model_version="0.3.0",
             requires_human_review=True
         )
     except ValueError as e:

@@ -1,7 +1,7 @@
 # M.I.N.D — Documentação de Desenvolvimento
 
 **Data:** Junho 2026
-**Versão:** 0.2.2
+**Versão:** 0.3.0
 **Status:** CDSS Completo — 12 fases implementadas
 **Testes:** 548 (unitários + integração)
 **Stack:** FastAPI + PostgreSQL 16 + React + Pandas + Airflow + PySpark + MLflow
@@ -9,6 +9,12 @@
 ---
 
 ## Diário de Desenvolvimento
+
+### 2026-11-01 — Versão 0.3.0 consolidada e dashboard de pacientes recentes
+- **Versão 0.3.0** — consolida o bump `0.2.2 → 0.3.0` em `pyproject.toml`, `app/core/config.py` (`api_version`), `app/api/v1/diagnostic/inferences.py` e `app/services/inference_service.py` (`model_version`), `.env.example` (`API_VERSION`), `mind-ui/package.json`/`package-lock.json`. `app/main.py` passou a ler `settings.api_version` no `FastAPI(version=...)` e no `GET /` (antes `0.1.0` hardcoded). Docs sincronizados: `AGENTS.md`, `GUIA_INSTALACAO.md` e `SECURITY.md`.
+- **Dashboard "Pacientes Recentes":** o card agora lista apenas os 5 últimos pacientes. `GET /api/v1/patients` ganhou o parâmetro opcional `order_by` (`name` | `recent`); `recent` ordena por `created_at DESC`, data da última consulta e nome. O dashboard passou a chamar `patientsApi.list({ limit: 5, order_by: 'recent' })` — antes enviava `page`/`size`, ignorados pelo backend, retornando até 100 pacientes em ordem alfabética.
+
+---
 
 ### 2026-08-13 — API RESTful no frontend, vínculo sintoma–transtorno e versionamento
 - **Versão 0.2.2** — bump de `0.2.1 → 0.2.2` em `pyproject.toml`, `app/core/config.py`, `app/api/v1/diagnostic/inferences.py`, `app/services/inference_service.py`, `.env.example` e `mind-ui/package.json`/`package-lock.json`.

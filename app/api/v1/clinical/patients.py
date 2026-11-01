@@ -63,11 +63,12 @@ async def get_patient(
 async def list_patients(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
+    order_by: str = Query("name", pattern="^(name|recent)$"),
     db: Session = Depends(get_db),
     _=Depends(require_permission(Permission.READ_PATIENT)),
 ):
     service = PatientService(db)
-    total, items = service.list_patients_with_details(skip=skip, limit=limit)
+    total, items = service.list_patients_with_details(skip=skip, limit=limit, order_by=order_by)
     return {"total": total, "patients": items}
 
 

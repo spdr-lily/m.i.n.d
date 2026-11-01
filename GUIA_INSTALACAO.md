@@ -72,7 +72,7 @@ pip install -r requirements.txt
 | `git clone` | Pasta `m.i.n.d` criada; no final, `done.` |
 | `python -m venv .venv` | Nenhuma saída; pasta `.venv\` criada no projeto |
 | `.venv\Scripts\Activate.ps1` | O prompt passa a exibir `(.venv)` antes do caminho |
-| `pip install -e . --no-deps` | `Successfully installed mind-cdss-0.2.2` |
+| `pip install -e . --no-deps` | `Successfully installed mind-cdss-0.3.0` |
 | `pip install -r requirements.txt` | `Successfully installed <pacotes>...` e nenhuma mensagem de erro |
 
 > ⚠️ **Erro comum (E02/E03):** se `pip install` falhar com `No module named 'app'` ou `pydantic_core`, reinstale:

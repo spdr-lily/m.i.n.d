@@ -2,7 +2,7 @@ from typing import Generic, TypeVar, List, Optional, Any
 from uuid import UUID
 from datetime import datetime
 from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import inspect as sa_inspect
+from sqlalchemy import inspect as sa_inspect, func
 from app.models.base import (
     PatientIdentity, PatientProfile, ClinicalConsultation, ClinicalEpisode,
     SymptomObservation, ScaleResponse, DiagnosticInference,
@@ -110,8 +110,27 @@ class PatientRepository:
     def get_patient_profile_by_uuid(self, profile_uuid: UUID) -> Optional[PatientProfile]:
         return self.session.query(PatientProfile).filter(PatientProfile.profile_uuid == profile_uuid).first()
 
-    def list_patients(self, skip: int = 0, limit: int = 100) -> List[PatientIdentity]:
-        return self.session.query(PatientIdentity).order_by(PatientIdentity.full_name).offset(skip).limit(limit).all()
+    def list_patients(self, skip: int = 0, limit: int = 100, order_by: str = "name") -> List[PatientIdentity]:
+        query = self.session.query(PatientIdentity)
+        if order_by == "recent":
+            last_consult = (
+                self.session.query(
+                    PatientProfile.patient_uuid.label("patient_uuid"),
+                    func.max(ClinicalConsultation.consultation_date).label("last_consultation"),
+                )
+                .join(ClinicalConsultation, ClinicalConsultation.profile_uuid == PatientProfile.profile_uuid)
+                .group_by(PatientProfile.patient_uuid)
+                .subquery()
+            )
+            query = query.outerjoin(last_consult, last_consult.c.patient_uuid == PatientIdentity.patient_uuid)
+            query = query.order_by(
+                PatientIdentity.created_at.desc(),
+                last_consult.c.last_consultation.desc().nullslast(),
+                PatientIdentity.full_name,
+            )
+        else:
+            query = query.order_by(PatientIdentity.full_name)
+        return query.offset(skip).limit(limit).all()
 
     def count_patients(self) -> int:
         return self.session.query(PatientIdentity).count()
