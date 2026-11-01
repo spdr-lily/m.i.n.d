@@ -188,7 +188,7 @@ export default function DashboardPage() {
   })()
   const prevalenceColors = ['#1677ff', '#52c41a', '#faad14', '#f5222d', '#722ed1', '#13c2c2', '#eb2f96', '#fa541c', '#a0d911', '#2f54eb']
 
-  const comorbidityPairsSorted = [...comorbidityPairs].sort((a, b) => b.count - a.count).slice(0, 20)
+  const comorbidityPairsSorted = [...comorbidityPairs].sort((a, b) => b.count - a.count).slice(0, 5)
 
   const scaleTrendChartData = scaleTrend?.trend?.scores
     ? Object.entries(scaleTrend.trend.scores).map(([date, score]) => ({
