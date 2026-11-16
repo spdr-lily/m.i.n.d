@@ -1,8 +1,13 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid, theme } from 'antd'
-import { ExperimentOutlined, ThunderboltOutlined, SafetyOutlined, HistoryOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { useNavigate } from 'react-router-dom'
+import { Card, Form, Select, Button, Typography, Breadcrumb, message, Row, Col, Table, Tag, Spin, Switch, Divider, Alert, Progress, Collapse, Tooltip, Empty, Space, Grid, theme, Drawer, Descriptions } from 'antd'
+import {
+  ExperimentOutlined, ThunderboltOutlined, SafetyOutlined, HistoryOutlined,
+  InfoCircleOutlined, FileSearchOutlined, PrinterOutlined, DownloadOutlined,
+  LinkOutlined, CheckCircleOutlined,
+} from '@ant-design/icons'
 import { inferencesApi, patientsApi, consultationsApi, disordersApi } from '../../api/endpoints'
-import type { PatientListItem, Symptom, InferenceResult, Disorder } from '../../types'
+import type { PatientListItem, Symptom, InferenceResult, Disorder, DiagnosticCriteria, ICD11Code } from '../../types'
 import dayjs from 'dayjs'
 
 const { Title, Text } = Typography
@@ -239,10 +244,15 @@ interface InferenceHistoryItem {
   generated_by_model: string
 }
 
+interface CriterionWithSymptom extends DiagnosticCriteria {
+  symptom_name?: string
+}
+
 export default function InferencePage() {
   const screens = useBreakpoint()
   const isMobile = !screens.md
   const { token } = theme.useToken()
+  const navigate = useNavigate()
   const [patients, setPatients] = useState<PatientListItem[]>([])
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [selectedPatient, setSelectedPatient] = useState<string>('')
@@ -254,16 +264,26 @@ export default function InferencePage() {
   const [historyLoading, setHistoryLoading] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({})
   const disorderNameById = useRef<Record<number, string>>({})
+  const disorderById = useRef<Record<number, Disorder>>({})
+
+  const [detailVisible, setDetailVisible] = useState(false)
+  const [detailLoading, setDetailLoading] = useState(false)
+  const [disorderDetail, setDisorderDetail] = useState<Disorder | null>(null)
+  const [detailCriteria, setDetailCriteria] = useState<CriterionWithSymptom[]>([])
 
   useEffect(() => {
     patientsApi.list(1, 100).then((data) => setPatients(data.patients))
     disordersApi.listSymptoms().then(setSymptoms)
-    disordersApi.listDisorders().then((disorders) => {
+    disordersApi.listDisorders({ limit: 600 }).then((data: any) => {
+      const list: Disorder[] = data?.disorders || data || []
       const map: Record<number, string> = {}
-      for (const d of disorders) {
+      const byId: Record<number, Disorder> = {}
+      for (const d of list) {
         map[d.disorder_id] = d.disorder_name
+        byId[d.disorder_id] = d
       }
       disorderNameById.current = map
+      disorderById.current = byId
     })
   }, [])
 
@@ -340,6 +360,51 @@ export default function InferencePage() {
     }
   }
 
+  const openDisorderDetail = async (result: InferenceResult) => {
+    const cached = disorderById.current[result.disorder_id]
+    setDetailVisible(true)
+    setDetailLoading(true)
+    setDisorderDetail(cached ?? null)
+    setDetailCriteria([])
+    try {
+      const symptomMap = new Map(symptoms.map((s) => [s.symptom_id, s.symptom_name]))
+      const [disorder, criteriaRes] = await Promise.all([
+        cached ?? disordersApi.get(result.disorder_id),
+        disordersApi.getCriteria(result.disorder_id).catch(() => ({ criteria: [] })),
+      ])
+      setDisorderDetail(disorder as Disorder)
+      const criteriaList: DiagnosticCriteria[] = criteriaRes?.criteria || []
+      setDetailCriteria(
+        criteriaList.map((c) => ({
+          ...c,
+          symptom_name: symptomMap.get(c.symptom_id) || `Sintoma #${c.symptom_id}`,
+        }))
+      )
+    } catch {
+      message.error('Não foi possível carregar os detalhes do transtorno')
+    } finally {
+      setDetailLoading(false)
+    }
+  }
+
+  const topResults = [...results]
+    .sort((a, b) => b.inference_probability - a.inference_probability)
+    .slice(0, 5)
+
+  // Sintomas marcados na inferência atual (para destacar critérios correspondentes)
+  const presentSymptomIds = new Set(
+    symptoms.filter((s) => evidence[s.symptom_name]).map((s) => s.symptom_id)
+  )
+  const presentSymptomNames = symptoms
+    .filter((s) => evidence[s.symptom_name])
+    .map((s) => s.symptom_description || s.symptom_name)
+  const matchedCriteriaCount = detailCriteria.filter((c) => presentSymptomIds.has(c.symptom_id)).length
+
+  const goToFullClassification = (disorderId: number) => {
+    setDetailVisible(false)
+    navigate(`/admin/disorders?disorder=${disorderId}`)
+  }
+
   const groupedSymptoms: Record<string, Symptom[]> = {}
   symptoms.forEach((s) => {
     const group = SYMPTOM_GROUPS[s.symptom_name] || 'Outros'
@@ -353,6 +418,165 @@ export default function InferencePage() {
 
   const presentCount = (group: string) =>
     groupedSymptoms[group]?.filter((s) => evidence[s.symptom_name]).length || 0
+
+  const renderDiagnosticSections = (d: Disorder) => {
+    const items: any[] = []
+    if (d.dsm_criteria) {
+      items.push({
+        key: 'dsm_criteria',
+        label: 'Critérios DSM-5-TR',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{d.dsm_criteria}</pre>,
+      })
+    }
+    if (d.dsm_exclusions) {
+      items.push({
+        key: 'dsm_exclusions',
+        label: 'Exclusões DSM-5-TR',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{d.dsm_exclusions}</pre>,
+      })
+    }
+    if (d.dsm_differentials) {
+      items.push({
+        key: 'dsm_differentials',
+        label: 'Diagnóstico Diferencial DSM-5-TR',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{d.dsm_differentials}</pre>,
+      })
+    }
+    if (d.icd11_exclusions) {
+      items.push({
+        key: 'icd11_exclusions',
+        label: 'Exclusões CID-11',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{d.icd11_exclusions}</pre>,
+      })
+    }
+    if (d.icd11_differentials) {
+      items.push({
+        key: 'icd11_differentials',
+        label: 'Diagnóstico Diferencial CID-11',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{d.icd11_differentials}</pre>,
+      })
+    }
+    if (d.icd11_codes && d.icd11_codes.length > 0) {
+      const icd = d.icd11_codes[0]
+      const icdLines = [
+        `Código: ${icd.icd11_code}`,
+        icd.icd11_title ? `Título CID-11: ${icd.icd11_title}` : null,
+        icd.chapter ? `Capítulo CID-11: ${icd.chapter}${icd.chapter_code ? ` (${icd.chapter_code})` : ''}` : null,
+        icd.who_url ? `Referência OMS: ${icd.who_url}` : null,
+        icd.clinical_description ? `\nDescrição Clínica:\n${icd.clinical_description}` : null,
+        icd.diagnostic_requirements ? `\nRequisitos Diagnósticos:\n${icd.diagnostic_requirements}` : null,
+      ].filter(Boolean).join('\n')
+      items.push({
+        key: 'icd11_codes',
+        label: 'Informações CID-11',
+        children: <pre style={{ whiteSpace: 'pre-wrap', margin: 0, fontSize: 13, lineHeight: 1.6 }}>{icdLines}</pre>,
+      })
+    }
+    return items.length > 0 ? <Collapse items={items} size="small" /> : null
+  }
+
+  const escapeHtml = (v: string) =>
+    v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+  const detailDocumentCss = `
+  body { font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; color: #1f1f1f; margin: 32px; line-height: 1.6; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 22px 0 6px; color: #0958d9; border-bottom: 1px solid #e8e8e8; padding-bottom: 4px; }
+  pre { white-space: pre-wrap; font-family: inherit; font-size: 13px; margin: 0; }
+  .meta { color: #595959; font-size: 12px; }
+  .codes span { display: inline-block; border: 1px solid #d9d9d9; border-radius: 4px; padding: 0 6px; margin-right: 6px; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; }
+  th, td { border: 1px solid #e8e8e8; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #fafafa; }
+  tr.present td { background: #f6ffed; }
+  .badge { background: #52c41a; color: #fff; border-radius: 8px; padding: 0 6px; font-size: 10px; }
+  .summary { font-size: 12px; color: #595959; margin: 4px 0; }
+  .disclaimer { margin-top: 28px; font-size: 11px; color: #8c8c8c; border-top: 1px solid #e8e8e8; padding-top: 8px; }
+  `
+
+  const buildDetailBodyHtml = (d: Disorder, criteria: CriterionWithSymptom[]) => {
+    const icd = d.icd11_codes?.[0]
+    const section = (title: string, body: string) =>
+      `<section><h2>${escapeHtml(title)}</h2><pre>${escapeHtml(body)}</pre></section>`
+
+    const blocks: string[] = []
+    if (d.disorder_description) blocks.push(section('Descrição', d.disorder_description))
+    if (d.dsm_criteria) blocks.push(section('Critérios DSM-5-TR', d.dsm_criteria))
+    if (d.dsm_exclusions) blocks.push(section('Exclusões DSM-5-TR', d.dsm_exclusions))
+    if (d.dsm_differentials) blocks.push(section('Diagnóstico Diferencial DSM-5-TR', d.dsm_differentials))
+    if (d.icd11_exclusions) blocks.push(section('Exclusões CID-11', d.icd11_exclusions))
+    if (d.icd11_differentials) blocks.push(section('Diagnóstico Diferencial CID-11', d.icd11_differentials))
+    if (icd) {
+      const icdLines = [
+        `Código: ${icd.icd11_code}`,
+        icd.icd11_title ? `Título CID-11: ${icd.icd11_title}` : '',
+        icd.chapter ? `Capítulo CID-11: ${icd.chapter}${icd.chapter_code ? ` (${icd.chapter_code})` : ''}` : '',
+        icd.who_url ? `Referência OMS: ${icd.who_url}` : '',
+        icd.clinical_description ? `\nDescrição Clínica:\n${icd.clinical_description}` : '',
+        icd.diagnostic_requirements ? `\nRequisitos Diagnósticos:\n${icd.diagnostic_requirements}` : '',
+      ].filter(Boolean).join('\n')
+      blocks.push(section('Informações CID-11', icdLines))
+    }
+
+    const rows = criteria.map((c) => {
+      const matched = presentSymptomIds.has(c.symptom_id)
+      return `<tr class="${matched ? 'present' : ''}">
+        <td>${escapeHtml(c.symptom_name || `Sintoma #${c.symptom_id}`)}${matched ? ' <span class="badge">presente</span>' : ''}</td>
+        <td>${c.required_presence ? 'Sim' : 'Não'}</td>
+        <td>${c.minimum_duration_days ? `${c.minimum_duration_days} dias` : '-'}</td>
+        <td>${escapeHtml(c.clinical_notes || '-')}</td>
+      </tr>`
+    }).join('')
+
+    const criteriaTable = criteria.length > 0 ? `
+      <section>
+        <h2>Critérios Diagnósticos (Sintomas)</h2>
+        <p class="summary">${matchedCriteriaCount} de ${criteria.length} critério(s) correspondem a sintomas marcados nesta inferência.</p>
+        <table>
+          <thead><tr><th>Sintoma</th><th>Obrigatório</th><th>Duração</th><th>Observações</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </section>` : ''
+
+    const symptomList = presentSymptomNames.length > 0
+      ? `<section><h2>Sintomas Marcados na Inferência (${presentSymptomNames.length})</h2><ul>${presentSymptomNames.map((s) => `<li>${escapeHtml(s)}</li>`).join('')}</ul></section>`
+      : ''
+
+    return `
+  <h1>${escapeHtml(d.disorder_name)}</h1>
+  <div class="codes">${[
+    d.cid_code ? `<span>CID-10: ${escapeHtml(d.cid_code)}</span>` : '',
+    d.dsm_code ? `<span>DSM-5-TR: ${escapeHtml(d.dsm_code)}</span>` : '',
+    icd ? `<span>CID-11: ${escapeHtml(icd.icd11_code)}</span>` : '',
+  ].filter(Boolean).join('')}</div>
+  <p class="meta">${escapeHtml(d.dsm_chapter || '')}${d.dsm_chapter ? ' • ' : ''}Gerado em ${dayjs().format('DD/MM/YYYY HH:mm')} — M.I.N.D</p>
+  ${blocks.join('\n')}
+  ${symptomList}
+  ${criteriaTable}
+  <p class="disclaimer">Projeto de portfólio — não autorizado para uso clínico. Documento gerado a partir de dados sintéticos/referência DSM-5-TR e CID-11.</p>`
+  }
+
+  const buildDetailHtml = (d: Disorder, criteria: CriterionWithSymptom[]) =>
+    `<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="utf-8" />
+<title>${escapeHtml(d.disorder_name)} — M.I.N.D</title>
+<style>${detailDocumentCss}</style></head>
+<body>${buildDetailBodyHtml(d, criteria)}</body></html>`
+
+  const exportDisorderDetail = () => {
+    if (!disorderDetail) return
+    const html = buildDetailHtml(disorderDetail, detailCriteria)
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `transtorno-${disorderDetail.disorder_id}.html`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+    message.success('Detalhes exportados em HTML')
+  }
 
   return (
     <>
@@ -453,54 +677,91 @@ export default function InferencePage() {
 
         <Col xs={24} lg={14}>
           <Space direction="vertical" style={{ width: '100%' }} size={12}>
-            <Card title="Resultados da Inferência" size="small">
+            <Card
+              title="Resultados da Inferência"
+              size="small"
+              extra={results.length > 0 ? (
+                <Text type="secondary" style={{ fontSize: 12 }}>
+                  Top {Math.min(5, results.length)} de {results.length}
+                </Text>
+              ) : null}
+            >
               {results.length === 0 ? (
                 <Text type="secondary">Selecione os sintomas e execute a inferência</Text>
               ) : (
-                <Table
-                  dataSource={results}
-                  rowKey="disorder_id"
-                  size="small"
-                  pagination={false}
-                  columns={[
-                    { title: 'Transtorno', dataIndex: 'disorder_name', ellipsis: true },
-                    {
-                      title: (
-                        <Space size={4}>
-                          <span>Probabilidade</span>
-                          <Tooltip title="Probabilidade calculada pelo modelo a partir dos sintomas observados">
-                            <InfoCircleOutlined style={{ fontSize: 12, color: '#999' }} />
+                <>
+                  <Text type="secondary" style={{ display: 'block', marginBottom: 8, fontSize: 12 }}>
+                    <FileSearchOutlined style={{ marginRight: 6 }} />
+                    Exibindo os {Math.min(5, results.length)} transtornos mais prováveis. Clique em um transtorno para ver os detalhes.
+                  </Text>
+                  <Table
+                    dataSource={topResults}
+                    rowKey="disorder_id"
+                    size="small"
+                    pagination={false}
+                    onRow={(record: InferenceResult) => ({
+                      style: { cursor: 'pointer' },
+                      onClick: () => openDisorderDetail(record),
+                    })}
+                    columns={[
+                      { title: 'Transtorno', dataIndex: 'disorder_name', ellipsis: true },
+                      {
+                        title: (
+                          <Space size={4}>
+                            <span>Probabilidade</span>
+                            <Tooltip title="Probabilidade calculada pelo modelo a partir dos sintomas observados">
+                              <InfoCircleOutlined style={{ fontSize: 12, color: '#999' }} />
+                            </Tooltip>
+                          </Space>
+                        ),
+                        dataIndex: 'inference_probability',
+                        width: 170,
+                        render: (v: number) => (
+                          <Progress
+                            percent={Math.round(v * 100)}
+                            size="small"
+                            status={v >= 0.7 ? 'success' : v >= 0.4 ? 'active' : 'exception'}
+                            format={(p) => `${p}%`}
+                          />
+                        ),
+                      },
+                      {
+                        title: 'Confiança',
+                        dataIndex: 'confidence_level',
+                        width: 90,
+                        render: (v: number) => v != null ? `${Math.round(v * 100)}%` : '-',
+                      },
+                      {
+                        title: 'Códigos',
+                        key: 'codes',
+                        width: 130,
+                        render: (_: unknown, r: InferenceResult) =>
+                          [r.cid_code && <Tag key="cid" style={{ fontSize: 11 }}>{r.cid_code}</Tag>,
+                           r.dsm_code && <Tag key="dsm" style={{ fontSize: 11 }}>{r.dsm_code}</Tag>]
+                            .filter(Boolean),
+                      },
+                      {
+                        title: '',
+                        key: 'actions',
+                        width: 48,
+                        align: 'center' as const,
+                        render: (_: unknown, r: InferenceResult) => (
+                          <Tooltip title="Ver detalhes do transtorno">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<FileSearchOutlined />}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                openDisorderDetail(r)
+                              }}
+                            />
                           </Tooltip>
-                        </Space>
-                      ),
-                      dataIndex: 'inference_probability',
-                      width: 200,
-                      render: (v: number) => (
-                        <Progress
-                          percent={Math.round(v * 100)}
-                          size="small"
-                          status={v >= 0.7 ? 'success' : v >= 0.4 ? 'active' : 'exception'}
-                          format={(p) => `${p}%`}
-                        />
-                      ),
-                    },
-                    {
-                      title: 'Confiança',
-                      dataIndex: 'confidence_level',
-                      width: 100,
-                      render: (v: number) => v != null ? `${Math.round(v * 100)}%` : '-',
-                    },
-                    {
-                      title: 'Códigos',
-                      key: 'codes',
-                      width: 140,
-                      render: (_: unknown, r: InferenceResult) =>
-                        [r.cid_code && <Tag key="cid" style={{ fontSize: 11 }}>{r.cid_code}</Tag>,
-                         r.dsm_code && <Tag key="dsm" style={{ fontSize: 11 }}>{r.dsm_code}</Tag>]
-                          .filter(Boolean),
-                    },
-                  ]}
-                />
+                        ),
+                      },
+                    ]}
+                  />
+                </>
               )}
             </Card>
 
@@ -549,6 +810,168 @@ export default function InferencePage() {
           </Space>
         </Col>
       </Row>
+
+      <Drawer
+        title={(
+          <Space direction="vertical" size={2}>
+            <Text strong style={{ fontSize: 16 }}>{disorderDetail?.disorder_name || 'Detalhes do Transtorno'}</Text>
+            {disorderDetail && (
+              <Space size={4} wrap>
+                {disorderDetail.cid_code && <Tag>{disorderDetail.cid_code}</Tag>}
+                {disorderDetail.dsm_code && <Tag color="purple">{disorderDetail.dsm_code}</Tag>}
+                {disorderDetail.icd11_codes?.[0] && <Tag color="green">{disorderDetail.icd11_codes[0].icd11_code}</Tag>}
+                {disorderDetail.is_core && <Tag color="blue">Pipeline Clínico</Tag>}
+              </Space>
+            )}
+          </Space>
+        )}
+        extra={disorderDetail ? (
+          <Space size={4} className="no-print">
+            <Tooltip title="Exportar detalhes (.html)">
+              <Button size="small" icon={<DownloadOutlined />} onClick={exportDisorderDetail}>
+                {isMobile ? null : 'Exportar'}
+              </Button>
+            </Tooltip>
+            <Tooltip title="Imprimir / salvar como PDF">
+              <Button size="small" icon={<PrinterOutlined />} onClick={() => window.print()}>
+                {isMobile ? null : 'Imprimir'}
+              </Button>
+            </Tooltip>
+          </Space>
+        ) : null}
+        placement="right"
+        width={isMobile ? '100%' : 680}
+        open={detailVisible}
+        onClose={() => setDetailVisible(false)}
+        destroyOnClose
+      >
+        {detailLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 48 }}>
+            <Spin tip="Carregando detalhes..." />
+          </div>
+        ) : disorderDetail ? (
+          <Space direction="vertical" style={{ width: '100%' }} size={16}>
+            <Button
+              type="link"
+              size="small"
+              icon={<LinkOutlined />}
+              style={{ paddingLeft: 0 }}
+              onClick={() => goToFullClassification(disorderDetail.disorder_id)}
+            >
+              Ver na classificação completa (DSM-5-TR / CID-11)
+            </Button>
+
+            {disorderDetail.dsm_chapter && <Tag color="geekblue">{disorderDetail.dsm_chapter}</Tag>}
+
+            {disorderDetail.disorder_description && (
+              <Card size="small" title="Descrição">
+                <Text style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{disorderDetail.disorder_description}</Text>
+              </Card>
+            )}
+
+            <Card size="small" title="Classificações">
+              <Descriptions size="small" column={1} bordered>
+                <Descriptions.Item label="CID-10">{disorderDetail.cid_code || '-'}</Descriptions.Item>
+                <Descriptions.Item label="DSM-5-TR">{disorderDetail.dsm_code || '-'}</Descriptions.Item>
+                <Descriptions.Item label="CID-11">
+                  {disorderDetail.icd11_codes && disorderDetail.icd11_codes.length > 0
+                    ? disorderDetail.icd11_codes.map((icd: ICD11Code) => icd.icd11_code).join(', ')
+                    : '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Capítulo DSM-5-TR">{disorderDetail.dsm_chapter || '-'}</Descriptions.Item>
+              </Descriptions>
+            </Card>
+
+            {renderDiagnosticSections(disorderDetail)}
+
+            <Card
+              size="small"
+              title={(
+                <Space size={6}>
+                  <span>Critérios Diagnósticos (Sintomas)</span>
+                  {detailCriteria.length > 0 && (
+                    <Tag color={matchedCriteriaCount > 0 ? 'green' : 'default'} style={{ fontSize: 11 }}>
+                      {matchedCriteriaCount}/{detailCriteria.length} na inferência
+                    </Tag>
+                  )}
+                </Space>
+              )}
+            >
+              {presentSymptomNames.length === 0 && (
+                <Alert
+                  type="info"
+                  showIcon
+                  style={{ marginBottom: 8 }}
+                  message="Nenhum sintoma marcado na inferência atual — execute uma inferência para comparar os critérios."
+                />
+              )}
+              {detailCriteria.length === 0 ? (
+                <Text type="secondary">Nenhum critério cadastrado para este transtorno.</Text>
+              ) : (
+                <Table
+                  dataSource={detailCriteria}
+                  rowKey="criteria_id"
+                  size="small"
+                  pagination={false}
+                  onRow={(r: CriterionWithSymptom) => presentSymptomIds.has(r.symptom_id)
+                    ? { style: { background: token.colorSuccessBg } }
+                    : {}}
+                  columns={[
+                    {
+                      title: 'Sintoma',
+                      dataIndex: 'symptom_name',
+                      ellipsis: true,
+                      render: (v: string, r: CriterionWithSymptom) => presentSymptomIds.has(r.symptom_id) ? (
+                        <Space size={4}>
+                          <CheckCircleOutlined style={{ color: token.colorSuccess }} />
+                          <Text strong>{v}</Text>
+                        </Space>
+                      ) : v,
+                    },
+                    {
+                      title: 'Na inferência',
+                      key: 'present',
+                      width: 120,
+                      render: (_: unknown, r: CriterionWithSymptom) =>
+                        presentSymptomIds.has(r.symptom_id)
+                          ? <Tag color="green" style={{ fontSize: 11 }}>Presente</Tag>
+                          : <Text type="secondary" style={{ fontSize: 12 }}>—</Text>,
+                    },
+                    {
+                      title: 'Obrigatório',
+                      dataIndex: 'required_presence',
+                      width: 100,
+                      render: (v: boolean) => v ? <Tag color="red">Sim</Tag> : <Tag>Não</Tag>,
+                    },
+                    {
+                      title: 'Duração',
+                      dataIndex: 'minimum_duration_days',
+                      width: 90,
+                      render: (v: number | null | undefined) => v ? `${v}d` : '-',
+                    },
+                    {
+                      title: 'Observações',
+                      dataIndex: 'clinical_notes',
+                      ellipsis: true,
+                      render: (v: string | null | undefined) => v || '-',
+                    },
+                  ]}
+                />
+              )}
+            </Card>
+          </Space>
+        ) : (
+          <Empty description="Nenhum detalhe disponível" />
+        )}
+      </Drawer>
+
+      {disorderDetail && (
+        <div
+          id="mind-print-area"
+          className="mind-print-only"
+          dangerouslySetInnerHTML={{ __html: buildDetailBodyHtml(disorderDetail, detailCriteria) }}
+        />
+      )}
     </>
   )
 }

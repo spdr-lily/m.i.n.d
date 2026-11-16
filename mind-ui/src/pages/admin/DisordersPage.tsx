@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
-import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input, theme } from 'antd'
-import { SearchOutlined } from '@ant-design/icons'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { Card, Table, Typography, Breadcrumb, Tag, Space, Spin, Collapse, Button, Input, theme, Alert } from 'antd'
+import { SearchOutlined, LinkOutlined } from '@ant-design/icons'
 import { disordersApi } from '../../api/endpoints'
 import type { Disorder, Symptom, DiagnosticCriteria, ICD11Code } from '../../types'
 
@@ -43,7 +44,11 @@ export default function DisordersPage() {
   const [symptoms, setSymptoms] = useState<Symptom[]>([])
   const [loading, setLoading] = useState(true)
   const [searchText, setSearchText] = useState('')
+  const [expandedKeys, setExpandedKeys] = useState<number[]>([])
   const { token } = theme.useToken()
+  const [searchParams] = useSearchParams()
+  const targetDisorderId = Number(searchParams.get('disorder')) || null
+  const focusedRef = useRef(false)
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -77,6 +82,26 @@ export default function DisordersPage() {
       )
     )
   }
+
+  // Deep link vindo da inferência: /admin/disorders?disorder=<id>
+  useEffect(() => {
+    if (!targetDisorderId || loading || disorders.length === 0) return
+    const target = disorders.find((d) => d.disorder_id === targetDisorderId)
+    if (!target) return
+    setExpandedKeys([targetDisorderId])
+    if (!target.criteria && !target.criteriaLoading) {
+      loadCriteria(targetDisorderId)
+    }
+    if (!focusedRef.current) {
+      focusedRef.current = true
+      setTimeout(() => {
+        document
+          .getElementById(`disorder-row-${targetDisorderId}`)
+          ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 400)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetDisorderId, loading, disorders.length])
 
   const grouped = useMemo(() => {
     const chapters: Record<string, DisorderRow[]> = {}
@@ -222,7 +247,15 @@ export default function DisordersPage() {
       loading={loading}
       pagination={false}
       size="small"
+      onRow={(record: DisorderRow) => ({
+        id: `disorder-row-${record.disorder_id}`,
+        ...(record.disorder_id === targetDisorderId
+          ? { style: { background: token.colorPrimaryBg, boxShadow: `inset 3px 0 0 ${token.colorPrimary}` } }
+          : {}),
+      })}
       expandable={{
+        expandedRowKeys: expandedKeys,
+        onExpandedRowsChange: (keys) => setExpandedKeys([...(keys as number[])]),
         expandedRowRender: (record: DisorderRow) => {
           if (record.criteriaLoading) return <Spin />
           return (
@@ -290,6 +323,19 @@ export default function DisordersPage() {
             style={{ width: 320 }}
           />
         </div>
+        {targetDisorderId && (
+          <Alert
+            type="info"
+            showIcon
+            style={{ marginBottom: 12 }}
+            message="Visualizando transtorno vindo da Inferência Diagnóstica"
+            action={(
+              <Button type="link" size="small" onClick={() => setExpandedKeys([targetDisorderId])}>
+                Expandir
+              </Button>
+            )}
+          />
+        )}
         <Text type="secondary" style={{ display: 'block', marginBottom: 16 }}>
           <Tag color="blue">ATIVO</Tag> = transtorno com pipeline clínico completo (inferência, ML, escalas, critérios)
         </Text>
