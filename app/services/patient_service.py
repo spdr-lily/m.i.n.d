@@ -69,7 +69,10 @@ class PatientService:
 
     def list_patients_with_details(self, skip: int = 0, limit: int = 100, order_by: str = "name") -> tuple:
         """List all patients with computed details (age, sex description)."""
-        identities = self.repository.list_patients(skip=skip, limit=limit, order_by=order_by)
+        if order_by == "name":
+            identities = self.repository.list_patients(skip=0, limit=100000, order_by="name")
+        else:
+            identities = self.repository.list_patients(skip=skip, limit=limit, order_by=order_by)
         total = self.repository.count_patients()
         today = date.today()
 
@@ -98,6 +101,9 @@ class PatientService:
                 "age": age,
                 "occupation": occ,
             })
+        if order_by == "name":
+            items.sort(key=lambda x: (x.get("full_name") or "").casefold())
+            items = items[skip:skip + limit]
         return total, items
 
     def update_patient_profile(self, patient_uuid: UUID, updates: PatientProfileUpdate) -> Optional[PatientProfile]:

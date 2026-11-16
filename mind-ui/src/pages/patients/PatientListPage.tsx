@@ -17,16 +17,21 @@ export default function PatientListPage() {
 
   useEffect(() => {
     setLoading(true)
-    const size = search ? 500 : 20
-    patientsApi.list(search ? 1 : page, size).then((data) => {
-      if (search) {
-        setPatients(data.patients.filter((p: any) => p.full_name.toLowerCase().includes(search.toLowerCase())))
-        setTotal(data.patients.filter((p: any) => p.full_name.toLowerCase().includes(search.toLowerCase())).length)
-      } else {
-        setPatients(data.patients)
-        setTotal(data.total)
-      }
-    }).finally(() => setLoading(false))
+    if (search) {
+      patientsApi.list({ skip: 0, limit: 500, order_by: 'name' }).then((data) => {
+        const filtered = (data.patients || []).filter((p: any) =>
+          (p.full_name || '').toLowerCase().includes(search.toLowerCase())
+        )
+        setPatients(filtered)
+        setTotal(filtered.length)
+      }).finally(() => setLoading(false))
+    } else {
+      const skip = (page - 1) * 20
+      patientsApi.list({ skip, limit: 20, order_by: 'name' }).then((data) => {
+        setPatients(data.patients || [])
+        setTotal(data.total || 0)
+      }).finally(() => setLoading(false))
+    }
   }, [page, search])
 
   return (
