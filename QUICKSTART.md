@@ -33,8 +33,9 @@ docker compose up -d
 # 6. Seed (ordem correta — todos idempotentes)
 .venv\Scripts\python.exe db/seed.py
 .venv\Scripts\python.exe scripts/seed_icd11.py
-.venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_diagnostic_data.py
+.venv\Scripts\python.exe scripts/seed_full_catalog.py
+.venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_clinical_data.py     # 200 pacientes, 21 escalas, 272k+ respostas
 
 # 7. Servidor

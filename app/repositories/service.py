@@ -260,7 +260,12 @@ class DisorderRepository:
         self.session.add(obj); self.session.flush(); self.session.refresh(obj); return obj
 
     def list_criteria_by_disorder(self, disorder_id: int) -> List[DiagnosticCriteria]:
-        return self.session.query(DiagnosticCriteria).filter(DiagnosticCriteria.disorder_id == disorder_id).all()
+        return (
+            self.session.query(DiagnosticCriteria)
+            .filter(DiagnosticCriteria.disorder_id == disorder_id)
+            .order_by(DiagnosticCriteria.criteria_id)
+            .all()
+        )
 
     def list_symptom_criteria(self) -> List[tuple]:
         return (

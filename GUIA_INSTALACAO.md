@@ -174,8 +174,9 @@ Encerra sem erros e o prompt volta ao normal. Para conferir, reexecute o mesmo c
 ```powershell
 .venv\Scripts\python.exe db/seed.py
 .venv\Scripts\python.exe scripts/seed_icd11.py
-.venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_diagnostic_data.py
+.venv\Scripts\python.exe scripts/seed_full_catalog.py
+.venv\Scripts\python.exe scripts/seed_scales_groups.py
 .venv\Scripts\python.exe scripts/seed_clinical_data.py   # 200 pacientes, 21 escalas, 272k+ respostas
 ```
 
@@ -356,8 +357,9 @@ docker exec mind-api alembic upgrade head
 
 docker exec mind-api python db/seed.py
 docker exec mind-api python scripts/seed_icd11.py
-docker exec mind-api python scripts/seed_scales_groups.py
 docker exec mind-api python scripts/seed_diagnostic_data.py
+docker exec mind-api python scripts/seed_full_catalog.py
+docker exec mind-api python scripts/seed_scales_groups.py
 docker exec mind-api python scripts/seed_clinical_data.py
 ```
 

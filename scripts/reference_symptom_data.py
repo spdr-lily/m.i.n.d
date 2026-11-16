@@ -729,9 +729,13 @@ REFERENCE_SYMPTOM_MAP = {
 
     # ═══ CORE DISORDERS THAT WERE MISSING DC ═══
     "Transtorno Bipolar Tipo II": [
-        ("hypomanic_mood", "Humor hipomaníaco por no mínimo 4 dias consecutivos", True, 4),
-        ("mildly_increased_energy", "Energia levemente aumentada e direcionada a objetivos", False, 4),
+        ("euphoric_mood", "Humor hipomaníaco elevado, expansivo ou irritável por no mínimo 4 dias consecutivos", False, 4),
+        ("grandiosity", "Autoestima inflada ou grandiosidade", False, 4),
         ("reduced_sleep_hypomania", "Necessidade reduzida de sono (sentir-se descansado com menos horas)", False, 4),
+        ("rapid_speech", "Fala acelerada ou pressão para falar", False, 4),
+        ("racing_thoughts", "Fuga de ideias ou pensamento acelerado", False, 4),
+        ("risk_behavior", "Envolvimento excessivo em atividades com alto potencial de consequências dolorosas", False, 4),
+        ("depressed_mood", "Histórico de episódio depressivo maior (humor deprimido ou anedonia) — obrigatório para diferenciar do Tipo I", True, 14),
     ],
     "Transtorno Depressivo Persistente (Distimia)": [
         ("chronic_low_mood", "Humor deprimido crônico na maior parte do dia, na maioria dos dias", True, 730),
@@ -927,7 +931,8 @@ REFERENCE_SYMPTOM_MAP = {
         ("social_dysfunction", "Comprometimento do funcionamento social, ocupacional ou acadêmico", False, 0),
     ],
     "Outro Transtorno do Neurodesenvolvimento Especificado": [
-        ("social_communication", "Déficit na comunicação socioemocional recíproca (abordagem social anormal, falha em iniciar/manter conversa)", True, 0),
+        ("distress_impairment_symptoms", "Sintomas do neurodesenvolvimento causam sofrimento ou prejuízo clinicamente significativo, mas não preenchem todos os critérios de um transtorno específico", True, 0),
+        ("social_communication", "Déficit na comunicação socioemocional recíproca (abordagem social anormal, falha em iniciar/manter conversa)", False, 0),
         ("restricted_interests", "Interesses fixos e intensos em tópicos específicos (intensidade ou foco anormais)", False, 0),
         ("repetitive_movements", "Movimentos motores repetitivos ou fala repetitiva (estereotipias, ecolalia)", False, 0),
         ("sensory_sensitivity", "Hiper ou hiporreatividade a estímulos sensoriais ou interesse incomum por aspectos sensoriais do ambiente", False, 0),
@@ -1027,7 +1032,8 @@ REFERENCE_SYMPTOM_MAP = {
         ("social_dysfunction", "Comprometimento do funcionamento social, ocupacional ou acadêmico", False, 0),
     ],
     "Transtorno do Neurodesenvolvimento Não Especificado": [
-        ("social_communication", "Déficit na comunicação socioemocional recíproca (abordagem social anormal, falha em iniciar/manter conversa)", True, 0),
+        ("insufficient_information", "Não há informação suficiente para fazer um diagnóstico mais específico do neurodesenvolvimento", True, 0),
+        ("social_communication", "Déficit na comunicação socioemocional recíproca (abordagem social anormal, falha em iniciar/manter conversa)", False, 0),
         ("restricted_interests", "Interesses fixos e intensos em tópicos específicos (intensidade ou foco anormais)", False, 0),
         ("repetitive_movements", "Movimentos motores repetitivos ou fala repetitiva (estereotipias, ecolalia)", False, 0),
         ("sensory_sensitivity", "Hiper ou hiporreatividade a estímulos sensoriais ou interesse incomum por aspectos sensoriais do ambiente", False, 0),
@@ -1160,14 +1166,16 @@ REFERENCE_SYMPTOM_MAP = {
         ("forgetfulness", "Esquecimento frequente de atividades diárias e compromissos", False, 180),
     ],
     "Transtorno de Déficit de Atenção/Hiperatividade — Outra Apresentação Especificada": [
-        ("inattention", "Desatenção persistente com dificuldade em manter foco em tarefas", True, 180),
-        ("hyperactivity", "Hiperatividade com excesso de atividade motora inapropriada", True, 180),
+        ("clinician_specifies_reason", "O clínico especifica a razão pela qual os critérios completos de TDAH não são preenchidos (ex.: sintomas insuficientes)", True, 180),
+        ("inattention", "Desatenção persistente com dificuldade em manter foco em tarefas", False, 180),
+        ("hyperactivity", "Hiperatividade com excesso de atividade motora inapropriada", False, 180),
         ("impulsivity", "Impulsividade com ações precipitadas sem consideração de consequências", False, 180),
         ("organizational_difficulty", "Dificuldade organizacional com má gestão de tarefas e materiais", False, 180),
         ("forgetfulness", "Esquecimento frequente de atividades diárias e compromissos", False, 180),
     ],
     "Transtorno de Déficit de Atenção/Hiperatividade Não Especificado": [
-        ("inattention", "Desatenção persistente com dificuldade em manter foco em tarefas", True, 180),
+        ("insufficient_information", "Não há informação suficiente para fazer um diagnóstico mais específico de TDAH", True, 180),
+        ("inattention", "Desatenção persistente com dificuldade em manter foco em tarefas", False, 180),
         ("hyperactivity", "Hiperatividade com excesso de atividade motora inapropriada", False, 180),
         ("impulsivity", "Impulsividade com ações precipitadas sem consideração de consequências", False, 180),
         ("organizational_difficulty", "Dificuldade organizacional com má gestão de tarefas e materiais", False, 180),

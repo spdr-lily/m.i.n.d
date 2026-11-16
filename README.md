@@ -198,8 +198,9 @@ alembic upgrade head
 #    Destinados exclusivamente a desenvolvimento, testes e demonstração de ML.
 python db/seed.py
 python scripts/seed_icd11.py
-python scripts/seed_scales_groups.py
 python scripts/seed_diagnostic_data.py
+python scripts/seed_full_catalog.py
+python scripts/seed_scales_groups.py
 
 # 4. Servidor
 uvicorn app.main:app --host 0.0.0.0 --port 8000

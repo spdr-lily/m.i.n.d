@@ -446,8 +446,9 @@ pytest --cov=app --cov-report=html  # Cobertura
 # Seed de referências (ordem correta — todos idempotentes)
 python db/seed.py                          # Autoridades, sintomas, transtornos, critérios
 python scripts/seed_icd11.py               # Códigos CID-11
-python scripts/seed_scales_groups.py       # Grupos de critérios + escalas
 python scripts/seed_diagnostic_data.py     # Critérios DSM-5-TR, exclusões, diferenciais
+python scripts/seed_full_catalog.py        # Critérios dos ~173 transtornos de referência
+python scripts/seed_scales_groups.py       # Grupos de critérios + escalas
 
 # Dados clínicos populados
 python db/populate_clinical.py

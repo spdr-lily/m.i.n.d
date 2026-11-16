@@ -239,3 +239,153 @@ def _make_mock_evaluation(met_criteria: int = 0, total_criteria: int = 0, intens
         mock.criteria_results = [MockCriteriaResult(True, None) for _ in range(met_criteria)]
     mock.all_groups_satisfied = _all_groups
     return mock
+
+
+# ── Specificity refinements ──────────────────────────────────────────
+
+from uuid import uuid4
+from tests.unit.conftest import MockDiagnosticCriteria, MockSymptomObservation
+
+
+def _obs(symptom_ids: List[int], duration: int = 30, intensity: float = 10.0) -> List[MockSymptomObservation]:
+    return [
+        MockSymptomObservation(i + 1, str(uuid4()), sid, intensity, "daily", duration, "")
+        for i, sid in enumerate(symptom_ids)
+    ]
+
+
+class TestInferenceEngineRefinements:
+
+    def setup_method(self):
+        self.engine = InferenceEngine()
+
+    @staticmethod
+    def _disorders(count: int) -> List[tuple]:
+        return [
+            (
+                d,
+                f"D{d}",
+                [
+                    MockDiagnosticCriteria(d * 10 + i, d, sid, False, None, "")
+                    for i, sid in enumerate((1, 2))
+                ],
+            )
+            for d in range(1, count + 1)
+        ]
+
+    def test_generic_symptoms_penalized(self):
+        obs = _obs([1, 2])
+        with_three = self.engine.calculate(self._disorders(3), obs)
+        with_two = self.engine.calculate(self._disorders(2), obs)
+        assert with_three[0].probability < with_two[0].probability
+
+    def test_specific_symptom_not_penalized(self):
+        obs = _obs([1])
+        with_three = self.engine.calculate(self._disorders(3), obs)
+        with_two = self.engine.calculate(self._disorders(2), obs)
+        assert with_three[0].probability == with_two[0].probability
+
+    def test_catch_all_disorder_penalized(self):
+        criteria = [
+            MockDiagnosticCriteria(1, 1, 1, True, None, ""),
+            MockDiagnosticCriteria(2, 1, 2, True, None, ""),
+        ]
+        obs = _obs([1, 2])
+        catch_all = self.engine.calculate(
+            [(1, "Transtorno Não Especificado", criteria)], obs
+        )[0]
+        specific = self.engine.calculate(
+            [(1, "Transtorno Específico", criteria)], obs
+        )[0]
+        assert catch_all.probability < specific.probability
+
+    def test_other_catch_all_disorder_penalized(self):
+        criteria = [
+            MockDiagnosticCriteria(1, 1, 1, True, None, ""),
+            MockDiagnosticCriteria(2, 1, 2, True, None, ""),
+        ]
+        obs = _obs([1, 2])
+        catch_all = self.engine.calculate(
+            [(1, "Outro Transtorno do Neurodesenvolvimento Especificado", criteria)], obs
+        )[0]
+        specific = self.engine.calculate(
+            [(1, "Transtorno do Espectro Autista", criteria)], obs
+        )[0]
+        assert catch_all.probability < specific.probability
+
+    # ── Secondary/reference disorder demotion ────────────────────────
+
+    @staticmethod
+    def _secondary_criteria(disorder_id: int) -> List[MockDiagnosticCriteria]:
+        return [
+            MockDiagnosticCriteria(disorder_id * 10 + 1, disorder_id, 1, True, None, ""),
+            MockDiagnosticCriteria(disorder_id * 10 + 2, disorder_id, 2, False, None, ""),
+            MockDiagnosticCriteria(disorder_id * 10 + 3, disorder_id, 3, False, None, ""),
+        ]
+
+    def test_residual_disorder_demoted_when_specific_is_stronger(self):
+        results = self.engine.calculate(
+            [
+                (1, "Transtorno do Neurodesenvolvimento Não Especificado", self._secondary_criteria(1)),
+                (2, "Transtorno do Espectro Autista", self._secondary_criteria(2)),
+            ],
+            _obs([1, 2]),
+        )
+        by_id = {r.disorder_id: r for r in results}
+        assert by_id[1].probability < by_id[2].probability
+
+    def test_variant_disorder_demoted_when_specific_is_stronger(self):
+        results = self.engine.calculate(
+            [
+                (1, "Transtorno de Déficit de Atenção/Hiperatividade — Apresentação Combinada", self._secondary_criteria(1)),
+                (2, "Transtorno de Déficit de Atenção/Hiperatividade", self._secondary_criteria(2)),
+            ],
+            _obs([1, 2]),
+        )
+        by_id = {r.disorder_id: r for r in results}
+        assert by_id[1].probability < by_id[2].probability
+
+    def test_secondary_disorder_not_demoted_when_it_leads(self):
+        residual_criteria = [
+            MockDiagnosticCriteria(1, 1, 1, True, None, ""),
+            MockDiagnosticCriteria(2, 1, 2, True, None, ""),
+        ]
+        specific_criteria = [
+            MockDiagnosticCriteria(21, 2, 1, True, None, ""),
+            MockDiagnosticCriteria(22, 2, 9, False, None, ""),
+        ]
+        results = self.engine.calculate(
+            [
+                (1, "Transtorno Não Especificado", residual_criteria),
+                (2, "Transtorno Específico", specific_criteria),
+            ],
+            _obs([1, 2]),
+        )
+        by_id = {r.disorder_id: r for r in results}
+        assert by_id[1].probability > by_id[2].probability
+
+    def test_secondary_penalty_is_accent_insensitive(self):
+        assert (
+            self.engine._secondary_penalty("Transtorno Bipolar Induzido por Substancia")
+            == self.engine.VARIANT_SECONDARY_PENALTY
+        )
+        assert (
+            self.engine._secondary_penalty("Transtorno do Neurodesenvolvimento Nao Especificado")
+            == self.engine.RESIDUAL_SECONDARY_PENALTY
+        )
+        assert self.engine._secondary_penalty("Transtorno do Espectro Autista") is None
+
+    def test_low_absolute_evidence_discounted(self):
+        criteria = [
+            MockDiagnosticCriteria(1, 1, 1, False, None, ""),
+            MockDiagnosticCriteria(2, 1, 2, False, None, ""),
+            MockDiagnosticCriteria(3, 1, 3, False, None, ""),
+        ]
+        low = self.engine.calculate(
+            [(1, "Transtorno Específico", criteria)], _obs([1])
+        )[0]
+        high = self.engine.calculate(
+            [(1, "Transtorno Específico", criteria)], _obs([1, 2, 3])
+        )[0]
+        assert low.criteria_met == 1
+        assert low.probability < high.probability * 0.5
