@@ -134,8 +134,6 @@ dmypy.json
 # Project specific
 .env.local
 .env.*.local
-instance/
-.webassets-cache
 
 # Database
 *.db
@@ -150,10 +148,29 @@ Thumbs.db
 .DS_Store
 
 # Docker
-.dockerignore
 docker-compose.override.yml
 
 # Sensitive data
 secrets/
 *.pem
 *.key
+certificates/
+.certs/
+
+# Backups / temporários
+*.bak
+*.tmp
+__tmp_*
+* - Copia*
+
+# Binários / artefatos locais
+*.jar
+mlruns/
+mlartifacts/
+
+# Frontend build local
+mind-ui/dist/
+
+# Notebooks executados/saídas locais
+notebooks/*_executed.ipynb
+notebooks/*.html

@@ -4,7 +4,7 @@ services:
     container_name: mind-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-137_Cmspelo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}
       POSTGRES_DB: mind
     ports:
       - "5433:5432"
@@ -41,7 +41,7 @@ services:
       dockerfile: docker/api/Dockerfile
     container_name: mind-api
     environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-137_Cmspelo}@postgres:5432/mind
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}@postgres:5432/mind
       REDIS_URL: redis://redis:6379/0
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_ALGORITHM: HS256
@@ -62,14 +62,16 @@ services:
     restart: unless-stopped
 
   airflow:
+    profiles:
+      - orchestration
     build:
       context: .
       dockerfile: docker/airflow/Dockerfile
     container_name: mind-airflow
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://postgres:${POSTGRES_PASSWORD:-137_Cmspelo}@postgres:5432/mind
-      AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY:-d6Vef9S0TtL7X8WzQ3R1pA5bC2nM4kL9jH7gF3dS6s=}
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql://postgres:${POSTGRES_PASSWORD:?defina POSTGRES_PASSWORD no .env}@postgres:5432/mind
+      AIRFLOW__CORE__FERNET_KEY: ${FERNET_KEY:?defina FERNET_KEY no .env}
       AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     volumes:
@@ -92,6 +94,8 @@ services:
       "
 
   spark:
+    profiles:
+      - spark
     build:
       context: .
       dockerfile: docker/spark/Dockerfile
@@ -122,6 +126,8 @@ services:
       - tools
 
   caddy:
+    profiles:
+      - proxy
     image: caddy:2
     container_name: mind-caddy
     ports:

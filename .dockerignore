@@ -1,0 +1,46 @@
+# Secrets / local environment — injected via docker compose, never baked into images
+.env
+.env.*
+!.env.example
+
+# Version control
+.git
+.github
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / frontend build output (rebuilt inside the image)
+node_modules/
+mind-ui/node_modules/
+mind-ui/dist/
+
+# Dados/artefatos pesados não necessários na imagem
+mlruns/
+mlartifacts/
+*.db
+*.jar
+data/datasets/
+notebooks/
+
+# Docs e arquivos locais (imagem não precisa do acervo completo)
+*.md
+docs/
+certificates/
+.certs/
+
+# IDE / temporários / backups
+.vscode/
+.idea/
+*.bak
+*.tmp
+__tmp_*
+* - Copia*
