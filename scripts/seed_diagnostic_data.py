@@ -45,14 +45,14 @@ DSM5TR_CRITERIA = {
             "transtorno de pânico com agorafobia."
         ),
         "icd11_exclusions": (
-            "Recurrent depressive disorder (6A71); Adjustment disorder (6B43); "
-            "Bipolar or related disorders (BlockL2-6A6); "
-            "Symptoms attributable to substances or medical conditions."
+            "Transtorno Depressivo Recorrente (6A71); Transtorno de Adaptação (6B43); "
+            "Transtornos Bipolares ou Relacionados (BlockL2-6A6); "
+            "Sintomas atribuíveis a substâncias ou condições médicas."
         ),
         "icd11_differentials": (
-            "Bipolar type I/II disorder (6A60/6A61); Generalized anxiety disorder (6B00); "
-            "Panic disorder (6B01); Mixed depressive and anxiety disorder (6A73); "
-            "Prolonged grief disorder (6B42); Schizoaffective disorder (6A21)."
+            "Transtorno Bipolar Tipo I/II (6A60/6A61); Transtorno de Ansiedade Generalizada (6B00); "
+            "Transtorno do Pânico (6B01); Transtorno Misto de Depressão e Ansiedade (6A73); "
+            "Transtorno de Luto Prolongado (6B42); Transtorno Esquizoafetivo (6A21)."
         ),
     },
     "Transtorno de Ansiedade Generalizada": {
@@ -87,13 +87,13 @@ DSM5TR_CRITERIA = {
             "transtorno de adaptação (estressor identificável,时限 menor)."
         ),
         "icd11_exclusions": (
-            "Panic disorder (6B01); Depressive disorders (6A70-6A71); "
-            "Obsessive-compulsive disorder (6B20); Health anxiety disorder (6B23)."
+            "Transtorno do Pânico (6B01); Transtornos Depressivos (6A70-6A71); "
+            "Transtorno Obsessivo-Compulsivo (6B20); Transtorno de Ansiedade de Doença (6B23)."
         ),
         "icd11_differentials": (
-            "Panic disorder (6B01); Single episode depressive disorder (6A70); "
-            "Mixed depressive and anxiety disorder (6A73); Social anxiety disorder (6B04); "
-            "Obsessive-compulsive disorder (6B20)."
+            "Transtorno do Pânico (6B01); Transtorno Depressivo com Episódio Único (6A70); "
+            "Transtorno Misto de Depressão e Ansiedade (6A73); Transtorno de Ansiedade Social (6B04); "
+            "Transtorno Obsessivo-Compulsivo (6B20)."
         ),
     },
     "Transtorno do Pânico": {
@@ -124,12 +124,12 @@ DSM5TR_CRITERIA = {
             "conversão; síndrome do seio carotídeo."
         ),
         "icd11_exclusions": (
-            "Agoraphobia (6B02); Specific phobia (6B03); Social anxiety disorder (6B04); "
-            "Generalized anxiety disorder (6B00); Health anxiety disorder (6B23)."
+            "Agorafobia (6B02); Fobia Específica (6B03); Transtorno de Ansiedade Social (6B04); "
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno de Ansiedade de Doença (6B23)."
         ),
         "icd11_differentials": (
-            "Generalized anxiety disorder (6B00); Agoraphobia (6B02); Social anxiety disorder (6B04); "
-            "Specific phobia (6B03); Health anxiety disorder (6B23)."
+            "Transtorno de Ansiedade Generalizada (6B00); Agorafobia (6B02); Transtorno de Ansiedade Social (6B04); "
+            "Fobia Específica (6B03); Transtorno de Ansiedade de Doença (6B23)."
         ),
     },
     "Transtorno de Estresse Pós-Traumático": {
@@ -168,13 +168,13 @@ DSM5TR_CRITERIA = {
             "distúrbios graves e persistentes na regulação do afeto, identidade e relacionamentos)."
         ),
         "icd11_exclusions": (
-            "Acute stress reaction (Q24.1); Adjustment disorder (6B43); "
-            "Complex post-traumatic stress disorder (6B41); Prolonged grief disorder (6B42)."
+            "Reação Aguda ao Estresse (Q24.1); Transtorno de Adaptação (6B43); "
+            "Transtorno de Estresse Pós-Traumático Complexo (6B41); Transtorno de Luto Prolongado (6B42)."
         ),
         "icd11_differentials": (
-            "Complex PTSD (6B41); Adjustment disorder (6B43); Generalized anxiety disorder (6B00); "
-            "Panic disorder (6B01); Depressive disorders (6A70-6A71); "
-            "Substance use disorders (6C40-6C4Z)."
+            "TEPT Complexo (6B41); Transtorno de Adaptação (6B43); Transtorno de Ansiedade Generalizada (6B00); "
+            "Transtorno do Pânico (6B01); Transtornos Depressivos (6A70-6A71); "
+            "Transtornos por Uso de Substâncias (6C40-6C4Z)."
         ),
     },
     "Transtorno Depressivo Persistente (Distimia)": {
@@ -206,13 +206,13 @@ DSM5TR_CRITERIA = {
             "com humor deprimido (estressor identificável, duração < 2 anos)."
         ),
         "icd11_exclusions": (
-            "Single episode depressive disorder (6A70); Recurrent depressive disorder (6A71); "
-            "Bipolar or related disorders (BlockL2-6A6)."
+            "Transtorno Depressivo com Episódio Único (6A70); Transtorno Depressivo Recorrente (6A71); "
+            "Transtornos Bipolares ou Relacionados (BlockL2-6A6)."
         ),
         "icd11_differentials": (
-            "Recurrent depressive disorder (6A71); Generalized anxiety disorder (6B00); "
-            "Mixed depressive and anxiety disorder (6A73); Bipolar type II disorder (6A61); "
-            "Schizoaffective disorder (6A21)."
+            "Transtorno Depressivo Recorrente (6A71); Transtorno de Ansiedade Generalizada (6B00); "
+            "Transtorno Misto de Depressão e Ansiedade (6A73); Transtorno Bipolar Tipo II (6A61); "
+            "Transtorno Esquizoafetivo (6A21)."
         ),
     },
     "Transtorno de Ansiedade Social": {
@@ -246,13 +246,13 @@ DSM5TR_CRITERIA = {
             "mutismo seletivo (em crianças); fobia específica (situação específica)."
         ),
         "icd11_exclusions": (
-            "Panic disorder (6B01); Agoraphobia (6B02); Specific phobia (6B03); "
-            "Body dysmorphic disorder (6B21)."
+            "Transtorno do Pânico (6B01); Agorafobia (6B02); Fobia Específica (6B03); "
+            "Transtorno Dismórfico Corporal (6B21)."
         ),
         "icd11_differentials": (
-            "Panic disorder (6B01); Agoraphobia (6B02); Specific phobia (6B03); "
-            "Generalized anxiety disorder (6B00); Schizoid personality disorder (6D11); "
-            "Avoidant personality disorder (6D12)."
+            "Transtorno do Pânico (6B01); Agorafobia (6B02); Fobia Específica (6B03); "
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno da Personalidade Esquizoide (6D11); "
+            "Transtorno da Personalidade Esquiva (6D12)."
         ),
     },
     "Transtorno Bipolar Tipo I": {
@@ -290,13 +290,13 @@ DSM5TR_CRITERIA = {
             "transtorno de estresse pós-traumático (hipervigilância, irritabilidade)."
         ),
         "icd11_exclusions": (
-            "Bipolar type II disorder (6A61); Schizoaffective disorder (6A21); "
-            "Schizophrenia (6A20); Substance-induced mood disorder."
+            "Transtorno Bipolar Tipo II (6A61); Transtorno Esquizoafetivo (6A21); "
+            "Esquizofrenia (6A20); Transtorno do Humor Induzido por Substância."
         ),
         "icd11_differentials": (
-            "Bipolar type II disorder (6A61); Recurrent depressive disorder (6A71); "
-            "Schizoaffective disorder (6A21); Schizophrenia (6A20); "
-            "ADHD (6A05); Borderline personality disorder (6D11)."
+            "Transtorno Bipolar Tipo II (6A61); Transtorno Depressivo Recorrente (6A71); "
+            "Transtorno Esquizoafetivo (6A21); Esquizofrenia (6A20); "
+            "TDAH (6A05); Transtorno da Personalidade Borderline (6D11)."
         ),
     },
     "Transtorno Bipolar Tipo II": {
@@ -327,13 +327,13 @@ DSM5TR_CRITERIA = {
             "substância; transtorno de ansiedade generalizada."
         ),
         "icd11_exclusions": (
-            "Bipolar type I disorder (6A60); Cyclothymic disorder (6A62); "
-            "Schizoaffective disorder (6A21)."
+            "Transtorno Bipolar Tipo I (6A60); Transtorno Ciclotímico (6A62); "
+            "Transtorno Esquizoafetivo (6A21)."
         ),
         "icd11_differentials": (
-            "Bipolar type I disorder (6A60); Recurrent depressive disorder (6A71); "
-            "Cyclothymic disorder (6A62); Schizoaffective disorder (6A21); "
-            "ADHD (6A05); Borderline personality disorder (6D11)."
+            "Transtorno Bipolar Tipo I (6A60); Transtorno Depressivo Recorrente (6A71); "
+            "Transtorno Ciclotímico (6A62); Transtorno Esquizoafetivo (6A21); "
+            "TDAH (6A05); Transtorno da Personalidade Borderline (6D11)."
         ),
     },
     "Transtorno Obsessivo-Compulsivo": {
@@ -367,14 +367,14 @@ DSM5TR_CRITERIA = {
             "maior (ruminação passiva vs. obsessões ativas)."
         ),
         "icd11_exclusions": (
-            "Generalized anxiety disorder (6B00); Health anxiety disorder (6B23); "
-            "Body dysmorphic disorder (6B21); Hoarding disorder (6B24); "
-            "Tic disorders (8A05)."
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno de Ansiedade de Doença (6B23); "
+            "Transtorno Dismórfico Corporal (6B21); Transtorno de Acumulação (6B24); "
+            "Transtornos de Tique (8A05)."
         ),
         "icd11_differentials": (
-            "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-            "Body dysmorphic disorder (6B21); Hoarding disorder (6B24); "
-            "Schizophrenia (6A20); Depressive disorders (6A70-6A71)."
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+            "Transtorno Dismórfico Corporal (6B21); Transtorno de Acumulação (6B24); "
+            "Esquizofrenia (6A20); Transtornos Depressivos (6A70-6A71)."
         ),
     },
     "Agorafobia": {
@@ -408,12 +408,12 @@ DSM5TR_CRITERIA = {
             "transtorno de ansiedade de separação (medo de separação de figuras de apego)."
         ),
         "icd11_exclusions": (
-            "Panic disorder (6B01); Specific phobia (6B03); Social anxiety disorder (6B04); "
-            "Separation anxiety disorder (6B05)."
+            "Transtorno do Pânico (6B01); Fobia Específica (6B03); Transtorno de Ansiedade Social (6B04); "
+            "Transtorno de Ansiedade de Separação (6B05)."
         ),
         "icd11_differentials": (
-            "Panic disorder (6B01); Specific phobia (6B03); Social anxiety disorder (6B04); "
-            "Generalized anxiety disorder (6B00); Body dysmorphic disorder (6B21)."
+            "Transtorno do Pânico (6B01); Fobia Específica (6B03); Transtorno de Ansiedade Social (6B04); "
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno Dismórfico Corporal (6B21)."
         ),
     },
     "Transtorno por Uso de Substâncias": {
@@ -449,12 +449,12 @@ DSM5TR_CRITERIA = {
             "transtorno psicótico primário (alucinações/delírios independentes do uso)."
         ),
         "icd11_exclusions": (
-            "Hazardous substance use (QE10); Substance intoxication (6C4E); "
-            "Bipolar type I disorder (6A60) - behavioral disinhibition."
+            "Uso Nocivo de Substâncias (QE10); Intoxicação por Substância (6C4E); "
+            "Transtorno Bipolar Tipo I (6A60) - desinibição comportamental."
         ),
         "icd11_differentials": (
-            "Bipolar disorders (6A60-6A61); Schizophrenia (6A20); "
-            "PTSD (6B40); ADHD (6A05); Antisocial personality disorder (6D11)."
+            "Transtornos Bipolares (6A60-6A61); Esquizofrenia (6A20); "
+            "TEPT (6B40); TDAH (6A05); Transtorno da Personalidade Antissocial (6D11)."
         ),
     },
     "Anorexia Nervosa": {
@@ -487,13 +487,13 @@ DSM5TR_CRITERIA = {
             "transtorno factício; transtorno dismórfico corporal."
         ),
         "icd11_exclusions": (
-            "Bulimia nervosa (6B81); Binge-eating disorder (6B82); "
-            "Depressive disorders (6A70-6A71)."
+            "Bulimia Nervosa (6B81); Transtorno de Compulsão Alimentar (6B82); "
+            "Transtornos Depressivos (6A70-6A71)."
         ),
         "icd11_differentials": (
-            "Bulimia nervosa (6B81); Binge-eating disorder (6B82); "
-            "Major depressive disorder (6A70-6A71); Body dysmorphic disorder (6B21); "
-            "Social anxiety disorder (6B04)."
+            "Bulimia Nervosa (6B81); Transtorno de Compulsão Alimentar (6B82); "
+            "Transtorno Depressivo Maior (6A70-6A71); Transtorno Dismórfico Corporal (6B21); "
+            "Transtorno de Ansiedade Social (6B04)."
         ),
     },
     "Bulimia Nervosa": {
@@ -522,12 +522,12 @@ DSM5TR_CRITERIA = {
             "síndrome do comer noturno."
         ),
         "icd11_exclusions": (
-            "Anorexia nervosa (6B80); Binge-eating disorder (6B82); "
-            "Depressive disorders (6A70-6A71)."
+            "Anorexia Nervosa (6B80); Transtorno de Compulsão Alimentar (6B82); "
+            "Transtornos Depressivos (6A70-6A71)."
         ),
         "icd11_differentials": (
-            "Anorexia nervosa (6B80); Binge-eating disorder (6B82); "
-            "Major depressive disorder (6A70-6A71); Borderline personality disorder (6D11)."
+            "Anorexia Nervosa (6B80); Transtorno de Compulsão Alimentar (6B82); "
+            "Transtorno Depressivo Maior (6A70-6A71); Transtorno da Personalidade Borderline (6D11)."
         ),
     },
     "Transtorno de Compulsão Alimentar": {
@@ -556,12 +556,12 @@ DSM5TR_CRITERIA = {
             "(comer emocional sem episódios discretos); síndrome do comer noturno."
         ),
         "icd11_exclusions": (
-            "Bulimia nervosa (6B81); Anorexia nervosa (6B80); "
-            "Depressive disorders (6A70-6A71); Prader-Willi syndrome (LD90)."
+            "Bulimia Nervosa (6B81); Anorexia Nervosa (6B80); "
+            "Transtornos Depressivos (6A70-6A71); Síndrome de Prader-Willi (LD90)."
         ),
         "icd11_differentials": (
-            "Bulimia nervosa (6B81); Anorexia nervosa (6B80); "
-            "Major depressive disorder (6A70-6A71); Generalized anxiety disorder (6B00)."
+            "Bulimia Nervosa (6B81); Anorexia Nervosa (6B80); "
+            "Transtorno Depressivo Maior (6A70-6A71); Transtorno de Ansiedade Generalizada (6B00)."
         ),
     },
     "Transtorno de Insônia": {
@@ -596,14 +596,14 @@ DSM5TR_CRITERIA = {
             "transtorno por uso de substância; condição clínica (hipertireoidismo, refluxo)."
         ),
         "icd11_exclusions": (
-            "Obstructive sleep apnoea (7A41); Restless legs syndrome (7A80); "
-            "Circadian rhythm sleep-wake disorder (7A60); "
-            "Substance-induced sleep disorder (7A0Y)."
+            "Apneia Obstrutiva do Sono (7A41); Síndrome das Pernas Inquietas (7A80); "
+            "Transtorno do Ritmo Circadiano do Sono-Vigília (7A60); "
+            "Transtorno do Sono Induzido por Substância (7A0Y)."
         ),
         "icd11_differentials": (
-            "Generalized anxiety disorder (6B00); Major depressive disorder (6A70-6A71); "
-            "Obstructive sleep apnoea (7A41); Restless legs syndrome (7A80); "
-            "Circadian rhythm sleep-wake disorder (7A60)."
+            "Transtorno de Ansiedade Generalizada (6B00); Transtorno Depressivo Maior (6A70-6A71); "
+            "Apneia Obstrutiva do Sono (7A41); Síndrome das Pernas Inquietas (7A80); "
+            "Transtorno do Ritmo Circadiano do Sono-Vigília (7A60)."
         ),
     },
     "Esquizofrenia / Transtorno Psicótico": {
@@ -640,15 +640,15 @@ DSM5TR_CRITERIA = {
             "(crenças estranhas sem psicose franca)."
         ),
         "icd11_exclusions": (
-            "Schizoaffective disorder (6A21); Acute and transient psychotic disorder (6A23); "
-            "Delusional disorder (6A24); Bipolar type I disorder (6A60); "
-            "Substance-induced psychotic disorder (6C4E)."
+            "Transtorno Esquizoafetivo (6A21); Transtorno Psicótico Agudo e Transitório (6A23); "
+            "Transtorno Delirante (6A24); Transtorno Bipolar Tipo I (6A60); "
+            "Transtorno Psicótico Induzido por Substância (6C4E)."
         ),
         "icd11_differentials": (
-            "Schizoaffective disorder (6A21); Acute and transient psychotic disorder (6A23); "
-            "Delusional disorder (6A24); Bipolar type I disorder (6A60); "
-            "Depressive disorders with psychotic symptoms (6A70-6A71); "
-            "Substance-induced psychotic disorder (6C4E); Autism spectrum disorder (6A02)."
+            "Transtorno Esquizoafetivo (6A21); Transtorno Psicótico Agudo e Transitório (6A23); "
+            "Transtorno Delirante (6A24); Transtorno Bipolar Tipo I (6A60); "
+            "Transtornos Depressivos com Sintomas Psicóticos (6A70-6A71); "
+            "Transtorno Psicótico Induzido por Substância (6C4E); Transtorno do Espectro Autista (6A02)."
         ),
     },
     "Transtorno de Sintomas Somáticos": {
@@ -681,13 +681,13 @@ DSM5TR_CRITERIA = {
             "muscular, fadiga, sem foco em doença)."
         ),
         "icd11_exclusions": (
-            "Health anxiety disorder (6B23); Bodily distress disorder (6C20); "
-            "Dissociative neurological symptom disorder (6B60); Factitious disorder (6D50)."
+            "Transtorno de Ansiedade de Doença (6B23); Transtorno de Sofrimento Corporal (6C20); "
+            "Transtorno de Sintomas Neurológicos Dissociativos (6B60); Transtorno Factício (6D50)."
         ),
         "icd11_differentials": (
-            "Health anxiety disorder (6B23); Bodily distress disorder (6C20); "
-            "Panic disorder (6B01); Generalized anxiety disorder (6B00); "
-            "Depressive disorders (6A70-6A71); Factitious disorder (6D50)."
+            "Transtorno de Ansiedade de Doença (6B23); Transtorno de Sofrimento Corporal (6C20); "
+            "Transtorno do Pânico (6B01); Transtorno de Ansiedade Generalizada (6B00); "
+            "Transtornos Depressivos (6A70-6A71); Transtorno Factício (6D50)."
         ),
     },
     "Transtorno do Espectro Autista": {
@@ -727,14 +727,14 @@ DSM5TR_CRITERIA = {
             "esquizofrenia infantil (alucinações/delírios proeminentes)."
         ),
         "icd11_exclusions": (
-            "ADHD (6A05); Social anxiety disorder (6B04); Selective mutism (6B06); "
-            "Language disorders (6A01); Childhood-onset fluency disorder (6A01)."
+            "TDAH (6A05); Transtorno de Ansiedade Social (6B04); Mutismo Seletivo (6B06); "
+            "Transtornos da Linguagem (6A01); Transtorno da Fluência com Início na Infância — Gagueira (6A01)."
         ),
         "icd11_differentials": (
-            "ADHD (6A05); Social anxiety disorder (6B04); Selective mutism (6B06); "
-            "Language disorders (MA80); Intellectual developmental disorder (6A00); "
-            "Schizophrenia (6A20); Obsessive-compulsive disorder (6B20); "
-            "Rett syndrome (LD90)."
+            "TDAH (6A05); Transtorno de Ansiedade Social (6B04); Mutismo Seletivo (6B06); "
+            "Transtornos da Linguagem (MA80); Deficiência Intelectual (6A00); "
+            "Esquizofrenia (6A20); Transtorno Obsessivo-Compulsivo (6B20); "
+            "Síndrome de Rett (LD90)."
         ),
     },
     "Transtorno de Déficit de Atenção/Hiperatividade": {
@@ -784,13 +784,13 @@ DSM5TR_CRITERIA = {
             "frequentemente co-ocorrem e podem ser diagnosticados conjuntamente."
         ),
         "icd11_exclusions": (
-            "Autism spectrum disorder (6A02); Bipolar disorders (6A60-6A61); "
-            "Generalized anxiety disorder (6B00); Depressive disorders (6A70-6A71)."
+            "Transtorno do Espectro Autista (6A02); Transtornos Bipolares (6A60-6A61); "
+            "Transtorno de Ansiedade Generalizada (6B00); Transtornos Depressivos (6A70-6A71)."
         ),
         "icd11_differentials": (
-            "Autism spectrum disorder (6A02); Bipolar type I/II disorder (6A60-6A61); "
-            "Generalized anxiety disorder (6B00); Depressive disorders (6A70-6A71); "
-            "Oppositional defiant disorder (6C90); Specific learning disorder (6A03)."
+            "Transtorno do Espectro Autista (6A02); Transtorno Bipolar Tipo I/II (6A60-6A61); "
+            "Transtorno de Ansiedade Generalizada (6B00); Transtornos Depressivos (6A70-6A71); "
+            "Transtorno Opositivo-Desafiador (6C90); Transtorno Específico da Aprendizagem (6A03)."
         ),
     },
 }
@@ -848,36 +848,49 @@ def seed():
                 # Parse and seed exclusions
                 excl_text = data.get("icd11_exclusions", "")
                 if excl_text:
-                    for excl_item in excl_text.split(";"):
-                        excl_item = excl_item.strip()
-                        if excl_item:
-                            existing = db.query(ICD11Exclusion).filter_by(
-                                code_id=icd.code_id, excluded_title=excl_item
-                            ).first()
-                            if not existing:
-                                db.add(ICD11Exclusion(
-                                    code_id=icd.code_id,
-                                    excluded_title=excl_item[:500] if len(excl_item) > 500 else excl_item,
-                                    reason="Exclusion per ICD-11 CDDR",
-                                ))
-                                exclusion_count += 1
+                    excl_items = [
+                        i.strip()[:500] for i in excl_text.split(";") if i.strip()
+                    ]
+                    if excl_items:
+                        # Remove registros obsoletos (ex.: títulos ainda em inglês de seeds antigos)
+                        db.query(ICD11Exclusion).filter(
+                            ICD11Exclusion.code_id == icd.code_id,
+                            ~ICD11Exclusion.excluded_title.in_(excl_items),
+                        ).delete(synchronize_session=False)
+                    for excl_item in excl_items:
+                        existing = db.query(ICD11Exclusion).filter_by(
+                            code_id=icd.code_id, excluded_title=excl_item
+                        ).first()
+                        if not existing:
+                            db.add(ICD11Exclusion(
+                                code_id=icd.code_id,
+                                excluded_title=excl_item,
+                                reason="Exclusão conforme CID-11 CDDR",
+                            ))
+                            exclusion_count += 1
 
                 # Parse and seed differentials
                 diff_text = data.get("icd11_differentials", "")
                 if diff_text:
-                    for diff_item in diff_text.split(";"):
-                        diff_item = diff_item.strip()
-                        if diff_item:
-                            existing = db.query(ICD11Differential).filter_by(
-                                code_id=icd.code_id, differential_title=diff_item
-                            ).first()
-                            if not existing:
-                                db.add(ICD11Differential(
-                                    code_id=icd.code_id,
-                                    differential_title=diff_item[:500] if len(diff_item) > 500 else diff_item,
-                                    distinguishing_features="See ICD-11 CDDR for full differential guidance.",
-                                ))
-                                differential_count += 1
+                    diff_items = [
+                        i.strip()[:500] for i in diff_text.split(";") if i.strip()
+                    ]
+                    if diff_items:
+                        db.query(ICD11Differential).filter(
+                            ICD11Differential.code_id == icd.code_id,
+                            ~ICD11Differential.differential_title.in_(diff_items),
+                        ).delete(synchronize_session=False)
+                    for diff_item in diff_items:
+                        existing = db.query(ICD11Differential).filter_by(
+                            code_id=icd.code_id, differential_title=diff_item
+                        ).first()
+                        if not existing:
+                            db.add(ICD11Differential(
+                                code_id=icd.code_id,
+                                differential_title=diff_item,
+                                distinguishing_features="Ver CID-11 CDDR para orientação completa do diagnóstico diferencial.",
+                            ))
+                            differential_count += 1
 
         db.commit()
         print(f"OK - {exclusion_count} ICD-11 exclusions seeded")

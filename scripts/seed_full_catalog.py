@@ -45,9 +45,9 @@ DSM5TR_ALL = {
         "TEA (interesses restritos, déficits sociais); transtorno específico da aprendizagem "
         "(função específica preservada); transtorno de comunicação; mutismo seletivo; "
         "privação psicossocial grave.",
-        "Autism spectrum disorder (6A02); Specific learning disorder (6A03); Dementia.",
-        "Autism spectrum disorder (6A02); Specific learning disorder (6A03); "
-        "Communication disorders (6A01)."
+        "Transtorno do Espectro Autista (6A02); Transtorno Específico da Aprendizagem (6A03); Demência.",
+        "Transtorno do Espectro Autista (6A02); Transtorno Específico da Aprendizagem (6A03); "
+        "Transtornos da Comunicação (6A01)."
     ),
     "Atraso Global do Desenvolvimento": (
         "Diagnóstico reservado para crianças menores de 5 anos quando o nível clínico de gravidade "
@@ -58,9 +58,9 @@ DSM5TR_ALL = {
         "atraso devido a privação ambiental; condição neurológica progressiva.",
         "TEA com atraso global; transtorno específico de linguagem; paralisia cerebral; "
         "síndromes genéticas.",
-        "Autism spectrum disorder (6A02); Cerebral palsy (8D20).",
-        "Autism spectrum disorder (6A02); Specific language impairment (6A01); "
-        "Cerebral palsy (8D20)."
+        "Transtorno do Espectro Autista (6A02); Paralisia Cerebral (8D20).",
+        "Transtorno do Espectro Autista (6A02); Transtorno Específico da Linguagem (6A01); "
+        "Paralisia Cerebral (8D20)."
     ),
     "Transtorno da Linguagem": (
         "A. Dificuldades persistentes na aquisição e uso da linguagem em todas as modalidades "
@@ -73,10 +73,10 @@ DSM5TR_ALL = {
         "Transtorno fonológico (apenas produção de sons); TEA; deficiência intelectual "
         "(prejuízo global); mutismo seletivo (fala ausente em contextos específicos); "
         "afasia adquirida; transtorno da comunicação social.",
-        "Autism spectrum disorder (6A02); Selective mutism (6B06); "
-        "Hearing loss (AB50).",
-        "Autism spectrum disorder (6A02); Intellectual developmental disorder (6A00); "
-        "Selective mutism (6B06)."
+        "Transtorno do Espectro Autista (6A02); Mutismo Seletivo (6B06); "
+        "Perda Auditiva (AB50).",
+        "Transtorno do Espectro Autista (6A02); Deficiência Intelectual (6A00); "
+        "Mutismo Seletivo (6B06)."
     ),
     "Transtorno Fonológico": (
         "A. Dificuldade persistente na produção de sons da fala que interfere na inteligibilidade "
@@ -88,10 +88,10 @@ DSM5TR_ALL = {
         "deficiência auditiva; fissura palatina.",
         "Transtorno da linguagem (compreensão/prejuízo mais amplo); TEA; "
         "apraxia de fala na infância; transtorno de fluência (gagueira).",
-        "Language disorder (6A01); Autism spectrum disorder (6A02); "
-        "Hearing loss (AB50).",
-        "Language disorder (6A01); Speech apraxia; "
-        "Autism spectrum disorder (6A02)."
+        "Transtorno da Linguagem (6A01); Transtorno do Espectro Autista (6A02); "
+        "Perda Auditiva (AB50).",
+        "Transtorno da Linguagem (6A01); Apraxia da Fala; "
+        "Transtorno do Espectro Autista (6A02)."
     ),
     "Transtorno da Fluência com Início na Infância (Gagueira)": (
         "A. Alterações na fluência e no padrão temporal da fala inadequadas para a idade.\n"
@@ -103,8 +103,8 @@ DSM5TR_ALL = {
         "disfluência normal do desenvolvimento; TOC (rituais de fala).",
         "Disfluência normal do desenvolvimento (sem ansiedade ou prejuízo); "
         "gagueira neurogênica (relação temporal com lesão); TOC.",
-        "Cluttering (F80.81); Tic disorders (8A05); Social anxiety disorder (6B04).",
-        "Cluttering; Social anxiety disorder (6B04); Tic disorders (8A05)."
+        "Taquifemia (F80.81); Transtornos de Tique (8A05); Transtorno de Ansiedade Social (6B04).",
+        "Taquifemia; Transtorno de Ansiedade Social (6B04); Transtornos de Tique (8A05)."
     ),
     "Transtorno da Comunicação Social (Pragmática)": (
         "A. Dificuldades persistentes no uso social da comunicação verbal e não verbal em: "
@@ -117,10 +117,10 @@ DSM5TR_ALL = {
         "deficiência intelectual; transtorno da linguagem.",
         "TEA (presença dos Critérios B); transtorno da linguagem; "
         "TDAH (fala impulsiva sem déficit pragmático); transtorno de ansiedade social.",
-        "Autism spectrum disorder (6A02); Language disorder (6A01); "
-        "ADHD (6A05).",
-        "Autism spectrum disorder (6A02); Language disorder (6A01); "
-        "Social anxiety disorder (6B04)."
+        "Transtorno do Espectro Autista (6A02); Transtorno da Linguagem (6A01); "
+        "TDAH (6A05).",
+        "Transtorno do Espectro Autista (6A02); Transtorno da Linguagem (6A01); "
+        "Transtorno de Ansiedade Social (6B04)."
     ),
     "Transtorno Específico da Aprendizagem": (
         "A. Dificuldades na aprendizagem e uso de habilidades acadêmicas (leitura, escrita, "
@@ -134,10 +134,10 @@ DSM5TR_ALL = {
         "Deficiência intelectual (avaliação de QI global); TDAH (desatenção primária); "
         "transtorno de ansiedade (desempenho escolar prejudicado); "
         "transtorno da linguagem; discalculia secundária.",
-        "Intellectual developmental disorder (6A00); ADHD (6A05); "
-        "Communication disorders (6A01).",
-        "Intellectual developmental disorder (6A00); ADHD (6A05); "
-        "Anxiety disorders (6B00-6B0Z)."
+        "Deficiência Intelectual (6A00); TDAH (6A05); "
+        "Transtornos da Comunicação (6A01).",
+        "Deficiência Intelectual (6A00); TDAH (6A05); "
+        "Transtornos de Ansiedade (6B00-6B0Z)."
     ),
     "Transtorno do Desenvolvimento da Coordenação": (
         "A. Aquisição e execução de habilidades motoras coordenadas substancialmente abaixo do "
@@ -151,9 +151,9 @@ DSM5TR_ALL = {
         "TDAH (inquietação motora sem déficit de coordenação); "
         "transtorno do espectro autista (dispraxia associada); "
         "paralisia cerebral (sinais neurológicos focais).",
-        "Cerebral palsy (8D20); ADHD (6A05); Autism spectrum disorder (6A02).",
-        "ADHD (6A05); Autism spectrum disorder (6A02); "
-        "Cerebral palsy (8D20); Muscular dystrophy (8C70)."
+        "Paralisia Cerebral (8D20); TDAH (6A05); Transtorno do Espectro Autista (6A02).",
+        "TDAH (6A05); Transtorno do Espectro Autista (6A02); "
+        "Paralisia Cerebral (8D20); Distrofia Muscular (8C70)."
     ),
     "Transtorno do Movimento Estereotipado": (
         "A. Comportamento motor repetitivo, aparentemente impulsivo e não funcional.\n"
@@ -165,10 +165,10 @@ DSM5TR_ALL = {
         "transtorno de tique; discinesia tardia; tricotilomania.",
         "TEA (estereotipias + critérios A e B do TEA); TOC; "
         "transtorno de Tourette; discinesia induzida por medicamento.",
-        "Autism spectrum disorder (6A02); Tourette disorder (8A05); "
-        "Obsessive-compulsive disorder (6B20).",
-        "Autism spectrum disorder (6A02); Tic disorders (8A05); "
-        "Obsessive-compulsive disorder (6B20)."
+        "Transtorno do Espectro Autista (6A02); Transtorno de Tourette (8A05); "
+        "Transtorno Obsessivo-Compulsivo (6B20).",
+        "Transtorno do Espectro Autista (6A02); Transtornos de Tique (8A05); "
+        "Transtorno Obsessivo-Compulsivo (6B20)."
     ),
     "Transtorno de Tourette": (
         "A. Múltiplos tiques motores e um ou mais tiques vocais presentes por 1+ ano.\n"
@@ -179,10 +179,10 @@ DSM5TR_ALL = {
         "discinesia tardia.",
         "Transtorno de tique motor/vocal crônico; transtorno de tique transitório; "
         "TOC; coreia de Sydenham; transtorno do movimento estereotipado.",
-        "Chronic motor or vocal tic disorder (8A05); Transient tic disorder (8A05); "
-        "Obsessive-compulsive disorder (6B20).",
-        "Chronic motor or vocal tic disorder (8A05); OCD (6B20); "
-        "ADHD (6A05); Stereotypic movement disorder (6A06)."
+        "Transtorno de Tique Motor ou Vocal Crônico (8A05); Transtorno de Tique Transitório (8A05); "
+        "Transtorno Obsessivo-Compulsivo (6B20).",
+        "Transtorno de Tique Motor ou Vocal Crônico (8A05); TOC (6B20); "
+        "TDAH (6A05); Transtorno do Movimento Estereotipado (6A06)."
     ),
     "Transtorno de Tique Motor ou Vocal Crônico": (
         "A. Tiques motores ou vocais únicos ou múltiplos (mas não ambos) presentes por 1+ ano.\n"
@@ -194,10 +194,10 @@ DSM5TR_ALL = {
         "movimentos estereotipados; discinesia tardia.",
         "Transtorno de Tourette; transtorno de tique transitório; "
         "TOC; transtorno do movimento estereotipado.",
-        "Tourette disorder (8A05); Transient tic disorder (8A05); "
-        "Stereotypic movement disorder (6A06).",
-        "Tourette disorder (8A05); Transient tic disorder (8A05); "
-        "OCD (6B20)."
+        "Transtorno de Tourette (8A05); Transtorno de Tique Transitório (8A05); "
+        "Transtorno do Movimento Estereotipado (6A06).",
+        "Transtorno de Tourette (8A05); Transtorno de Tique Transitório (8A05); "
+        "TOC (6B20)."
     ),
     "Transtorno de Tique Transitório": (
         "A. Tiques motores e/ou vocais.\n"
@@ -209,136 +209,136 @@ DSM5TR_ALL = {
         "movimentos estereotipados; efeito colateral medicamentoso.",
         "Tique fisiológico transitório (estresse, fadiga); Tourette; "
         "tique crônico; movimentos estereotipados.",
-        "Tourette disorder (8A05); Chronic tic disorder (8A05).",
-        "Tourette disorder (8A05); Chronic tic disorder (8A05); "
-        "Stereotypic movement disorder (6A06)."
+        "Transtorno de Tourette (8A05); Transtorno de Tique Crônico (8A05).",
+        "Transtorno de Tourette (8A05); Transtorno de Tique Crônico (8A05); "
+        "Transtorno do Movimento Estereotipado (6A06)."
     ),
 
 "Deficiência Intelectual Leve": (
         'A. Preenche os critérios diagnósticos para deficiência intelectual.\nB. A gravidade é especificada como leve (qi aproximadamente 50-70) com base no nível de comprometimento funcional e no suporte necessário.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Deficiência Intelectual; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Deficiência Intelectual Moderada": (
         'A. Preenche os critérios diagnósticos para deficiência intelectual.\nB. A gravidade é especificada como moderada (qi aproximadamente 35-49) com base no nível de comprometimento funcional e no suporte necessário.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Deficiência Intelectual; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Deficiência Intelectual Grave": (
         'A. Preenche os critérios diagnósticos para deficiência intelectual.\nB. A gravidade é especificada como grave (qi aproximadamente 20-34) com base no nível de comprometimento funcional e no suporte necessário.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Deficiência Intelectual; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Deficiência Intelectual Profunda": (
         'A. Preenche os critérios diagnósticos para deficiência intelectual.\nB. A gravidade é especificada como profunda (qi abaixo de 20) com base no nível de comprometimento funcional e no suporte necessário.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Deficiência Intelectual; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Deficiência Intelectual Não Especificada": (
         'A. Sintomas característicos de deficiência intelectual que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Deficiência Intelectual; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno da Comunicação Não Especificado": (
         'A. Sintomas característicos de transtorno da linguagem que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno da Linguagem; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Déficit de Atenção/Hiperatividade — Apresentação Combinada": (
         'A. Preenche os critérios diagnósticos para transtorno de déficit de atenção/hiperatividade.\nB. O subtipo apresentação combinada (sintomas significativos tanto de desatenção quanto de hiperatividade/impulsividade nos últimos 6 meses) é especificado com base nas características predominantes da apresentação clínica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Déficit de Atenção/Hiperatividade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Déficit de Atenção/Hiperatividade — Apresentação Predominante com Desatenção": (
         'A. Preenche os critérios diagnósticos para transtorno de déficit de atenção/hiperatividade.\nB. O subtipo apresentação predominante com desatenção (sintomas significativos de desatenção, mas não de hiperatividade/impulsividade nos últimos 6 meses) é especificado com base nas características predominantes da apresentação clínica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Déficit de Atenção/Hiperatividade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Déficit de Atenção/Hiperatividade — Apresentação Predominante com Hiperatividade": (
         'A. Preenche os critérios diagnósticos para transtorno de déficit de atenção/hiperatividade.\nB. O subtipo apresentação predominante com hiperatividade/impulsividade (sintomas significativos de hiperatividade/impulsividade, mas não de desatenção nos últimos 6 meses) é especificado com base nas características predominantes da apresentação clínica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Déficit de Atenção/Hiperatividade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Déficit de Atenção/Hiperatividade — Outra Apresentação Especificada": (
         'A. Sintomas característicos de transtorno de déficit de atenção/hiperatividade que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de déficit de atenção/hiperatividade, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Déficit de Atenção/Hiperatividade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Déficit de Atenção/Hiperatividade Não Especificado": (
         'A. Sintomas característicos de transtorno de déficit de atenção/hiperatividade que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Déficit de Atenção/Hiperatividade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Específico da Aprendizagem Não Especificado": (
         'A. Sintomas característicos de transtorno específico da aprendizagem que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Específico da Aprendizagem; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Específico da Aprendizagem — com Prejuízo na Expressão Escrita": (
         'A. Preenche os critérios diagnósticos para transtorno específico da aprendizagem.\nB. O subtipo prejuízo na expressão escrita (precisão ortográfica, gramática, clareza da organização escrita) é especificado com base nas características predominantes da apresentação clínica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Específico da Aprendizagem; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Específico da Aprendizagem — com Prejuízo na Matemática": (
         'A. Preenche os critérios diagnósticos para transtorno específico da aprendizagem.\nB. O subtipo prejuízo na matemática (senso numérico, memorização de fatos aritméticos, raciocínio matemático) é especificado com base nas características predominantes da apresentação clínica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Específico da Aprendizagem; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Tique Especificado": (
         'A. Sintomas característicos de transtorno de tourette que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de tourette, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Tourette; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Tique Não Especificado": (
         'A. Sintomas característicos de transtorno de tourette que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Tourette; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outro Transtorno do Neurodesenvolvimento Especificado": (
         'A. Sintomas característicos de transtorno do espectro autista que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno do espectro autista, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno do Espectro Autista; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno do Neurodesenvolvimento Não Especificado": (
         'A. Sintomas característicos de transtorno do espectro autista que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno do Espectro Autista; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 2: Espectro da Esquizofrenia ═══
@@ -355,10 +355,10 @@ DSM5TR_ALL = {
         "Esquizofrenia paranóide; transtorno esquizoafetivo; transtorno bipolar com psicose; "
         "TOC (obsessões com insight pobre); transtorno de personalidade paranoide "
         "(crenças menos fixas e mais plausíveis).",
-        "Schizophrenia (6A20); Acute and transient psychotic disorder (6A23); "
-        "Bipolar type I disorder (6A60).",
-        "Schizophrenia (6A20); Schizoaffective disorder (6A21); "
-        "Bipolar type I disorder (6A60); OCD (6B20)."
+        "Esquizofrenia (6A20); Transtorno Psicótico Agudo e Transitório (6A23); "
+        "Transtorno Bipolar Tipo I (6A60).",
+        "Esquizofrenia (6A20); Transtorno Esquizoafetivo (6A21); "
+        "Transtorno Bipolar Tipo I (6A60); TOC (6B20)."
     ),
     "Transtorno Psicótico Breve": (
         "A. Presença de 1+ sintoma: delírios, alucinações, discurso desorganizado, "
@@ -370,10 +370,10 @@ DSM5TR_ALL = {
         "simulação.",
         "Transtorno esquizofreniforme; esquizofrenia; transtorno bipolar com psicose; "
         "depressão maior com psicose; estresse pós-traumático com flashbacks psicóticos.",
-        "Schizophrenia (6A20); Schizophreniform disorder; "
-        "Substance-induced psychotic disorder (6C4E).",
-        "Schizophrenia (6A20); Schizoaffective disorder (6A21); "
-        "Bipolar type I disorder (6A60); Acute stress reaction (Q24.1)."
+        "Esquizofrenia (6A20); Transtorno Esquizofreniforme; "
+        "Transtorno Psicótico Induzido por Substância (6C4E).",
+        "Esquizofrenia (6A20); Transtorno Esquizoafetivo (6A21); "
+        "Transtorno Bipolar Tipo I (6A60); Reação Aguda ao Estresse (Q24.1)."
     ),
     "Transtorno Esquizofreniforme": (
         "A. Critérios A para esquizofrenia.\n"
@@ -384,10 +384,10 @@ DSM5TR_ALL = {
         "Esquizofrenia (diferença temporal); transtorno psicótico breve; "
         "transtorno delirante (delírios não-bizarrros); "
         "transtorno de humor com características psicóticas.",
-        "Schizophrenia (6A20); Acute and transient psychotic disorder (6A23); "
-        "Delusional disorder (6A24).",
-        "Schizophrenia (6A20); Delusional disorder (6A24); "
-        "Bipolar type I disorder (6A60)."
+        "Esquizofrenia (6A20); Transtorno Psicótico Agudo e Transitório (6A23); "
+        "Transtorno Delirante (6A24).",
+        "Esquizofrenia (6A20); Transtorno Delirante (6A24); "
+        "Transtorno Bipolar Tipo I (6A60)."
     ),
     "Transtorno Esquizoafetivo": (
         "A. Período ininterrupto de doença com episódio de humor maior (depressivo ou maníaco) "
@@ -400,10 +400,10 @@ DSM5TR_ALL = {
         "transtorno psicótico induzido por substância.",
         "Esquizofrenia; transtorno bipolar tipo I; depressão maior com características "
         "psicóticas; transtorno esquizofreniforme.",
-        "Schizophrenia (6A20); Bipolar type I disorder (6A60); "
-        "Depressive disorders with psychotic symptoms (6A70-6A71).",
-        "Schizophrenia (6A20); Bipolar type I disorder (6A60); "
-        "Depressive disorders with psychotic symptoms (6A70-6A71)."
+        "Esquizofrenia (6A20); Transtorno Bipolar Tipo I (6A60); "
+        "Transtornos Depressivos com Sintomas Psicóticos (6A70-6A71).",
+        "Esquizofrenia (6A20); Transtorno Bipolar Tipo I (6A60); "
+        "Transtornos Depressivos com Sintomas Psicóticos (6A70-6A71)."
     ),
     "Transtorno Psicótico Induzido por Substância": (
         "A. Delírios ou alucinações proeminentes.\n"
@@ -414,9 +414,9 @@ DSM5TR_ALL = {
         "transtorno psicótico devido a condição médica.",
         "Esquizofrenia; transtorno bipolar com psicose; transtorno delirante; "
         "intoxicação por substância sem transtorno psicótico.",
-        "Schizophrenia (6A20); Delirium (6D70); "
-        "Bipolar type I disorder (6A60).",
-        "Schizophrenia (6A20); Bipolar type I disorder (6A60); "
+        "Esquizofrenia (6A20); Delirium (6D70); "
+        "Transtorno Bipolar Tipo I (6A60).",
+        "Esquizofrenia (6A20); Transtorno Bipolar Tipo I (6A60); "
         "Delirium (6D70)."
     ),
     "Transtorno Psicótico Devido a Outra Condição Médica": (
@@ -428,10 +428,10 @@ DSM5TR_ALL = {
         "simulação.",
         "Esquizofrenia; transtorno bipolar; transtorno delirante; "
         "delirium; transtorno neurocognitivo.",
-        "Schizophrenia (6A20); Delirium (6D70); "
-        "Neurocognitive disorders (6D71-6D7Z).",
-        "Schizophrenia (6A20); Delirium (6D70); "
-        "Substance-induced psychotic disorder (6C4E)."
+        "Esquizofrenia (6A20); Delirium (6D70); "
+        "Transtornos Neurocognitivos (6D71-6D7Z).",
+        "Esquizofrenia (6A20); Delirium (6D70); "
+        "Transtorno Psicótico Induzido por Substância (6C4E)."
     ),
     "Catatonia": (
         "A. Marcada perturbação psicomotora envolvendo 3+ sintomas: estupor, catalepsia, "
@@ -441,46 +441,46 @@ DSM5TR_ALL = {
         "síndrome neuroléptica maligna; mutismo seletivo; TEA com catatonia.",
         "Síndrome neuroléptica maligna; encefalite autoimune; estado de mal epiléptico não-convulsivo; "
         "TEA (comportamentos repetitivos); transtorno do movimento estereotipado.",
-        "Neuroleptic malignant syndrome (8D86); Encephalitis (1D00); "
-        "Autism spectrum disorder (6A02).",
-        "Neuroleptic malignant syndrome (8D86); Encephalitis (1D00); "
-        "Parkinsonism (8A60)."
+        "Síndrome Neuroléptica Maligna (8D86); Encefalite (1D00); "
+        "Transtorno do Espectro Autista (6A02).",
+        "Síndrome Neuroléptica Maligna (8D86); Encefalite (1D00); "
+        "Parkinsonismo (8A60)."
     ),
 
 "Catatonia Associada a Transtorno Mental": (
         'A. Preenche os critérios diagnósticos para catatonia.\nB. O quadro catatônico ocorre no contexto de um transtorno mental (ex.: transtorno do humor, psicótico).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Catatonia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Catatonia Devido a Outra Condição Médica": (
         'A. Preenche os critérios para catatonia.\nB. A etiologia é atribuída a condição médica geral (ex.: encefalite, acidente vascular cerebral, neoplasia), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Catatonia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Catatonia Não Especificada": (
         'A. Sintomas característicos de catatonia que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Catatonia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outro Transtorno do Espectro da Esquizofrenia Especificado": (
         'A. Sintomas característicos de esquizofrenia / transtorno psicótico que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para esquizofrenia / transtorno psicótico, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Esquizofrenia / Transtorno Psicótico; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno do Espectro da Esquizofrenia Não Especificado": (
         'A. Sintomas característicos de esquizofrenia / transtorno psicótico que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Esquizofrenia / Transtorno Psicótico; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 3: Transtornos Bipolares ═══
@@ -496,10 +496,10 @@ DSM5TR_ALL = {
         "Bipolar tipo II; transtorno de personalidade borderline; "
         "TDAH; transtorno depressivo persistente; "
         "transtorno de ansiedade generalizada.",
-        "Bipolar type II disorder (6A61); Borderline personality disorder (6D11); "
-        "ADHD (6A05).",
-        "Bipolar type II disorder (6A61); Dysthymic disorder (6A72); "
-        "Borderline personality disorder (6D11); ADHD (6A05)."
+        "Transtorno Bipolar Tipo II (6A61); Transtorno da Personalidade Borderline (6D11); "
+        "TDAH (6A05).",
+        "Transtorno Bipolar Tipo II (6A61); Transtorno Distímico (6A72); "
+        "Transtorno da Personalidade Borderline (6D11); TDAH (6A05)."
     ),
     "Transtorno Bipolar Induzido por Substância": (
         "A. Elevação ou irritabilidade proeminente e persistente do humor.\n"
@@ -509,10 +509,10 @@ DSM5TR_ALL = {
         "transtorno de humor devido a condição médica.",
         "Transtorno bipolar tipo I/II; TDAH; transtorno de personalidade borderline; "
         "intoxicação por estimulantes.",
-        "Bipolar type I/II disorder (6A60-6A61); ADHD (6A05); "
-        "Borderline personality disorder (6D11).",
-        "Bipolar type I/II disorder (6A60-6A61); ADHD (6A05); "
-        "Substance intoxication (6C4E)."
+        "Transtorno Bipolar Tipo I/II (6A60-6A61); TDAH (6A05); "
+        "Transtorno da Personalidade Borderline (6D11).",
+        "Transtorno Bipolar Tipo I/II (6A60-6A61); TDAH (6A05); "
+        "Intoxicação por Substância (6C4E)."
     ),
     "Transtorno Bipolar Devido a Outra Condição Médica": (
         "A. Elevação ou irritabilidade proeminente e persistente do humor.\n"
@@ -523,25 +523,25 @@ DSM5TR_ALL = {
         "delirium; transtorno de personalidade.",
         "Transtorno bipolar tipo I/II; doença de Cushing; hipertireoidismo; "
         "esclerose múltipla; AVE; delirium.",
-        "Bipolar disorders (6A60-6A61); Cushing syndrome (5A70); "
-        "Hyperthyroidism (5A02); Delirium (6D70).",
-        "Bipolar disorders (6A60-6A61); Delirium (6D70); "
-        "Substance-induced mood disorder."
+        "Transtornos Bipolares (6A60-6A61); Síndrome de Cushing (5A70); "
+        "Hipertireoidismo (5A02); Delirium (6D70).",
+        "Transtornos Bipolares (6A60-6A61); Delirium (6D70); "
+        "Transtorno do Humor Induzido por Substância."
     ),
 
 "Outro Transtorno Bipolar Especificado": (
         'A. Sintomas característicos de transtorno bipolar tipo i que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno bipolar tipo i, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Bipolar Tipo I; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Bipolar Não Especificado": (
         'A. Sintomas característicos de transtorno bipolar tipo i que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Bipolar Tipo I; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 4: Transtornos Depressivos ═══
@@ -560,10 +560,10 @@ DSM5TR_ALL = {
         "Transtorno bipolar (especialmente em crianças); TOD; "
         "transtorno explosivo intermitente; TDAH; "
         "depressão maior; ansiedade de separação.",
-        "Bipolar disorders (6A60-6A61); Oppositional defiant disorder (6C90); "
-        "Intermittent explosive disorder (6C70).",
-        "Bipolar disorders (6A60-6A61); Oppositional defiant disorder (6C90); "
-        "ADHD (6A05); Major depressive disorder (6A70-6A71)."
+        "Transtornos Bipolares (6A60-6A61); Transtorno Opositivo-Desafiador (6C90); "
+        "Transtorno Explosivo Intermitente (6C70).",
+        "Transtornos Bipolares (6A60-6A61); Transtorno Opositivo-Desafiador (6C90); "
+        "TDAH (6A05); Transtorno Depressivo Maior (6A70-6A71)."
     ),
     "Transtorno Disfórico Pré-Menstrual": (
         "A. Na maioria dos ciclos, 5+ sintomas na semana pré-menstrual com melhora na semana "
@@ -577,10 +577,10 @@ DSM5TR_ALL = {
         "transtorno disfórico pré-menstrual mascarado.",
         "TDM; TAG; transtorno bipolar; síndrome pré-menstrual; "
         "transtorno de personalidade borderline.",
-        "Premenstrual syndrome (GA34.4); Major depressive disorder (6A70-6A71); "
-        "Bipolar disorders (6A60-6A61).",
-        "Major depressive disorder (6A70-6A71); Bipolar disorder (6A60-6A61); "
-        "Premenstrual syndrome (GA34.4)."
+        "Síndrome Pré-Menstrual (GA34.4); Transtorno Depressivo Maior (6A70-6A71); "
+        "Transtornos Bipolares (6A60-6A61).",
+        "Transtorno Depressivo Maior (6A70-6A71); Transtorno Bipolar (6A60-6A61); "
+        "Síndrome Pré-Menstrual (GA34.4)."
     ),
     "Transtorno Depressivo Induzido por Substância": (
         "A. Humor deprimido ou anedonia proeminente.\n"
@@ -590,10 +590,10 @@ DSM5TR_ALL = {
         "transtorno de adaptação; transtorno de ansiedade.",
         "TDM; transtorno de adaptação com humor deprimido; "
         "transtorno bipolar; transtorno depressivo persistente.",
-        "Major depressive disorder (6A70); Recurrent depressive disorder (6A71); "
-        "Adjustment disorder (6B43).",
-        "Major depressive disorder (6A70-6A71); Adjustment disorder (6B43); "
-        "Dysthymic disorder (6A72)."
+        "Transtorno Depressivo Maior (6A70); Transtorno Depressivo Recorrente (6A71); "
+        "Transtorno de Adaptação (6B43).",
+        "Transtorno Depressivo Maior (6A70-6A71); Transtorno de Adaptação (6B43); "
+        "Transtorno Distímico (6A72)."
     ),
     "Transtorno Depressivo Devido a Outra Condição Médica": (
         "A. Humor deprimido ou anedonia proeminente.\n"
@@ -603,24 +603,24 @@ DSM5TR_ALL = {
         "transtorno bipolar.",
         "TDM; hipotireoidismo; doença de Parkinson; AVE; "
         "doença de Cushing; lúpus eritematoso sistêmico; dor crônica.",
-        "Major depressive disorder (6A70-6A71); Hypothyroidism (5A00); "
-        "Parkinson disease (8A60).",
-        "Major depressive disorder (6A70-6A71); Substance-induced depressive disorder."
+        "Transtorno Depressivo Maior (6A70-6A71); Hipotireoidismo (5A00); "
+        "Doença de Parkinson (8A60).",
+        "Transtorno Depressivo Maior (6A70-6A71); Transtorno Depressivo Induzido por Substância."
     ),
 
 "Outro Transtorno Depressivo Especificado": (
         'A. Sintomas característicos de transtorno depressivo maior que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno depressivo maior, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Depressivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Depressivo Não Especificado": (
         'A. Sintomas característicos de transtorno depressivo maior que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Depressivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 5: Transtornos de Ansiedade ═══
@@ -636,10 +636,10 @@ DSM5TR_ALL = {
         "mutismo seletivo; TEPT; agorafobia.",
         "TAG; transtorno do pânico; agorafobia; fobia específica; "
         "transtorno de ansiedade social; TOD (recusa escolar).",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Agoraphobia (6B02); Social anxiety disorder (6B04).",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Agoraphobia (6B02); Oppositional defiant disorder (6C90)."
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Agorafobia (6B02); Transtorno de Ansiedade Social (6B04).",
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Agorafobia (6B02); Transtorno Opositivo-Desafiador (6C90)."
     ),
     "Mutismo Seletivo": (
         "A. Fala consistentemente ausente em situações sociais específicas onde se espera que fale, "
@@ -653,10 +653,10 @@ DSM5TR_ALL = {
         "mutismo traumático; fobia específica.",
         "Transtorno de ansiedade social; TEA; transtorno da linguagem; "
         "mutismo devido a trauma; transtorno de comunicação social.",
-        "Social anxiety disorder (6B04); Autism spectrum disorder (6A02); "
-        "Language disorder (6A01).",
-        "Social anxiety disorder (6B04); Autism spectrum disorder (6A02); "
-        "Communication disorders (6A01)."
+        "Transtorno de Ansiedade Social (6B04); Transtorno do Espectro Autista (6A02); "
+        "Transtorno da Linguagem (6A01).",
+        "Transtorno de Ansiedade Social (6B04); Transtorno do Espectro Autista (6A02); "
+        "Transtornos da Comunicação (6A01)."
     ),
     "Fobia Específica": (
         "A. Medo ou ansiedade intensa em relação a objeto ou situação específica.\n"
@@ -672,10 +672,10 @@ DSM5TR_ALL = {
         "Agorafobia; transtorno de ansiedade social; "
         "transtorno do pânico; TAG; "
         "hipocondria (medo de doença); transtorno de ansiedade de doença.",
-        "Agoraphobia (6B02); Social anxiety disorder (6B04); "
-        "Panic disorder (6B01).",
-        "Agoraphobia (6B02); Social anxiety disorder (6B04); "
-        "Panic disorder (6B01); Health anxiety disorder (6B23)."
+        "Agorafobia (6B02); Transtorno de Ansiedade Social (6B04); "
+        "Transtorno do Pânico (6B01).",
+        "Agorafobia (6B02); Transtorno de Ansiedade Social (6B04); "
+        "Transtorno do Pânico (6B01); Transtorno de Ansiedade de Doença (6B23)."
     ),
     "Transtorno de Ansiedade Induzido por Substância": (
         "A. Ansiedade ou ataques de pânico proeminentes.\n"
@@ -686,10 +686,10 @@ DSM5TR_ALL = {
         "delirium; síndrome de abstinência.",
         "TAG; transtorno do pânico; transtorno de ansiedade social; "
         "hipertireoidismo; feocromocitoma; abstinência alcoólica.",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Hyperthyroidism (5A02).",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Social anxiety disorder (6B04)."
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Hipertireoidismo (5A02).",
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Transtorno de Ansiedade Social (6B04)."
     ),
     "Transtorno de Ansiedade Devido a Outra Condição Médica": (
         "A. Ansiedade ou ataques de pânico proeminentes.\n"
@@ -700,25 +700,25 @@ DSM5TR_ALL = {
         "transtorno de adaptação; delirium.",
         "TAG; transtorno do pânico; hipertireoidismo; "
         "hiperparatireoidismo; feocromocitoma; arritmia cardíaca; asma; DPOC.",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Hyperthyroidism (5A02); Pheochromocytoma (5A70).",
-        "Generalized anxiety disorder (6B00); Panic disorder (6B01); "
-        "Adjustment disorder (6B43)."
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Hipertireoidismo (5A02); Feocromocitoma (5A70).",
+        "Transtorno de Ansiedade Generalizada (6B00); Transtorno do Pânico (6B01); "
+        "Transtorno de Adaptação (6B43)."
     ),
 
 "Outro Transtorno de Ansiedade Especificado": (
         'A. Sintomas característicos de transtorno de ansiedade generalizada que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de ansiedade generalizada, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Ansiedade Generalizada; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Ansiedade Não Especificado": (
         'A. Sintomas característicos de transtorno de ansiedade generalizada que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Ansiedade Generalizada; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 6: Transtornos Obsessivo-Compulsivos ═══
@@ -734,10 +734,10 @@ DSM5TR_ALL = {
         "TOC; transtorno alimentar; transtorno de ansiedade social; "
         "transtorno de ansiedade de doença; transtorno factício; "
         "transtorno de personalidade narcisista (preocupação excessiva com aparência).",
-        "Obsessive-compulsive disorder (6B20); Eating disorders (6B80-6B82); "
-        "Social anxiety disorder (6B04); Health anxiety disorder (6B23).",
-        "OCD (6B20); Social anxiety disorder (6B04); "
-        "Anorexia nervosa (6B80); Body integrity dysphoria."
+        "Transtorno Obsessivo-Compulsivo (6B20); Transtornos Alimentares (6B80-6B82); "
+        "Transtorno de Ansiedade Social (6B04); Transtorno de Ansiedade de Doença (6B23).",
+        "TOC (6B20); Transtorno de Ansiedade Social (6B04); "
+        "Anorexia Nervosa (6B80); Disforia de Integridade Corporal."
     ),
     "Transtorno de Acumulação": (
         "A. Dificuldade persistente em descartar posses, independentemente do valor.\n"
@@ -751,10 +751,10 @@ DSM5TR_ALL = {
         "TOC; colecionismo normal; depressão maior; "
         "transtorno de personalidade obsessivo-compulsiva; "
         "demência frontotemporal; síndrome de Prader-Willi.",
-        "OCD (6B20); Hoarding due to organic brain disorder; "
-        "Frontotemporal dementia (6D81).",
-        "OCD (6B20); Depressive disorders (6A70-6A71); "
-        "Frontotemporal dementia (6D81)."
+        "TOC (6B20); Acumulação Devida a Transtorno Cerebral Orgânico; "
+        "Demência Frontotemporal (6D81).",
+        "TOC (6B20); Transtornos Depressivos (6A70-6A71); "
+        "Demência Frontotemporal (6D81)."
     ),
     "Tricotilomania": (
         "A. Arrancar cabelos recorrentemente, resultando em perda capilar.\n"
@@ -767,10 +767,10 @@ DSM5TR_ALL = {
         "transtorno dismórfico corporal (arrancar por defeito percebido).",
         "TOC; transtorno de escoriação; transtorno do movimento estereotipado; "
         "transtorno de personalidade borderline; alopecia.",
-        "OCD (6B20); Skin picking disorder (6B25); "
-        "Stereotypic movement disorder (6A06).",
-        "OCD (6B20); Skin picking disorder (6B25); "
-        "Stereotypic movement disorder (6A06)."
+        "TOC (6B20); Transtorno de Escoriação (6B25); "
+        "Transtorno do Movimento Estereotipado (6A06).",
+        "TOC (6B20); Transtorno de Escoriação (6B25); "
+        "Transtorno do Movimento Estereotipado (6A06)."
     ),
     "Transtorno de Escoriação (Skin Picking)": (
         "A. Beliscar a pele recorrentemente, resultando em lesões.\n"
@@ -783,10 +783,10 @@ DSM5TR_ALL = {
         "condição dermatológica primária; autolesão não suicida.",
         "TOC; tricotilomania; autolesão não suicida (borderline); "
         "transtorno factício; condição dermatológica.",
-        "OCD (6B20); Trichotillomania (6B25); "
-        "Factitial dermatitis (sindrômico).",
-        "OCD (6B20); Trichotillomania (6B25); "
-        "Borderline personality disorder (6D11)."
+        "TOC (6B20); Tricotilomania (6B25); "
+        "Dermatite Factícia (sindrômica).",
+        "TOC (6B20); Tricotilomania (6B25); "
+        "Transtorno da Personalidade Borderline (6D11)."
     ),
     "TOC Induzido por Substância": (
         "A. Sintomas obsessivo-compulsivos proeminentes.\n"
@@ -796,30 +796,30 @@ DSM5TR_ALL = {
         "TOC + transtorno por uso de substância comórbido.",
         "TOC; transtorno de ansiedade; síndrome de Tourette; "
         "coreia de Sydenham (PANDAS).",
-        "OCD (6B20); Tic disorders (8A05); "
-        "Substance-induced anxiety disorder."
+        "TOC (6B20); Transtornos de Tique (8A05); "
+        "Transtorno de Ansiedade Induzido por Substância."
     ),
 
 "TOC Devido a Outra Condição Médica": (
         'A. Preenche os critérios para transtorno obsessivo-compulsivo.\nB. A etiologia é atribuída a condição médica (ex.: lesão cerebral, infecção), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Obsessivo-Compulsivo; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outro Transtorno Obsessivo-Compulsivo Especificado": (
         'A. Sintomas característicos de transtorno obsessivo-compulsivo que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno obsessivo-compulsivo, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Obsessivo-Compulsivo; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Obsessivo-Compulsivo Não Especificado": (
         'A. Sintomas característicos de transtorno obsessivo-compulsivo que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Obsessivo-Compulsivo; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 7: Transtornos Relacionados a Trauma ═══
@@ -835,10 +835,10 @@ DSM5TR_ALL = {
         "depressão maior na infância.",
         "TEA; deficiência intelectual; transtorno de engajamento social desinibido; "
         "TEPT; depressão infantil; transtorno de adaptação.",
-        "Autism spectrum disorder (6A02); Intellectual developmental disorder (6A00); "
-        "PTSD (6B40).",
-        "Autism spectrum disorder (6A02); Disinhibited social engagement disorder; "
-        "PTSD (6B40)."
+        "Transtorno do Espectro Autista (6A02); Deficiência Intelectual (6A00); "
+        "TEPT (6B40).",
+        "Transtorno do Espectro Autista (6A02); Transtorno de Engajamento Social Desinibido; "
+        "TEPT (6B40)."
     ),
     "Transtorno de Engajamento Social Desinibido": (
         "A. Comportamento excessivamente familiar com estranhos: aproximação ativa, "
@@ -850,10 +850,10 @@ DSM5TR_ALL = {
         "transtorno de apego reativo (inibido vs. desinibido).",
         "TDAH; síndrome de Williams; "
         "transtorno de apego reativo; comportamento normal em crianças pequenas.",
-        "ADHD (6A05); Williams syndrome (LD90); "
-        "Reactive attachment disorder (6B44).",
-        "ADHD (6A05); Autism spectrum disorder (6A02); "
-        "Reactive attachment disorder (6B44)."
+        "TDAH (6A05); Síndrome de Williams (LD90); "
+        "Transtorno de Apego Reativo (6B44).",
+        "TDAH (6A05); Transtorno do Espectro Autista (6A02); "
+        "Transtorno de Apego Reativo (6B44)."
     ),
     "Transtorno de Estresse Agudo": (
         "A. Exposição a morte real/ameaçadora, lesão grave ou violência sexual.\n"
@@ -866,10 +866,10 @@ DSM5TR_ALL = {
         "traumatismo cranioencefálico.",
         "TEPT; transtorno de adaptação; TAG; depressão maior; "
         "transtorno do pânico; amnésia dissociativa; psicose breve.",
-        "PTSD (6B40); Adjustment disorder (6B43); "
-        "Acute stress reaction (Q24.1).",
-        "PTSD (6B40); Adjustment disorder (6B43); "
-        "Panic disorder (6B01)."
+        "TEPT (6B40); Transtorno de Adaptação (6B43); "
+        "Reação Aguda ao Estresse (Q24.1).",
+        "TEPT (6B40); Transtorno de Adaptação (6B43); "
+        "Transtorno do Pânico (6B01)."
     ),
     "Transtornos de Adaptação": (
         "A. Sintomas emocionais ou comportamentais em resposta a estressor identificável dentro "
@@ -882,10 +882,10 @@ DSM5TR_ALL = {
         "transtorno de ansiedade de doença.",
         "TDM; TAG; TEPT; transtorno de estresse agudo; "
         "transtorno de pânico; transtorno de sintomas somáticos; luto.",
-        "Major depressive disorder (6A70); Generalized anxiety disorder (6B00); "
-        "PTSD (6B40); Prolonged grief disorder (6B42).",
-        "Major depressive disorder (6A70-6A71); GAD (6B00); "
-        "Acute stress reaction (Q24.1); PTSD (6B40)."
+        "Transtorno Depressivo Maior (6A70); Transtorno de Ansiedade Generalizada (6B00); "
+        "TEPT (6B40); Transtorno de Luto Prolongado (6B42).",
+        "Transtorno Depressivo Maior (6A70-6A71); TAG (6B00); "
+        "Reação Aguda ao Estresse (Q24.1); TEPT (6B40)."
     ),
     "Transtorno de Luto Prolongado": (
         "A. Morte de alguém próximo há 12+ meses.\n"
@@ -898,25 +898,25 @@ DSM5TR_ALL = {
         "luto normal (variação cultural).",
         "TDM; TEPT; transtorno de adaptação; "
         "ansiedade de separação; luto normal.",
-        "Major depressive disorder (6A70-6A71); PTSD (6B40); "
-        "Adjustment disorder (6B43).",
-        "Major depressive disorder (6A70-6A71); PTSD (6B40); "
-        "Anxiety disorders (6B00-6B0Z)."
+        "Transtorno Depressivo Maior (6A70-6A71); TEPT (6B40); "
+        "Transtorno de Adaptação (6B43).",
+        "Transtorno Depressivo Maior (6A70-6A71); TEPT (6B40); "
+        "Transtornos de Ansiedade (6B00-6B0Z)."
     ),
 
 "Outro Transtorno Relacionado a Trauma Especificado": (
         'A. Sintomas característicos de transtorno de estresse pós-traumático que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de estresse pós-traumático, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Estresse Pós-Traumático; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Relacionado a Trauma Não Especificado": (
         'A. Sintomas característicos de transtorno de estresse pós-traumático que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Estresse Pós-Traumático; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 8: Transtornos Dissociativos ═══
@@ -932,10 +932,10 @@ DSM5TR_ALL = {
         "TEPT; transtorno de conversão; depressão maior; "
         "esquizofrenia; transtorno de personalidade borderline; "
         "transtorno factício; simulação.",
-        "PTSD (6B40); Schizophrenia (6A20); "
-        "Borderline personality disorder (6D11); Factitious disorder (6D50).",
-        "PTSD (6B40); Borderline personality disorder (6D11); "
-        "Conversion disorder (6B60); Schizophrenia (6A20)."
+        "TEPT (6B40); Esquizofrenia (6A20); "
+        "Transtorno da Personalidade Borderline (6D11); Transtorno Factício (6D50).",
+        "TEPT (6B40); Transtorno da Personalidade Borderline (6D11); "
+        "Transtorno Conversivo (6B60); Esquizofrenia (6A20)."
     ),
     "Amnésia Dissociativa": (
         "A. Incapacidade de recordar informações autobiográficas, geralmente traumáticas.\n"
@@ -947,10 +947,10 @@ DSM5TR_ALL = {
         "TEPT (amnésia como parte do quadro); TDI; "
         "amnésia neurológica; transtorno neurocognitivo; "
         "crise não-epiléptica psicogênica.",
-        "PTSD (6B40); DID (6B61); "
-        "Neurological amnesia; Neurocognitive disorders (6D71-6D7Z).",
-        "PTSD (6B40); DID (6B61); Neurocognitive disorders (6D71-6D7Z); "
-        "Conversion disorder (6B60)."
+        "TEPT (6B40); Transtorno Dissociativo de Identidade (6B61); "
+        "Amnésia Neurológica; Transtornos Neurocognitivos (6D71-6D7Z).",
+        "TEPT (6B40); Transtorno Dissociativo de Identidade (6B61); Transtornos Neurocognitivos (6D71-6D7Z); "
+        "Transtorno Conversivo (6B60)."
     ),
     "Transtorno de Despersonalização/Desrealização": (
         "A. Experiências persistentes de despersonalização e/ou desrealização.\n"
@@ -964,25 +964,25 @@ DSM5TR_ALL = {
         "TEPT; transtorno do pânico; depressão maior; "
         "esquizofrenia; TDI; epilepsia; enxaqueca; "
         "ansiedade generalizada.",
-        "PTSD (6B40); Panic disorder (6B01); "
-        "Depressive disorders (6A70-6A71); Temporal lobe epilepsy (8A61).",
-        "PTSD (6B40); Panic disorder (6B01); "
-        "Depressive disorders (6A70-6A71); Schizophrenia (6A20)."
+        "TEPT (6B40); Transtorno do Pânico (6B01); "
+        "Transtornos Depressivos (6A70-6A71); Epilepsia do Lobo Temporal (8A61).",
+        "TEPT (6B40); Transtorno do Pânico (6B01); "
+        "Transtornos Depressivos (6A70-6A71); Esquizofrenia (6A20)."
     ),
 
 "Outro Transtorno Dissociativo Especificado": (
         'A. Sintomas característicos de transtorno dissociativo de identidade que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno dissociativo de identidade, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Dissociativo de Identidade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Dissociativo Não Especificado": (
         'A. Sintomas característicos de transtorno dissociativo de identidade que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Dissociativo de Identidade; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 9: Transtornos de Sintomas Somáticos ═══
@@ -998,10 +998,10 @@ DSM5TR_ALL = {
         "Transtorno de sintomas somáticos; transtorno do pânico; TAG; "
         "TOC; depressão maior; transtorno delirante (tipo somático); "
         "transtorno factício; simulação.",
-        "Somatic symptom disorder (6C20); Panic disorder (6B01); "
-        "GAD (6B00); OCD (6B20); Hypochondriasis (ICD-10 F45.2).",
-        "Somatic symptom disorder (6C20); Panic disorder (6B01); "
-        "GAD (6B00); OCD (6B20); Delusional disorder (6A24)."
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno do Pânico (6B01); "
+        "TAG (6B00); TOC (6B20); Hipocondria (CID-10 F45.2).",
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno do Pânico (6B01); "
+        "TAG (6B00); TOC (6B20); Transtorno Delirante (6A24)."
     ),
     "Transtorno Conversivo (Transtorno de Sintomas Neurológicos Funcionais)": (
         "A. Sintomas neurológicos motores ou sensoriais.\n"
@@ -1014,10 +1014,10 @@ DSM5TR_ALL = {
         "Esclerose múltipla; epilepsia; AVE; miastenia gravis; "
         "neuropatia periférica; doença de Parkinson; "
         "transtorno factício; simulação.",
-        "Multiple sclerosis (8A40); Epilepsy (8A61); Stroke (8B20); "
-        "Factitious disorder (6D50).",
-        "Multiple sclerosis (8A40); Epilepsy (8A61); "
-        "Somatic symptom disorder (6C20); Factitious disorder (6D50)."
+        "Esclerose Múltipla (8A40); Epilepsia (8A61); Acidente Vascular Cerebral (8B20); "
+        "Transtorno Factício (6D50).",
+        "Esclerose Múltipla (8A40); Epilepsia (8A61); "
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno Factício (6D50)."
     ),
     "Transtorno Factício": (
         "A. Falsificação de sinais ou sintomas físicos/psicológicos.\n"
@@ -1030,10 +1030,10 @@ DSM5TR_ALL = {
         "Simulação; transtorno de sintomas somáticos; "
         "transtorno conversivo; transtorno factício por procuração; "
         "condição médica genuína.",
-        "Malingering (Z76.5); Somatic symptom disorder (6C20); "
-        "Conversion disorder (6B60).",
-        "Somatic symptom disorder (6C20); Conversion disorder (6B60); "
-        "Malingering."
+        "Simulação (Z76.5); Transtorno de Sintomas Somáticos (6C20); "
+        "Transtorno Conversivo (6B60).",
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno Conversivo (6B60); "
+        "Simulação."
     ),
     "Fatores Psicológicos que Afetam Outras Condições Médicas": (
         "A. Condição médica presente.\n"
@@ -1043,25 +1043,25 @@ DSM5TR_ALL = {
         "transtorno de adaptação; não adesão ao tratamento sem fatores psicológicos.",
         "Transtorno de sintomas somáticos; transtorno de ansiedade de doença; "
         "transtorno de adaptação; depressão maior comórbida.",
-        "Somatic symptom disorder (6C20); Health anxiety disorder (6B23); "
-        "Adjustment disorder (6B43).",
-        "Somatic symptom disorder (6C20); Adjustment disorder (6B43); "
-        "Depressive disorders (6A70-6A71)."
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno de Ansiedade de Doença (6B23); "
+        "Transtorno de Adaptação (6B43).",
+        "Transtorno de Sintomas Somáticos (6C20); Transtorno de Adaptação (6B43); "
+        "Transtornos Depressivos (6A70-6A71)."
     ),
 
 "Outro Transtorno de Sintomas Somáticos Especificado": (
         'A. Sintomas característicos de transtorno de sintomas somáticos que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de sintomas somáticos, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Sintomas Somáticos; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno de Sintomas Somáticos Não Especificado": (
         'A. Sintomas característicos de transtorno de sintomas somáticos que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Sintomas Somáticos; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 10: Transtornos Alimentares ═══
@@ -1076,10 +1076,10 @@ DSM5TR_ALL = {
         "TEA (comportamento de pica associado); deficiência intelectual; "
         "transtorno alimentar restritivo-evitativo; "
         "deficiência de ferro (causa ou efeito).",
-        "Autism spectrum disorder (6A02); ARFID (6B83); "
-        "Intellectual developmental disorder (6A00).",
-        "Autism spectrum disorder (6A02); ARFID (6B83); "
-        "Iron deficiency anemia (3A00)."
+        "Transtorno do Espectro Autista (6A02); Transtorno Alimentar Restritivo-Evitante (6B83); "
+        "Deficiência Intelectual (6A00).",
+        "Transtorno do Espectro Autista (6A02); Transtorno Alimentar Restritivo-Evitante (6B83); "
+        "Anemia Ferropriva (3A00)."
     ),
     "Transtorno de Ruminação": (
         "A. Regurgitação repetida de alimentos por 1+ mês.\n"
@@ -1092,8 +1092,8 @@ DSM5TR_ALL = {
         "Anorexia nervosa; bulimia nervosa; "
         "refluxo gastroesofágico; gastroparesia; "
         "TAREA (evitação sensorial, não regurgitação).",
-        "Anorexia nervosa (6B80); Bulimia nervosa (6B81); "
-        "GERD (DA22); Gastroparesis."
+        "Anorexia Nervosa (6B80); Bulimia Nervosa (6B81); "
+        "Doença do Refluxo Gastroesofágico (DA22); Gastroparesia."
     ),
     "Transtorno Alimentar Restritivo-Evitante": (
         "A. Perturbação alimentar: desinteresse por comida, evitação sensorial, "
@@ -1108,25 +1108,25 @@ DSM5TR_ALL = {
         "Anorexia nervosa; pica; TEA; "
         "fobia específica (vômito, engasgo); "
         "transtorno de ansiedade; TOC (alimentar).",
-        "Anorexia nervosa (6B80); Pica (6B84); "
-        "Autism spectrum disorder (6A02).",
-        "Anorexia nervosa (6B80); Bulimia nervosa (6B81); "
-        "Autism spectrum disorder (6A02); OCD (6B20)."
+        "Anorexia Nervosa (6B80); Pica (6B84); "
+        "Transtorno do Espectro Autista (6A02).",
+        "Anorexia Nervosa (6B80); Bulimia Nervosa (6B81); "
+        "Transtorno do Espectro Autista (6A02); TOC (6B20)."
     ),
 
 "Outro Transtorno Alimentar Especificado": (
         'A. Sintomas característicos de anorexia nervosa que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para anorexia nervosa, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Anorexia Nervosa; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Alimentar Não Especificado": (
         'A. Sintomas característicos de anorexia nervosa que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Anorexia Nervosa; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 11: Transtornos da Eliminação ═══
@@ -1141,10 +1141,10 @@ DSM5TR_ALL = {
         "Infecção urinária; diabetes mellitus/insipidus; "
         "bexiga neurogênica; enurese noturna primária; "
         "transtorno de ansiedade de separação (enurese secundária).",
-        "Urinary tract infection (GC08); Diabetes mellitus (5A10); "
-        "Sleep disorders (7A00-7A0Z).",
-        "UTI (GC08); Diabetes (5A10); "
-        "Separation anxiety disorder (6B05)."
+        "Infecção do Trato Urinário (GC08); Diabetes Mellitus (5A10); "
+        "Transtornos do Sono-Vigília (7A00-7A0Z).",
+        "ITU (GC08); Diabetes (5A10); "
+        "Transtorno de Ansiedade de Separação (6B05)."
     ),
     "Encoprese": (
         "A. Eliminação repetida de fezes em locais inadequados.\n"
@@ -1158,25 +1158,25 @@ DSM5TR_ALL = {
         "Constipação crônica com transbordamento; "
         "doença de Hirschsprung; lesão medular; "
         "TOD; encoprese retentiva vs. não-retentiva.",
-        "Hirschsprung disease (DA30); Chronic constipation (DA92); "
-        "Oppositional defiant disorder (6C90).",
-        "Chronic constipation (DA92); Hirschsprung disease (DA30); "
-        "ODD (6C90)."
+        "Doença de Hirschsprung (DA30); Constipação Crônica (DA92); "
+        "Transtorno Opositivo-Desafiador (6C90).",
+        "Constipação Crônica (DA92); Doença de Hirschsprung (DA30); "
+        "TOD (6C90)."
     ),
 
 "Outro Transtorno da Eliminação Especificado": (
         'A. Sintomas característicos de enurese que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para enurese, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Enurese; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno da Eliminação Não Especificado": (
         'A. Sintomas característicos de enurese que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Enurese; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 12: Transtornos do Sono-Vigília ═══
@@ -1192,10 +1192,10 @@ DSM5TR_ALL = {
         "Narcolepsia; apneia obstrutiva do sono; "
         "privação de sono; hipersonia idiopática; "
         "síndrome de Kleine-Levin; depressão atípica.",
-        "Narcolepsy (7A20); Obstructive sleep apnoea (7A41); "
-        "Depressive disorders (6A70-6A71).",
-        "Narcolepsy (7A20); OSA (7A41); "
-        "Depressive disorders (6A70-6A71); Kleine-Levin syndrome."
+        "Narcolepsia (7A20); Apneia Obstrutiva do Sono (7A41); "
+        "Transtornos Depressivos (6A70-6A71).",
+        "Narcolepsia (7A20); AOS (7A41); "
+        "Transtornos Depressivos (6A70-6A71); Síndrome de Kleine-Levin."
     ),
     "Narcolepsia": (
         "A. Ataques recorrentes de sono irresistível 3+ vezes/semana por 3+ meses.\n"
@@ -1208,10 +1208,10 @@ DSM5TR_ALL = {
         "Transtorno de hipersonolência; apneia do sono; "
         "síndrome de Kleine-Levin; convulsões; "
         "narcolepsia tipo 1 vs. tipo 2.",
-        "Hypersomnolence disorder (7A21); OSA (7A41); "
-        "Kleine-Levin syndrome (7A22).",
-        "Hypersomnolence disorder (7A21); OSA (7A41); "
-        "Kleine-Levin syndrome (7A22)."
+        "Transtorno de Hipersonolência (7A21); AOS (7A41); "
+        "Síndrome de Kleine-Levin (7A22).",
+        "Transtorno de Hipersonolência (7A21); AOS (7A41); "
+        "Síndrome de Kleine-Levin (7A22)."
     ),
     "Apneia Obstrutiva do Sono": (
         "A. Pausas respiratórias recorrentes durante o sono.\n"
@@ -1223,10 +1223,10 @@ DSM5TR_ALL = {
         "Apneia central do sono; ronco primário; "
         "síndrome de resistência das vias aéreas superiores; "
         "narcolepsia; hipersonia.",
-        "Central sleep apnoea (7A42); Primary snoring; "
-        "Narcolepsy (7A20).",
-        "Central sleep apnoea (7A42); Hypersomnolence (7A21); "
-        "Narcolepsy (7A20)."
+        "Apneia Central do Sono (7A42); Ressonar Primário; "
+        "Narcolepsia (7A20).",
+        "Apneia Central do Sono (7A42); Hipersonolência (7A21); "
+        "Narcolepsia (7A20)."
     ),
     "Apneia Central do Sono": (
         "A. Pausas respiratórias sem esforço respiratório.\n"
@@ -1237,8 +1237,8 @@ DSM5TR_ALL = {
         "medicação opioide.",
         "Apneia obstrutiva do sono; hipoventilação central; "
         "insuficiência cardíaca; AVE; uso de opioides.",
-        "OSA (7A41); Heart failure (BD10); "
-        "Opioid-induced sleep apnoea."
+        "AOS (7A41); Insuficiência Cardíaca (BD10); "
+        "Apneia do Sono Induzida por Opioides."
     ),
     "Transtorno do Ritmo Circadiano do Sono-Vigília": (
         "A. Padrão persistente de perturbação do sono devido a alteração circadiana.\n"
@@ -1261,10 +1261,10 @@ DSM5TR_ALL = {
         "terror noturno; amnésia dissociativa; simulação.",
         "Terror noturno; transtorno comportamental do sono REM; "
         "epilepsia noturna; sonilóquio; estado confusional.",
-        "REM sleep behaviour disorder (7A40); "
-        "Sleep-related hypermotor epilepsy (8A61).",
-        "REM sleep behaviour disorder (7A40); Nightmare disorder (7A45); "
-        "Sleep-related epilepsy (8A61)."
+        "Transtorno Comportamental do Sono REM (7A40); "
+        "Epilepsia Hipermotora Relacionada ao Sono (8A61).",
+        "Transtorno Comportamental do Sono REM (7A40); Transtorno do Pesadelo (7A45); "
+        "Epilepsia Relacionada ao Sono (8A61)."
     ),
     "Terror Noturno": (
         "A. Episódios de gritos de medo intenso com despertar parcial do sono N3.\n"
@@ -1275,8 +1275,8 @@ DSM5TR_ALL = {
         "TEPT (pesadelos traumáticos).",
         "Pesadelo; transtorno do pânico noturno; "
         "TEPT; sonambulismo; epilepsia noturna.",
-        "Nightmare disorder (7A45); Panic disorder (6B01); "
-        "PTSD (6B40)."
+        "Transtorno do Pesadelo (7A45); Transtorno do Pânico (6B01); "
+        "TEPT (6B40)."
     ),
     "Transtorno do Pesadelo": (
         "A. Sonhos extensos, bem lembrados e extremamente disféricos.\n"
@@ -1317,22 +1317,22 @@ DSM5TR_ALL = {
         'A. Os sintomas são consistentes com disfunção sexual/outro transtorno, mas são inteiramente atribuíveis aos efeitos fisiológicos diretos de uma substância (droga de abuso, medicamento ou toxina).\nB. Os sintomas não são mais bem explicados por um transtorno primário ou outra condição médica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Insônia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outro Transtorno do Sono-Vigília Especificado": (
         'A. Sintomas característicos de transtorno de insônia que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno de insônia, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Insônia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno do Sono-Vigília Não Especificado": (
         'A. Sintomas característicos de transtorno de insônia que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno de Insônia; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 13: Disfunções Sexuais ═══
@@ -1412,22 +1412,22 @@ DSM5TR_ALL = {
         'A. Os sintomas são consistentes com disfunção sexual/outro transtorno, mas são inteiramente atribuíveis aos efeitos fisiológicos diretos de uma substância (droga de abuso, medicamento ou toxina).\nB. Os sintomas não são mais bem explicados por um transtorno primário ou outra condição médica.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Erétil; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outra Disfunção Sexual Especificada": (
         'A. Sintomas característicos de transtorno erétil que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno erétil, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Erétil; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Disfunção Sexual Não Especificada": (
         'A. Sintomas característicos de transtorno erétil que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Erétil; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 14: Disforia de Gênero ═══
@@ -1444,10 +1444,10 @@ DSM5TR_ALL = {
         "Inconformidade de gênero (sem sofrimento); TEA; "
         "TOC (obsessões com identidade de gênero); "
         "transtorno de personalidade borderline; transtorno transvéstico.",
-        "Gender incongruence without distress; Autism spectrum disorder (6A02); "
-        "Transvestic disorder (6D30).",
-        "Autism spectrum disorder (6A02); Body dysmorphic disorder (6B21); "
-        "Transvestic disorder (6D30)."
+        "Incongruência de Gênero sem Sofrimento; Transtorno do Espectro Autista (6A02); "
+        "Transtorno Transvéstico (6D30).",
+        "Transtorno do Espectro Autista (6A02); Transtorno Dismórfico Corporal (6B21); "
+        "Transtorno Transvéstico (6D30)."
     ),
     "Disforia de Gênero em Adolescentes e Adultos": (
         "A. Incongruência marcante entre gênero experienciado e designado por 6+ meses.\n"
@@ -1460,25 +1460,25 @@ DSM5TR_ALL = {
         "transtorno dismórfico corporal.",
         "Disforia de gênero em crianças (idade); inconformidade de gênero; "
         "transtorno transvéstico; TEA; TOC; esquizofrenia.",
-        "Gender incongruence without distress; Transvestic disorder (6D30); "
-        "Body dysmorphic disorder (6B21); Schizophrenia (6A20).",
-        "Gender incongruence; Transvestic disorder (6D30); "
-        "OCD (6B20); Body dysmorphic disorder (6B21)."
+        "Incongruência de Gênero sem Sofrimento; Transtorno Transvéstico (6D30); "
+        "Transtorno Dismórfico Corporal (6B21); Esquizofrenia (6A20).",
+        "Incongruência de Gênero; Transtorno Transvéstico (6D30); "
+        "TOC (6B20); Transtorno Dismórfico Corporal (6B21)."
     ),
 
 "Outra Disforia de Gênero Especificada": (
         'A. Sintomas característicos de disforia de gênero em crianças que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para disforia de gênero em crianças, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Disforia de Gênero em Crianças; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Disforia de Gênero Não Especificada": (
         'A. Sintomas característicos de disforia de gênero em crianças que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Disforia de Gênero em Crianças; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 15: Transtornos Disruptivos ═══
@@ -1494,10 +1494,10 @@ DSM5TR_ALL = {
         "TDAH; transtorno explosivo intermitente; transtorno da conduta; "
         "depressão maior; transtorno bipolar; "
         "comportamento opositivo normal (adolescência); TEA.",
-        "ADHD (6A05); Conduct disorder (6C91); "
-        "Intermittent explosive disorder (6C70); Bipolar disorder (6A60-6A61).",
-        "ADHD (6A05); Conduct disorder (6C91); Bipolar disorder (6A60-6A61); "
-        "Major depressive disorder (6A70-6A71)."
+        "TDAH (6A05); Transtorno da Conduta (6C91); "
+        "Transtorno Explosivo Intermitente (6C70); Transtorno Bipolar (6A60-6A61).",
+        "TDAH (6A05); Transtorno da Conduta (6C91); Transtorno Bipolar (6A60-6A61); "
+        "Transtorno Depressivo Maior (6A70-6A71)."
     ),
     "Transtorno Explosivo Intermitente": (
         "A. Explosões comportamentais impulsivas e agressivas desproporcionais.\n"
@@ -1512,10 +1512,10 @@ DSM5TR_ALL = {
         "transtorno de personalidade borderline; "
         "depressão com irritabilidade; mania; "
         "transtorno disruptivo da desregulação do humor.",
-        "ODD (6C90); Conduct disorder (6C91); ADHD (6A05); "
-        "Disruptive mood dysregulation disorder (6A73).",
-        "ODD (6C90); Conduct disorder (6C91); ADHD (6A05); "
-        "Borderline personality disorder (6D11)."
+        "TOD (6C90); Transtorno da Conduta (6C91); TDAH (6A05); "
+        "Transtorno Disruptivo da Desregulação do Humor (6A73).",
+        "TOD (6C90); Transtorno da Conduta (6C91); TDAH (6A05); "
+        "Transtorno da Personalidade Borderline (6D11)."
     ),
     "Transtorno da Conduta": (
         "A. Padrão repetitivo de violação de direitos básicos dos outros ou normas sociais.\n"
@@ -1529,10 +1529,10 @@ DSM5TR_ALL = {
         "TOD; TDAH; TPAS; transtorno explosivo intermitente; "
         "depressão maior; transtorno bipolar; "
         "transtorno por uso de substância; psicose.",
-        "ODD (6C90); ADHD (6A05); Antisocial personality disorder (6D11); "
-        "Intermittent explosive disorder (6C70).",
-        "ODD (6C90); ADHD (6A05); Antisocial personality disorder (6D11); "
-        "Bipolar disorder (6A60-6A61)."
+        "TOD (6C90); TDAH (6A05); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtorno Explosivo Intermitente (6C70).",
+        "TOD (6C90); TDAH (6A05); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtorno Bipolar (6A60-6A61)."
     ),
     "Piromania": (
         "A. Incêndio deliberado em múltiplas ocasiões.\n"
@@ -1563,15 +1563,15 @@ DSM5TR_ALL = {
         'A. Sintomas característicos de transtorno opositivo-desafiador que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno opositivo-desafiador, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Opositivo-Desafiador; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Disruptivo Não Especificado": (
         'A. Sintomas característicos de transtorno opositivo-desafiador que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Opositivo-Desafiador; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 16: Transtornos por Substâncias ═══
@@ -1582,9 +1582,9 @@ DSM5TR_ALL = {
         "transtorno bipolar (uso secundário); TPAS.",
         "Transtorno bipolar; TPAS; depressão maior; "
         "transtorno de ansiedade social; TEPT.",
-        "Hazardous alcohol use (QE10); Bipolar disorders (6A60-6A61).",
-        "Bipolar disorders (6A60-6A61); Depressive disorders (6A70-6A71); "
-        "PTSD (6B40); Social anxiety disorder (6B04)."
+        "Uso Nocivo de Álcool (QE10); Transtornos Bipolares (6A60-6A61).",
+        "Transtornos Bipolares (6A60-6A61); Transtornos Depressivos (6A70-6A71); "
+        "TEPT (6B40); Transtorno de Ansiedade Social (6B04)."
     ),
     "Intoxicação Alcoólica": (
         "A. Sintomas reversíveis após ingestão recente de álcool: fala arrastada, incoordenação, "
@@ -1621,10 +1621,10 @@ DSM5TR_ALL = {
         "Transtorno de ansiedade social; TAG; transtorno do pânico; "
         "transtorno bipolar; depressão maior; TDAH; "
         "transtorno de personalidade borderline; síndrome amotivacional.",
-        "Hazardous cannabis use (QE12); Cannabis intoxication (6C41.1); "
-        "Bipolar disorders (6A60-6A61).",
-        "Bipolar disorders (6A60-6A61); Depressive disorders (6A70-6A71); "
-        "Anxiety disorders (6B00-6B0Z); ADHD (6A05)."
+        "Uso Nocivo de Cannabis (QE12); Intoxicação por Cannabis (6C41.1); "
+        "Transtornos Bipolares (6A60-6A61).",
+        "Transtornos Bipolares (6A60-6A61); Transtornos Depressivos (6A70-6A71); "
+        "Transtornos de Ansiedade (6B00-6B0Z); TDAH (6A05)."
     ),
     "Transtorno por Uso de Alucinógenos": (
         "A. Padrão problemático de uso de alucinógenos (incluindo LSD, dissociativos, "
@@ -1647,10 +1647,10 @@ DSM5TR_ALL = {
         "Esquizofrenia; transtorno esquizofreniforme; transtorno delirante; "
         "transtorno psicótico breve; transtorno de pânico; "
         "transtorno de estresse pós-traumático; enxaqueca com aura.",
-        "LSD use disorder (6C43.0); Dissociative drug use disorder (6C44); "
-        "Phencyclidine use disorder (6C45); Schizophrenia (6A20).",
-        "Schizophrenia (6A20); Brief psychotic disorder (6A23); "
-        "Delusional disorder (6A24); Panic disorder (6B01); PTSD (6B40)."
+        "Transtorno por Uso de LSD (6C43.0); Transtorno por Uso de Drogas Dissociativas (6C44); "
+        "Transtorno por Uso de Fenciclidina (6C45); Esquizofrenia (6A20).",
+        "Esquizofrenia (6A20); Transtorno Psicótico Breve (6A23); "
+        "Transtorno Delirante (6A24); Transtorno do Pânico (6B01); TEPT (6B40)."
     ),
     "Transtorno por Uso de Inalantes": (
         "A. Padrão problemático de uso de inalantes (hidrocarbonetos voláteis) com 2+ critérios "
@@ -1673,10 +1673,10 @@ DSM5TR_ALL = {
         "Transtorno neurocognitivo maior/leve (exposição crônica a inalantes); "
         "transtorno por uso de álcool ou outras substâncias; "
         "transtorno da conduta (comportamento antissocial associado).",
-        "Inhalant use disorder (6C46); "
-        "Neurocognitive disorder due to inhalant exposure (6D7Y).",
-        "Alcohol use disorder (6C41); Stimulant use disorders (6C47-6C48); "
-        "Conduct disorder (6C91)."
+        "Transtorno por Uso de Inalantes (6C46); "
+        "Transtorno Neurocognitivo devido à Exposição a Inalantes (6D7Y).",
+        "Transtorno por Uso de Álcool (6C41); Transtornos por Uso de Estimulantes (6C47-6C48); "
+        "Transtorno da Conduta (6C91)."
     ),
     "Transtorno por Uso de Opioides": (
         "A. Padrão problemático de uso de opioides com 2+ dos seguintes critérios em 12 meses:\n"
@@ -1699,10 +1699,10 @@ DSM5TR_ALL = {
         "Transtorno depressivo maior (anedonia); transtorno de ansiedade; "
         "síndrome de dor crônica primária; transtorno de personalidade borderline; "
         "transtorno factício com sintomas de dor.",
-        "Opioid use disorder (6C40); Opioid intoxication (6C40.1); "
-        "Opioid withdrawal (6C40.3).",
-        "Depressive disorders (6A70-6A71); Chronic pain (MG30); "
-        "Borderline personality disorder (6D11); Factitious disorder (6D50)."
+        "Transtorno por Uso de Opioides (6C40); Intoxicação por Opioides (6C40.1); "
+        "Abstinência de Opioides (6C40.3).",
+        "Transtornos Depressivos (6A70-6A71); Dor Crônica (MG30); "
+        "Transtorno da Personalidade Borderline (6D11); Transtorno Factício (6D50)."
     ),
     "Transtorno por Uso de Sedativos/Hipnóticos/Ansiolíticos": (
         "A. Padrão problemático de uso de sedativos/hipnóticos/ansiolíticos (benzodiazepínicos, "
@@ -1726,10 +1726,10 @@ DSM5TR_ALL = {
         "TAG; transtorno do pânico; transtorno de ansiedade social; "
         "insônia primária; transtorno depressivo maior; "
         "transtorno bipolar (uso de sedativos para mania).",
-        "Sedative/hypnotic/anxiolytic use disorder (6C42); "
-        "Benzodiazepine withdrawal (6C42.3); GAD (6B00); Panic disorder (6B01).",
-        "GAD (6B00); Panic disorder (6B01); Insomnia disorders (7A00-7A01); "
-        "Depressive disorders (6A70-6A71); Alcohol use disorder (6C41)."
+        "Transtorno por Uso de Sedativos/Hipnóticos/Ansiolíticos (6C42); "
+        "Abstinência de Benzodiazepínicos (6C42.3); TAG (6B00); Transtorno do Pânico (6B01).",
+        "TAG (6B00); Transtorno do Pânico (6B01); Transtornos de Insônia (7A00-7A01); "
+        "Transtornos Depressivos (6A70-6A71); Transtorno por Uso de Álcool (6C41)."
     ),
     "Transtorno por Uso de Estimulantes": (
         "A. Padrão problemático de uso de estimulantes (cocaína, anfetaminas, metanfetamina, "
@@ -1754,11 +1754,11 @@ DSM5TR_ALL = {
         "TDAH; transtorno de ansiedade; TAG; "
         "transtorno do pânico; transtorno de personalidade borderline; "
         "transtorno psicótico induzido por estimulantes.",
-        "Cocaine use disorder (6C47); Amphetamine use disorder (6C48); "
-        "Cocaine intoxication (6C47.1); Stimulant withdrawal (6C48.3); "
-        "Bipolar disorders (6A60-6A61).",
-        "Bipolar disorders (6A60-6A61); ADHD (6A05); "
-        "Psychotic disorders (6A20-6A2Z); Panic disorder (6B01)."
+        "Transtorno por Uso de Cocaína (6C47); Transtorno por Uso de Anfetaminas (6C48); "
+        "Intoxicação por Cocaína (6C47.1); Abstinência de Estimulantes (6C48.3); "
+        "Transtornos Bipolares (6A60-6A61).",
+        "Transtornos Bipolares (6A60-6A61); TDAH (6A05); "
+        "Transtornos Psicóticos (6A20-6A2Z); Transtorno do Pânico (6B01)."
     ),
     "Transtorno por Uso de Tabaco": (
         "A. Padrão problemático de uso de tabaco com 2+ dos seguintes critérios em 12 meses:\n"
@@ -1782,10 +1782,10 @@ DSM5TR_ALL = {
         "transtorno de ansiedade social; TDAH; "
         "transtorno por uso de álcool/cannabis (poli-uso); "
         "esquizofrenia (alta prevalência de tabagismo).",
-        "Tobacco use disorder (6C4A); Nicotine withdrawal (6C4A.3); "
-        "Hazardous tobacco use (QE11).",
-        "Depressive disorders (6A70-6A71); Anxiety disorders (6B00-6B0Z); "
-        "Schizophrenia (6A20); Alcohol use disorder (6C41)."
+        "Transtorno por Uso de Tabaco (6C4A); Abstinência de Nicotina (6C4A.3); "
+        "Uso Nocivo de Tabaco (QE11).",
+        "Transtornos Depressivos (6A70-6A71); Transtornos de Ansiedade (6B00-6B0Z); "
+        "Esquizofrenia (6A20); Transtorno por Uso de Álcool (6C41)."
     ),
     "Transtorno do Jogo (Jogo Patológico)": (
         "A. Comportamento problemático de jogo com 4+ dos seguintes critérios em 12 meses:\n"
@@ -1808,10 +1808,10 @@ DSM5TR_ALL = {
         "TPAS; TOC; transtorno explosivo intermitente; "
         "transtorno por uso de álcool ou outras substâncias; "
         "jogo problemático (subclínico, sem 4 critérios).",
-        "Gambling disorder (6C50); Bipolar type I disorder (6A60); "
-        "OCD (6B20); Antisocial personality disorder (6D11).",
-        "Bipolar type I disorder (6A60); OCD (6B20); "
-        "Antisocial personality disorder (6D11); Substance use disorders (6C4)."
+        "Transtorno do Jogo (6C50); Transtorno Bipolar Tipo I (6A60); "
+        "TOC (6B20); Transtorno da Personalidade Antissocial (6D11).",
+        "Transtorno Bipolar Tipo I (6A60); TOC (6B20); "
+        "Transtorno da Personalidade Antissocial (6D11); Transtornos por Uso de Substâncias (6C4)."
     ),
 
     # ═══ CHAPTER 17: Transtornos Neurocognitivos ═══
@@ -1831,10 +1831,10 @@ DSM5TR_ALL = {
         "transtorno psicótico induzido por substância; esquizofrenia; "
         "mania (agitação); depressão psicótica; encefalopatia metabólica; "
         "encefalopatia de Wernicke; abstinência alcoólica.",
-        "Delirium (6D70); Dementia (6D71-6D7Z); "
-        "Substance intoxication/withdrawal (6C4E).",
-        "Dementia (6D71-6D7Z); Psychotic disorders (6A20-6A2Z); "
-        "Wernicke encephalopathy (5B51); Encephalitis (1D00)."
+        "Delirium (6D70); Demência (6D71-6D7Z); "
+        "Intoxicação/Abstinência por Substância (6C4E).",
+        "Demência (6D71-6D7Z); Transtornos Psicóticos (6A20-6A2Z); "
+        "Encefalopatia de Wernicke (5B51); Encefalite (1D00)."
     ),
     "Transtorno Neurocognitivo Maior": (
         "A. Declínio cognitivo significativo em 1+ domínios (atenção complexa, função executiva, "
@@ -1852,11 +1852,11 @@ DSM5TR_ALL = {
         "transtorno factício; simulação; "
         "TDAH em adultos; deficiência intelectual; TEA; "
         "transtorno psicótico; envelhecimento normal.",
-        "Delirium (6D70); Major neurocognitive disorder due to Alzheimer (6D71); "
-        "Vascular dementia (6D72); Frontotemporal dementia (6D81); "
-        "Dementia with Lewy bodies (6D82).",
-        "Mild neurocognitive disorder (6D7Y); Depression (6A70-6A71); "
-        "Schizophrenia (6A20); ADHD (6A05); Factitious disorder (6D50)."
+        "Delirium (6D70); Transtorno Neurocognitivo Maior devido à Doença de Alzheimer (6D71); "
+        "Demência Vascular (6D72); Demência Frontotemporal (6D81); "
+        "Demência com Corpos de Lewy (6D82).",
+        "Transtorno Neurocognitivo Leve (6D7Y); Depressão (6A70-6A71); "
+        "Esquizofrenia (6A20); TDAH (6A05); Transtorno Factício (6D50)."
     ),
     "Transtorno Neurocognitivo Leve": (
         "A. Declínio cognitivo modesto em 1+ domínios (atenção complexa, função executiva, "
@@ -1875,55 +1875,55 @@ DSM5TR_ALL = {
         "transtorno neurocognitivo induzido por substância; "
         "envelhecimento cognitivo normal; privação de sono; "
         "transtorno factício; simulação.",
-        "Mild neurocognitive disorder (6D7Y); "
-        "Major neurocognitive disorder (6D71-6D7Z); "
-        "Delirium (6D70); Normal ageing (MG2A).",
-        "Major neurocognitive disorder (6D71-6D7Z); "
-        "Depressive disorders (6A70-6A71); ADHD (6A05); "
-        "Anxiety disorders (6B00-6B0Z); Substance-related disorders (6C4)."
+        "Transtorno Neurocognitivo Leve (6D7Y); "
+        "Transtorno Neurocognitivo Maior (6D71-6D7Z); "
+        "Delirium (6D70); Envelhecimento Normal (MG2A).",
+        "Transtorno Neurocognitivo Maior (6D71-6D7Z); "
+        "Transtornos Depressivos (6A70-6A71); TDAH (6A05); "
+        "Transtornos de Ansiedade (6B00-6B0Z); Transtornos Relacionados a Substâncias (6C4)."
     ),
 
 "Transtorno Neurocognitivo Maior — Degeneração Lobar Frontotemporal": (
         'A. Preenche os critérios para transtorno neurocognitivo maior.\nB. A etiologia é atribuída a degeneração lobar frontotemporal (mutações nos genes mapt, grn, c9orf72), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Neurocognitivo Maior — Corpos de Lewy": (
         'A. Preenche os critérios para transtorno neurocognitivo maior.\nB. A etiologia é atribuída a doença de corpos de lewy difusos (depósitos de alfa-sinucleína no córtex), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Neurocognitivo Maior — Vascular": (
         'A. Preenche os critérios para transtorno neurocognitivo maior.\nB. A etiologia é atribuída a doença cerebrovascular (infartos múltiplos ou extensos, lesão da substância branca), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Neurocognitivo Maior — Traumatismo Cranioencefálico": (
         'A. Preenche os critérios para transtorno neurocognitivo maior.\nB. A etiologia é atribuída a traumatismo cranioencefálico (lesão cerebral traumática com perda de consciência ou amnésia pós-traumática), conforme evidenciado por história clínica, exame físico e exames complementares.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Outro Transtorno Neurocognitivo Especificado": (
         'A. Sintomas característicos de transtorno neurocognitivo maior que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno neurocognitivo maior, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Neurocognitivo Não Especificado": (
         'A. Sintomas característicos de transtorno neurocognitivo maior que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Neurocognitivo Maior; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 18: Transtornos da Personalidade ═══
@@ -1946,10 +1946,10 @@ DSM5TR_ALL = {
         "Esquizofrenia (6A20); transtorno delirante (6A24); "
         "TP esquizotípica (6D12); TP borderline (6D11); "
         "transtorno de ansiedade social (medo de avaliação).",
-        "Schizophrenia (6A20); Delusional disorder (6A24); "
-        "Schizotypal disorder (6D12); Borderline PD (6D11).",
-        "Schizophrenia (6A20); Schizotypal disorder (6D12); "
-        "Delusional disorder (6A24); Social anxiety disorder (6B04)."
+        "Esquizofrenia (6A20); Transtorno Delirante (6A24); "
+        "Transtorno da Personalidade Esquizotípica (6D12); Transtorno da Personalidade Borderline (6D11).",
+        "Esquizofrenia (6A20); Transtorno da Personalidade Esquizotípica (6D12); "
+        "Transtorno Delirante (6A24); Transtorno de Ansiedade Social (6B04)."
     ),
     "Transtorno da Personalidade Esquizoide": (
         "A. Padrão de distanciamento social e restrição de expressão emocional, presente desde "
@@ -1969,10 +1969,10 @@ DSM5TR_ALL = {
         "TEA; TP esquizotípica; TP paranoide; "
         "esquizofrenia (pródromo); depressão maior; "
         "TP esquiva (deseja relacionamentos mas evita por medo).",
-        "Schizophrenia (6A20); Schizotypal disorder (6D12); "
-        "Autism spectrum disorder (6A02).",
-        "Autism spectrum disorder (6A02); Schizotypal disorder (6D12); "
-        "Avoidant personality disorder (6D10); Depressive disorders (6A70-6A71)."
+        "Esquizofrenia (6A20); Transtorno da Personalidade Esquizotípica (6D12); "
+        "Transtorno do Espectro Autista (6A02).",
+        "Transtorno do Espectro Autista (6A02); Transtorno da Personalidade Esquizotípica (6D12); "
+        "Transtorno da Personalidade Esquiva (6D10); Transtornos Depressivos (6A70-6A71)."
     ),
     "Transtorno da Personalidade Esquizotípica": (
         "A. Padrão de déficits sociais e interpessoais com desconforto agudo e distorções "
@@ -1994,10 +1994,10 @@ DSM5TR_ALL = {
         "Esquizofrenia; TP paranoide; TP esquizoide; "
         "TEA; TOC (crenças estranhas?); "
         "transtorno de ansiedade social (sem distorções perceptivas).",
-        "Schizophrenia (6A20); Delusional disorder (6A24); "
-        "Autism spectrum disorder (6A02); Schizoid PD (6D12).",
-        "Schizophrenia (6A20); Autism spectrum disorder (6A02); "
-        "Paranoid PD (6D12); Schizoid PD (6D12); Social anxiety disorder (6B04)."
+        "Esquizofrenia (6A20); Transtorno Delirante (6A24); "
+        "Transtorno do Espectro Autista (6A02); Transtorno da Personalidade Esquizoide (6D12).",
+        "Esquizofrenia (6A20); Transtorno do Espectro Autista (6A02); "
+        "Transtorno da Personalidade Paranoide (6D12); Transtorno da Personalidade Esquizoide (6D12); Transtorno de Ansiedade Social (6B04)."
     ),
     "Transtorno da Personalidade Borderline": (
         "A. Padrão de instabilidade nas relações interpessoais, autoimagem e afetos, e "
@@ -2022,10 +2022,10 @@ DSM5TR_ALL = {
         "transtorno ciclotímico; TP histriônica; "
         "TP narcisista; TDAH; TEPT; "
         "transtorno dissociativo de identidade; transtorno por uso de substância.",
-        "Bipolar disorders (6A60-6A61); Depressive disorders (6A70-6A71); "
-        "Histrionic PD (6D11); PTSD (6B40); Cyclothymic disorder (6A62).",
-        "Bipolar disorders (6A60-6A61); Depressive disorders (6A70-6A71); "
-        "PTSD (6B40); ADHD (6A05); Substance use disorders (6C4)."
+        "Transtornos Bipolares (6A60-6A61); Transtornos Depressivos (6A70-6A71); "
+        "Transtorno da Personalidade Histriônica (6D11); TEPT (6B40); Transtorno Ciclotímico (6A62).",
+        "Transtornos Bipolares (6A60-6A61); Transtornos Depressivos (6A70-6A71); "
+        "TEPT (6B40); TDAH (6A05); Transtornos por Uso de Substâncias (6C4)."
     ),
     "Transtorno da Personalidade Histriônica": (
         "A. Padrão de emocionalidade excessiva e busca de atenção, presente desde o início "
@@ -2047,10 +2047,10 @@ DSM5TR_ALL = {
         "TP borderline; TP narcisista; TP antissocial; "
         "transtorno de conversão; transtorno dismórfico corporal; "
         "transtorno bipolar; TDAH; transtorno por uso de substância.",
-        "Borderline PD (6D11); Narcissistic PD (6D11); "
-        "Bipolar disorders (6A60-6A61); Conversion disorder (6B60).",
-        "Borderline PD (6D11); Narcissistic PD (6D11); "
-        "Bipolar disorders (6A60-6A61); Body dysmorphic disorder (6B21)."
+        "Transtorno da Personalidade Borderline (6D11); Transtorno da Personalidade Narcisista (6D11); "
+        "Transtornos Bipolares (6A60-6A61); Transtorno Conversivo (6B60).",
+        "Transtorno da Personalidade Borderline (6D11); Transtorno da Personalidade Narcisista (6D11); "
+        "Transtornos Bipolares (6A60-6A61); Transtorno Dismórfico Corporal (6B21)."
     ),
     "Transtorno da Personalidade Narcisista": (
         "A. Padrão de grandiosidade, necessidade de admiração e falta de empatia, presente "
@@ -2074,10 +2074,10 @@ DSM5TR_ALL = {
         "TP borderline; TEA (falta de empatia sem grandiosidade); "
         "transtorno dismórfico corporal; "
         "comportamento narcisista normal (adolescência).",
-        "Bipolar disorders (6A60-6A61); Antisocial PD (6D11); "
-        "Histrionic PD (6D11); Anorexia nervosa (6B80).",
-        "Bipolar disorders (6A60-6A61); Antisocial PD (6D11); "
-        "Substance use disorders (6C4); Body dysmorphic disorder (6B21)."
+        "Transtornos Bipolares (6A60-6A61); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtorno da Personalidade Histriônica (6D11); Anorexia Nervosa (6B80).",
+        "Transtornos Bipolares (6A60-6A61); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtornos por Uso de Substâncias (6C4); Transtorno Dismórfico Corporal (6B21)."
     ),
     "Transtorno da Personalidade Esquiva": (
         "A. Padrão de inibição social, sentimentos de inadequação e hipersensibilidade a "
@@ -2097,11 +2097,11 @@ DSM5TR_ALL = {
         "Transtorno de ansiedade social (fobia social generalizada vs. TP esquiva); "
         "depressão maior; transtorno do pânico com agorafobia; "
         "TAG; TP esquizoide (não deseja relações); TP dependente.",
-        "Social anxiety disorder (6B04); Agoraphobia (6B02); "
-        "Dependent PD (6D10); Schizoid PD (6D12).",
-        "Social anxiety disorder (6B04); Agoraphobia (6B02); "
-        "Schizoid PD (6D12); Dependent PD (6D10); "
-        "Depressive disorders (6A70-6A71)."
+        "Transtorno de Ansiedade Social (6B04); Agorafobia (6B02); "
+        "Transtorno da Personalidade Dependente (6D10); Transtorno da Personalidade Esquizoide (6D12).",
+        "Transtorno de Ansiedade Social (6B04); Agorafobia (6B02); "
+        "Transtorno da Personalidade Esquizoide (6D12); Transtorno da Personalidade Dependente (6D10); "
+        "Transtornos Depressivos (6A70-6A71)."
     ),
     "Transtorno da Personalidade Dependente": (
         "A. Necessidade excessiva de ser cuidado com comportamento submisso, apego e medo de "
@@ -2123,10 +2123,10 @@ DSM5TR_ALL = {
         "depressão maior; TP histriônica; TP borderline; "
         "TP esquiva; comportamento dependente normal; "
         "doença médica com dependência real.",
-        "Separation anxiety disorder (6B05); Agoraphobia (6B02); "
-        "Depressive disorders (6A70-6A71); Histrionic PD (6D11).",
-        "Separation anxiety disorder (6B05); Agoraphobia (6B02); "
-        "Borderline PD (6D11); Avoidant PD (6D10)."
+        "Transtorno de Ansiedade de Separação (6B05); Agorafobia (6B02); "
+        "Transtornos Depressivos (6A70-6A71); Transtorno da Personalidade Histriônica (6D11).",
+        "Transtorno de Ansiedade de Separação (6B05); Agorafobia (6B02); "
+        "Transtorno da Personalidade Borderline (6D11); Transtorno da Personalidade Esquiva (6D10)."
     ),
     "Transtorno da Personalidade Obsessivo-Compulsiva": (
         "A. Padrão de preocupação com ordem, perfeccionismo e controle mental/interpessoal às "
@@ -2148,11 +2148,11 @@ DSM5TR_ALL = {
         "transtorno do espectro autista (rigidez, interesses restritos); "
         "transtorno neurocognitivo frontotemporal; "
         "transtorno de personalidade paranoide (inflexibilidade).",
-        "OCD (6B20); Hoarding disorder (6B24); "
-        "Anorexia nervosa (6B80); Autism spectrum disorder (6A02).",
-        "OCD (6B20); Hoarding disorder (6B24); "
-        "Anorexia nervosa (6B80); Autism spectrum disorder (6A02); "
-        "Frontotemporal dementia (6D81)."
+        "TOC (6B20); Transtorno de Acumulação (6B24); "
+        "Anorexia Nervosa (6B80); Transtorno do Espectro Autista (6A02).",
+        "TOC (6B20); Transtorno de Acumulação (6B24); "
+        "Anorexia Nervosa (6B80); Transtorno do Espectro Autista (6A02); "
+        "Demência Frontotemporal (6D81)."
     ),
     "Transtorno da Personalidade Antissocial": (
         "A. Padrão de desrespeito e violação dos direitos alheios, presente desde os 15 anos, "
@@ -2175,26 +2175,26 @@ DSM5TR_ALL = {
         "TP borderline; TP narcisista; "
         "transtorno bipolar; transtorno por uso de substância; "
         "transtorno neurocognitivo frontotemporal; simulação.",
-        "Conduct disorder (6C91); Intermittent explosive disorder (6C70); "
-        "Bipolar disorders (6A60-6A61); Substance use disorders (6C4).",
-        "Conduct disorder (6C91); Borderline PD (6D11); "
-        "Narcissistic PD (6D11); Bipolar disorders (6A60-6A61); "
-        "Substance use disorders (6C4); Frontotemporal dementia (6D81)."
+        "Transtorno da Conduta (6C91); Transtorno Explosivo Intermitente (6C70); "
+        "Transtornos Bipolares (6A60-6A61); Transtornos por Uso de Substâncias (6C4).",
+        "Transtorno da Conduta (6C91); Transtorno da Personalidade Borderline (6D11); "
+        "Transtorno da Personalidade Narcisista (6D11); Transtornos Bipolares (6A60-6A61); "
+        "Transtornos por Uso de Substâncias (6C4); Demência Frontotemporal (6D81)."
     ),
 
 "Outro Transtorno da Personalidade Especificado": (
         'A. Sintomas característicos de transtorno da personalidade borderline que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno da personalidade borderline, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno da Personalidade Borderline; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno da Personalidade Não Especificado": (
         'A. Sintomas característicos de transtorno da personalidade borderline que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno da Personalidade Borderline; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
     # ═══ CHAPTER 19: Transtornos Parafílicos ═══
@@ -2212,10 +2212,10 @@ DSM5TR_ALL = {
         "Transtorno exhibitionista; transtorno de sadismo sexual; "
         "transtorno frotteurista; hipersexualidade secundária a transtorno bipolar; "
         "transtorno neurocognitivo maior; TUS.",
-        "Exhibitionistic disorder (6D34); Frotteuristic disorder (6D35); "
-        "Sexual sadism disorder (6D37).",
-        "Exhibitionistic disorder (6D34); Frotteuristic disorder (6D35); "
-        "Bipolar type I disorder (6A60); Neurocognitive disorders (6D71-6D7Z)."
+        "Transtorno Exhibitionista (6D34); Transtorno Frotteurista (6D35); "
+        "Transtorno de Sadismo Sexual (6D37).",
+        "Transtorno Exhibitionista (6D34); Transtorno Frotteurista (6D35); "
+        "Transtorno Bipolar Tipo I (6A60); Transtornos Neurocognitivos (6D71-6D7Z)."
     ),
     "Transtorno Exhibitionista": (
         "A. Excitação sexual recorrente e intensa pela exposição dos próprios genitais a "
@@ -2230,10 +2230,10 @@ DSM5TR_ALL = {
         "transtorno de sadismo sexual; transtorno transvéstico; "
         "hipersexualidade maníaca; delírio erótico; "
         "transtorno neurocognitivo; TUS.",
-        "Voyeuristic disorder (6D33); Frotteuristic disorder (6D35); "
-        "Transvestic disorder (6D30); Bipolar disorders (6A60-6A61).",
-        "Voyeuristic disorder (6D33); Frotteuristic disorder (6D35); "
-        "Bipolar type I disorder (6A60); Neurocognitive disorders (6D71-6D7Z)."
+        "Transtorno Voyeurista (6D33); Transtorno Frotteurista (6D35); "
+        "Transtorno Transvéstico (6D30); Transtornos Bipolares (6A60-6A61).",
+        "Transtorno Voyeurista (6D33); Transtorno Frotteurista (6D35); "
+        "Transtorno Bipolar Tipo I (6A60); Transtornos Neurocognitivos (6D71-6D7Z)."
     ),
     "Transtorno Frotteurista": (
         "A. Excitação sexual recorrente e intensa por tocar ou esfregar-se em pessoa não "
@@ -2248,10 +2248,10 @@ DSM5TR_ALL = {
         "transtorno de sadismo sexual; hipersexualidade; "
         "transtorno neurocognitivo; TUS; "
         "comportamento agressivo não sexual.",
-        "Voyeuristic disorder (6D33); Exhibitionistic disorder (6D34); "
-        "Sexual sadism disorder (6D37); Bipolar disorders (6A60-6A61).",
-        "Voyeuristic disorder (6D33); Exhibitionistic disorder (6D34); "
-        "Bipolar type I disorder (6A60); Neurocognitive disorders (6D71-6D7Z)."
+        "Transtorno Voyeurista (6D33); Transtorno Exhibitionista (6D34); "
+        "Transtorno de Sadismo Sexual (6D37); Transtornos Bipolares (6A60-6A61).",
+        "Transtorno Voyeurista (6D33); Transtorno Exhibitionista (6D34); "
+        "Transtorno Bipolar Tipo I (6A60); Transtornos Neurocognitivos (6D71-6D7Z)."
     ),
     "Transtorno de Masoquismo Sexual": (
         "A. Excitação sexual recorrente e intensa ao ser humilhado, agredido ou fazer sofrer, "
@@ -2264,10 +2264,10 @@ DSM5TR_ALL = {
         "Transtorno de sadismo sexual; TP borderline; "
         "transtorno factício; autolesão não suicida; "
         "depressão maior; transtorno dissociativo.",
-        "Sexual sadism disorder (6D37); Borderline PD (6D11); "
-        "Non-suicidal self-injury (MB23.E).",
-        "Sexual sadism disorder (6D37); Borderline PD (6D11); "
-        "Depressive disorders (6A70-6A71); Factitious disorder (6D50)."
+        "Transtorno de Sadismo Sexual (6D37); Transtorno da Personalidade Borderline (6D11); "
+        "Autolesão Não Suicida (MB23.E).",
+        "Transtorno de Sadismo Sexual (6D37); Transtorno da Personalidade Borderline (6D11); "
+        "Transtornos Depressivos (6A70-6A71); Transtorno Factício (6D50)."
     ),
     "Transtorno de Sadismo Sexual": (
         "A. Excitação sexual recorrente e intensa pelo sofrimento físico ou psicológico de "
@@ -2281,10 +2281,10 @@ DSM5TR_ALL = {
         "Transtorno de masoquismo sexual; TP antissocial; "
         "transtorno explosivo intermitente; "
         "transtorno da conduta; transtorno psicótico.",
-        "Sexual masochism disorder (6D36); Antisocial PD (6D11); "
-        "Intermittent explosive disorder (6C70).",
-        "Sexual masochism disorder (6D36); Antisocial PD (6D11); "
-        "Conduct disorder (6C91); Bipolar disorders (6A60-6A61)."
+        "Transtorno de Masoquismo Sexual (6D36); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtorno Explosivo Intermitente (6C70).",
+        "Transtorno de Masoquismo Sexual (6D36); Transtorno da Personalidade Antissocial (6D11); "
+        "Transtorno da Conduta (6C91); Transtornos Bipolares (6A60-6A61)."
     ),
     "Transtorno Pedofílico": (
         "A. Excitação sexual recorrente e intensa por atividade sexual com criança(s) pré-púbere(s) "
@@ -2301,11 +2301,11 @@ DSM5TR_ALL = {
         "TOC; TUS; transtorno bipolar; "
         "transtorno neurocognitivo maior; "
         "deficiência intelectual; abuso sexual na infância (história).",
-        "Exhibitionistic disorder (6D34); Voyeuristic disorder (6D33); "
-        "OCD (6B20); Bipolar disorders (6A60-6A61).",
-        "Exhibitionistic disorder (6D34); Voyeuristic disorder (6D33); "
-        "OCD (6B20); Bipolar disorders (6A60-6A61); "
-        "Intellectual developmental disorder (6A00); Dementia (6D71-6D7Z)."
+        "Transtorno Exhibitionista (6D34); Transtorno Voyeurista (6D33); "
+        "TOC (6B20); Transtornos Bipolares (6A60-6A61).",
+        "Transtorno Exhibitionista (6D34); Transtorno Voyeurista (6D33); "
+        "TOC (6B20); Transtornos Bipolares (6A60-6A61); "
+        "Deficiência Intelectual (6A00); Demência (6D71-6D7Z)."
     ),
     "Transtorno Fetichista": (
         "A. Excitação sexual recorrente e intensa por objetos não vivos ou partes do corpo "
@@ -2318,10 +2318,10 @@ DSM5TR_ALL = {
         "Transtorno transvéstico; TOC; "
         "transtorno dismórfico corporal; "
         "comportamento fetichista normal (parafilia não transtorno).",
-        "Transvestic disorder (6D30); OCD (6B20); "
-        "Body dysmorphic disorder (6B21).",
-        "Transvestic disorder (6D30); OCD (6B20); "
-        "Body dysmorphic disorder (6B21)."
+        "Transtorno Transvéstico (6D30); TOC (6B20); "
+        "Transtorno Dismórfico Corporal (6B21).",
+        "Transtorno Transvéstico (6D30); TOC (6B20); "
+        "Transtorno Dismórfico Corporal (6B21)."
     ),
     "Transtorno Transvéstico": (
         "A. Excitação sexual recorrente e intensa por trajar-se do sexo oposto, presente por "
@@ -2334,25 +2334,25 @@ DSM5TR_ALL = {
         "Disforia de gênero; transtorno fetichista; "
         "inconformidade de gênero; TOC (obsessões com identidade de gênero); "
         "mania (comportamento cross-gender em episódio maníaco).",
-        "Gender dysphoria (HA60-6D31); Fetishistic disorder (6D38); "
-        "OCD (6B20); Bipolar disorders (6A60-6A61).",
-        "Gender dysphoria (6D31); Fetishistic disorder (6D38); "
-        "OCD (6B20); Body dysmorphic disorder (6B21)."
+        "Disforia de Gênero (HA60-6D31); Transtorno Fetichista (6D38); "
+        "TOC (6B20); Transtornos Bipolares (6A60-6A61).",
+        "Disforia de Gênero (6D31); Transtorno Fetichista (6D38); "
+        "TOC (6B20); Transtorno Dismórfico Corporal (6B21)."
     ),
 
 "Outro Transtorno Parafílico Especificado": (
         'A. Sintomas característicos de transtorno voyeurista que causam sofrimento ou prejuízo clinicamente significativo.\nB. Os sintomas preenchem a maioria dos critérios para transtorno voyeurista, mas não todos, e o clínico opta por especificar a razão.',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Voyeurista; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
     "Transtorno Parafílico Não Especificado": (
         'A. Sintomas característicos de transtorno voyeurista que causam sofrimento ou prejuízo clinicamente significativo.\nB. Não há informação suficiente para fazer um diagnóstico mais específico (ex.: em contextos de emergência, ou quando o paciente não pode ser avaliado adequadamente).',
         'Excluir diagnósticos primários que expliquem melhor os sintomas; transtorno devido a condição médica; transtorno induzido por substância; transtorno do espectro da esquizofrenia; transtorno de personalidade pré-existente.',
         'Considerar: Transtorno Voyeurista; outros transtornos da mesma classe diagnóstica; transtorno factício; simulação; transtorno de personalidade; transtorno devido a condição médica; transtorno induzido por substância.',
-        'Conditions classifiable elsewhere; substance-induced disorders; disorders due to known medical conditions.',
-        'All specific disorder codes in the diagnostic class; substance-induced disorders; disorders due to known medical conditions.',
+        'Condições classificáveis em outra parte; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
+        'Todos os códigos específicos da classe diagnóstica; transtornos induzidos por substância; transtornos devidos a condições médicas conhecidas.',
     ),
 
 # Total supplemental entries: 62
@@ -2371,11 +2371,11 @@ DSM5TR_ALL = {
         "transtorno de adaptação (estressor identificável).",
         "Todos os transtornos mentais específicos devem ser excluídos antes de usar esta categoria; "
         "transtorno de adaptação; transtorno factício; simulação.",
-        "All specific disorder codes; "
-        "Adjustment disorder (6B43); Factitious disorder (6D50).",
-        "All specific disorder codes; "
-        "Adjustment disorder (6B43); "
-        "Mental disorder not otherwise specified."
+        "Todos os códigos de transtornos específicos; "
+        "Transtorno de Adaptação (6B43); Transtorno Factício (6D50).",
+        "Todos os códigos de transtornos específicos; "
+        "Transtorno de Adaptação (6B43); "
+        "Transtorno Mental Não Especificado."
     ),
     "Transtorno Mental Não Especificado": (
         "A. Sintomas característicos de um transtorno mental que causam sofrimento ou prejuízo "
@@ -2388,11 +2388,11 @@ DSM5TR_ALL = {
         "Outro transtorno mental especificado (razão conhecida); "
         "transtorno de adaptação; "
         "todos os transtornos mentais específicos devem ser considerados.",
-        "Other specified mental disorder; "
-        "Adjustment disorder (6B43); Factitious disorder (6D50).",
-        "All specific disorder codes; "
-        "Adjustment disorder (6B43); "
-        "Other specified mental disorder."
+        "Outro Transtorno Mental Especificado; "
+        "Transtorno de Adaptação (6B43); Transtorno Factício (6D50).",
+        "Todos os códigos de transtornos específicos; "
+        "Transtorno de Adaptação (6B43); "
+        "Outro Transtorno Mental Especificado."
     ),
 }
 
@@ -2625,6 +2625,8 @@ def seed():
         # ── Phase 2: Seed ICD-11 exclusions and differentials ──
         excl_count = 0
         diff_count = 0
+        wanted_excl = {}
+        wanted_diff = {}
         icd11_codes = {c.icd11_title: c for c in db.query(ICD11Code).all()}
 
         for disorder_name, data in DSM5TR_ALL.items():
@@ -2649,19 +2651,23 @@ def seed():
                 if len(data) >= 4:
                     icd11_excl_text = data[3] or ""
                 if icd11_excl_text:
-                    for excl_item in icd11_excl_text.split(";"):
-                        excl_item = excl_item.strip()
-                        if excl_item:
-                            existing = db.query(ICD11Exclusion).filter_by(
-                                code_id=icd.code_id, excluded_title=excl_item[:500]
-                            ).first()
-                            if not existing:
-                                db.add(ICD11Exclusion(
-                                    code_id=icd.code_id,
-                                    excluded_title=excl_item[:500],
-                                    reason="Exclusion per ICD-11 CDDR",
-                                ))
-                                excl_count += 1
+                    excl_items = [
+                        i.strip()[:500] for i in icd11_excl_text.split(";") if i.strip()
+                    ]
+                    # Acumula a união por code_id: mais de uma chave de DSM5TR_ALL pode
+                    # resolver para o mesmo transtorno do DB.
+                    wanted_excl.setdefault(icd.code_id, set()).update(excl_items)
+                    for excl_item in excl_items:
+                        existing = db.query(ICD11Exclusion).filter_by(
+                            code_id=icd.code_id, excluded_title=excl_item
+                        ).first()
+                        if not existing:
+                            db.add(ICD11Exclusion(
+                                code_id=icd.code_id,
+                                excluded_title=excl_item,
+                                reason="Exclusão conforme CID-11 CDDR",
+                            ))
+                            excl_count += 1
 
                 # Parse icd11_differentials text
                 icd11_diff_text = ""
@@ -2670,19 +2676,34 @@ def seed():
                 elif len(data) == 4:
                     pass
                 if icd11_diff_text:
-                    for diff_item in icd11_diff_text.split(";"):
-                        diff_item = diff_item.strip()
-                        if diff_item:
-                            existing = db.query(ICD11Differential).filter_by(
-                                code_id=icd.code_id, differential_title=diff_item[:500]
-                            ).first()
-                            if not existing:
-                                db.add(ICD11Differential(
-                                    code_id=icd.code_id,
-                                    differential_title=diff_item[:500],
-                                    distinguishing_features="See ICD-11 CDDR for full differential guidance.",
-                                ))
-                                diff_count += 1
+                    diff_items = [
+                        i.strip()[:500] for i in icd11_diff_text.split(";") if i.strip()
+                    ]
+                    wanted_diff.setdefault(icd.code_id, set()).update(diff_items)
+                    for diff_item in diff_items:
+                        existing = db.query(ICD11Differential).filter_by(
+                            code_id=icd.code_id, differential_title=diff_item
+                        ).first()
+                        if not existing:
+                            db.add(ICD11Differential(
+                                code_id=icd.code_id,
+                                differential_title=diff_item,
+                                distinguishing_features="Ver CID-11 CDDR para orientação completa do diagnóstico diferencial.",
+                            ))
+                            diff_count += 1
+
+        # Remove registros obsoletos (ex.: títulos ainda em inglês de seeds antigos),
+        # preservando a união de títulos por code_id.
+        for code_id, titles in wanted_excl.items():
+            db.query(ICD11Exclusion).filter(
+                ICD11Exclusion.code_id == code_id,
+                ~ICD11Exclusion.excluded_title.in_(sorted(titles)),
+            ).delete(synchronize_session=False)
+        for code_id, titles in wanted_diff.items():
+            db.query(ICD11Differential).filter(
+                ICD11Differential.code_id == code_id,
+                ~ICD11Differential.differential_title.in_(sorted(titles)),
+            ).delete(synchronize_session=False)
 
         db.commit()
         print(f"OK - {excl_count} ICD-11 exclusions seeded")
