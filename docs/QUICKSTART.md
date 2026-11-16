@@ -22,10 +22,12 @@ pip install -r requirements.txt
 
 # 3. Configurar .env
 Copy-Item .env.example -Destination .env
-# Editar — alterar senha e nome do banco antes de usar
+# Editar: defina POSTGRES_PASSWORD, JWT_SECRET_KEY e ENCRYPTION_KEY (e FERNET_KEY para o profile de orquestração)
 
 # 4. Iniciar serviços
+# Núcleo: postgres + redis + api
 docker compose up -d
+# Opcionais: --profile tools (pgAdmin), --profile proxy (Caddy/HTTPS), --profile orchestration (Airflow), --profile spark
 
 # 5. Migrations
 .venv\Scripts\python.exe -m alembic upgrade head
@@ -69,7 +71,7 @@ npm run dev
 |---|---|---|---|
 | Frontend / API | http://localhost:8000 | JWT |
 | API Docs (Swagger) | http://localhost:8000/docs | JWT |
-| pgAdmin | http://localhost:5050 | `admin@mind.example.com` / `admin` |
+| pgAdmin | http://localhost:5050 (profile `tools`) | `admin@mind.example.com` / `admin` |
 | PostgreSQL (host) | `localhost:5433` — senha em `POSTGRES_PASSWORD` no `.env` |
 
 Usuários padrão: `admin` / `admin` — senha definida via seed (`db/seed.py`)

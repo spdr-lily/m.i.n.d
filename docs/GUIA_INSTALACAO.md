@@ -292,44 +292,40 @@ ENCRYPTION_KEY=gerar-outra-chave-aqui
 
 > A `DATABASE_URL` do container é montada pelo `docker-compose.yml` usando `POSTGRES_PASSWORD` — não precisa apontar para `localhost`.
 
-### Passo B2 — Subir banco e cache
+### Passo B2 — Subir o núcleo (banco, cache e API)
+
+> Requer `POSTGRES_PASSWORD`, `JWT_SECRET_KEY` e `ENCRYPTION_KEY` definidos no `.env` (e `FERNET_KEY` para o profile `orchestration`).
 
 ```powershell
-docker compose up -d postgres redis
+docker compose up -d
 ```
 
-**Saída esperada:**
+Isso sobe o núcleo: `postgres` + `redis` + `api`. Perfis opcionais: `--profile tools` (pgAdmin), `--profile proxy` (Caddy/HTTPS), `--profile orchestration` (Airflow), `--profile spark`.
+
+**Saída esperada (núcleo):**
 
 ```
-[+] Running 3/3
- ✔ Network mind_mind-network  Created
- ✔ Container mind-postgres    Started
- ✔ Container mind-redis       Started
+[+] Running ...
+ ✔ Container mind-postgres  Started
+ ✔ Container mind-redis     Started
+ ✔ Container mind-api       Started
 ```
 
-> **Erro comum:** `Error response from daemon: driver failed programming external connectivity on endpoint mind-postgres (... bind: An attempt was made to access a socket in a way forbidden by its access permissions.)` — a porta **5433** do host está ocupada; ajuste o mapeamento em `docker-compose.yml` (linha `"5433:5432"`) ou use `docker compose down` e suba apenas o que falta.
-
-### Passo B3 — Construir a imagem da API
+### Passo B3 — (Opcional) Construir imagens
 
 ```powershell
 docker compose build api
+# Se for usar Spark:
+docker compose --profile spark build spark
 ```
 
-**Saída esperada:**
-
-```
-[+] Building <t>s (N/N) FINISHED
-...
- => exporting to image
- => => naming to docker.io/library/mind-api:latest
-```
-
-Termina com a imagem nomeada `mind-api:latest` e o prompt volta ao normal.
-
-### Passo B4 — Subir a aplicação completa
+### Passo B4 — (Opcional) Subir serviços por profile
 
 ```powershell
-docker compose up -d api pgadmin caddy
+docker compose --profile tools up -d    # pgAdmin (http://localhost:5050)
+docker compose --profile proxy up -d    # Caddy/HTTPS (https://mind.local, requer hosts/certs)
+# docker compose --profile orchestration up -d
+# docker compose --profile spark up -d
 ```
 
 Veja o status dos containers:
@@ -338,15 +334,11 @@ Veja o status dos containers:
 docker compose ps
 ```
 
-**Saída esperada:**
+**Saída esperada (núcleo):** `mind-postgres`, `mind-redis`, `mind-api` com `STATUS` `Up`/`Healthy`. Serviços de profile aparecem quando ativados.
 
-| Comando | Saída esperada |
-|---|---|
-| `docker compose up -d api pgadmin caddy` | `Container mind-api ... Started`, `Container mind-pgadmin ... Started`, `Container mind-caddy ... Started` |
-| `docker compose ps` | Tabela com `mind-postgres`, `mind-redis`, `mind-api`, `mind-pgadmin`, `mind-caddy` todos com `STATUS` = `Up` / `Healthy` |
+> **Erro comum:** o `mind-api` reinicia em loop (`Restarting`) — veja o log com `docker compose logs api` (ex.: variáveis obrigatórias ausentes no `.env`, senha incorreta, porta ocupada).
+> **Erro comum:** `mind-caddy` (profile `proxy`) retorna 502 logo após subir — aguarde a API ficar `Healthy` e rode `docker compose restart caddy` (ver E17).
 
-> **Erro comum:** o `mind-api` reinicia em loop (`Restarting`) — veja o log real com `docker compose logs api` (ex.: senha do `.env` errada, porta ocupada ou problema no `entrypoint.sh` — ver E09/E04).
-> **Erro comum:** `mind-caddy` retorna 502 (`Bad Gateway`) logo após subir — o Caddy conectou antes da API ficar pronta. Aguarde a API ficar `Healthy` e `docker compose restart caddy` (ver E17).
 
 ### Passo B5 — Rodar migrations e seeds dentro do container
 
