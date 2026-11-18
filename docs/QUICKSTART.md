@@ -17,8 +17,10 @@ python -m venv .venv
 .venv\Scripts\Activate.ps1
 
 # 2. Instalar dependências
-pip install -e .
-pip install -r requirements.txt
+# Desenvolvimento completo (API + testes + ML/MLOps)
+pip install -e ".[dev,ml,mlops]"
+# Alternativa: pip install -r requirements.txt
+# Mínimo (somente API): pip install -e .
 
 # 3. Configurar .env
 Copy-Item .env.example -Destination .env

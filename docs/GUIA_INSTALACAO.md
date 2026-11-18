@@ -60,9 +60,12 @@ python -m venv .venv
 .venv\Scripts\Activate.ps1          # Windows PowerShell
 # source .venv/bin/activate         # Linux/macOS
 
-# 3. Instalar dependências do backend (editable + produção)
-pip install -e . --no-deps
-pip install -r requirements.txt
+# 3. Instalar dependências do backend
+# Desenvolvimento completo (recomendado)
+pip install -e ".[dev,ml,mlops]"
+# Alternativas:
+#   pip install -r requirements.txt        # dev + ML/MLOps
+#   pip install -e .                       # mínimo (somente API)
 ```
 
 **Saída esperada:**

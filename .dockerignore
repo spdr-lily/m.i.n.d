@@ -30,6 +30,7 @@ mlartifacts/
 *.jar
 data/datasets/
 notebooks/
+tests/
 
 # Docs e arquivos locais (imagem não precisa do acervo completo)
 *.md

@@ -48,12 +48,15 @@ Acesso (padrão): API/Swagger em `http://localhost:8000/docs`, app em `http://lo
 ```bash
 python -m venv .venv
 # Windows: .venv\Scripts\Activate.ps1
-pip install -e .
-pip install -r requirements.txt
+# API + testes + ML/MLOps (desenvolvimento completo)
+pip install -e ".[dev,ml,mlops]"
+# ou: pip install -r requirements.txt
 
 alembic upgrade head
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
+
+> Instalação mínima da API: `pip install -e .` (ou `pip install -r requirements-prod.txt`). Extras opcionais: `.[ml]`, `.[mlops]`, `.[orchestration]`, `.[spark]`.
 
 Frontend: `cd mind-ui && npm install && npm run dev`. Testes: `python -m pytest tests/ -q`.
 

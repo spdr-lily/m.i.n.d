@@ -3,7 +3,7 @@ WORKDIR /app
 COPY mind-ui/package.json mind-ui/package-lock.json ./
 RUN npm ci
 COPY mind-ui/ .
-RUN npx vite build
+RUN npm run build
 
 FROM python:3.12-slim
 
@@ -24,7 +24,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements-prod.txt .
 RUN pip install --upgrade pip setuptools wheel && \
-    pip install numpy>=1.24.3 scipy>=1.11.4 && \
     pip install -r requirements-prod.txt
 
 COPY . .

@@ -1,24 +1,6 @@
-# Core Backend
-fastapi>=0.109.0
-uvicorn>=0.24.0
-pydantic>=2.5.0
-pydantic-settings>=2.1.0
+# Dependências mínimas para jobs Spark (container Python 3.8 do Spark)
+# Evita scipy/pandas/scikit-learn incompatíveis com o runtime do Spark.
 sqlalchemy>=2.0.23,<2.1
 psycopg2-binary>=2.9.9
-alembic>=1.13.0
-
-# Database & ORM
 python-dotenv>=1.0.0
-sqlalchemy-utils>=0.39.0
-
-# Security & Auth
-pyjwt>=2.8.1
-python-jose>=3.3.0
-bcrypt>=4.1.1
-cryptography>=44.0.0
-
-# API
-python-multipart>=0.0.6
-
-# Utilities
 requests>=2.31.0
